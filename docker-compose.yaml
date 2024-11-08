@@ -1,0 +1,7 @@
+version: "3.8"
+
+services:
+  backend-dev-server:
+    image: ghcr.io/supotsu-no-ochaya/backend:latest
+    ports:
+      - "5000:80"

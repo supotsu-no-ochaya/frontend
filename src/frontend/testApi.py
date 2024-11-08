@@ -8,13 +8,22 @@ def get_current_time():
     """
     Returns the current time in a JSON format.
     """
-    Output = {
-    "dish": "Mochi",
-    "price": "3.50€",
-    "tags": ["vegan","food","nice"],
-    "stock": "100",
-    "timestamp": datetime.datetime.now()
-    }
+    Output = [
+        {
+            "dish": "Mochi",
+            "price": "3.50€",
+            "tags": ["vegan","food","nice"],
+            "stock": "100",
+            "timestamp": datetime.datetime.now()
+        },{
+            "dish": "Sandwich",
+            "price": "3.75€",
+            "tags": ["meat","food"],
+            "stock": "75",
+            "timestamp": datetime.datetime.now()
+        }
+    ]
+    
 
     return jsonify(Output)
 

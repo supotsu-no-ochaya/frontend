@@ -1,5 +1,3 @@
-name: Supotsu no Ochaya - Frontend Dev-Stack
-
 services:
   backend-dev-server:
     image: ghcr.io/supotsu-no-ochaya/backend:latest

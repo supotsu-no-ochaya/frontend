@@ -1,4 +1,4 @@
-version: "3.8"
+name: Supotsu no Ochaya - Frontend Dev-Stack
 
 services:
   backend-dev-server:

@@ -23,7 +23,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/dish': 'http://localhost:5000/'
+      '/api/test': 'http://localhost:8090/'
     }
   }
 })

@@ -30,9 +30,9 @@
       {{ data[0]}}<br>
       {{ Object.keys(data[0]) }}
     </div>
-    <div id="dish.table">
+    <div id="User.table">
       <Table>
-        <TableCaption>Übersich der Gerichte von Supotsu no Ochaya
+        <TableCaption>Übersich der User von Supotsu no Ochaya
         </TableCaption>
         <TableHeader>
           <TableRow>

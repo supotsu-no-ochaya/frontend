@@ -1,6 +1,8 @@
 import type { Component, VNode } from 'vue'
 import type { ToastProps } from '.'
 import { computed, ref } from 'vue'
+import { useSound } from "@vueuse/sound";
+import bellSoundSrc from "@/assets/sounds/notification-bell.mp3";
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
@@ -121,10 +123,19 @@ function dispatch(action: Action) {
   }
 }
 
+// note: this function was adjusted to play the bell sound with a notification
 function useToast() {
+  const { play: playBellSound } = useSound(bellSoundSrc);
+
+  function toastWithSound(props: Toast & { playSound?: boolean }) {
+    if (props.playSound !== false)
+      playBellSound();
+    return toast(props);
+  }
+
   return {
     toasts: computed(() => state.value.toasts),
-    toast,
+    toast: toastWithSound,
     dismiss: (toastId?: string) => dispatch({ type: actionTypes.DISMISS_TOAST, toastId }),
   }
 }

@@ -2,11 +2,8 @@
 import {DefaultLayout} from "@/layouts/default";
 import {Button} from "@/components/ui/button";
 import {useToast} from "@/components/ui/toast";
-import {useSound} from "@vueuse/sound";
-import bellSoundSrc from "@/assets/bell.mp3";
 
 const { toast } = useToast();
-const { play } = useSound(bellSoundSrc);
 </script>
 
 <template>
@@ -16,10 +13,8 @@ const { play } = useSound(bellSoundSrc);
     <Button @click="() => {
       toast({
         title: 'Hello World',
-        description: 'This is a Toast Notification'
+        description: 'This is a Toast Notification',
       });
-      // todo: move useSound and play into the toast function
-      play();
     }">
       Show Toast
     </Button>

@@ -64,7 +64,7 @@ const calculateTotalSum = () => {
       <div class="flex w-full h-4 bg-primary my-4 fixed top-[9rem] left-0 z-10"></div>
 
       <!-- Scrollable container, adjusts to fit between the headers and the footer -->
-      <div class="items-center fixed mt-[12rem] mb-[6rem] ml-8 overflow-y-auto max-h-[calc(100vh-16rem)] mx-auto w-4/5 max-w-3xl">
+      <div class="items-center fixed mt-[8rem] mb-[6rem] ml-8 overflow-y-auto max-h-[calc(100vh-16rem)] mx-auto w-4/5 max-w-3xl">
         <Accordion type="multiple" class="w-full mx-auto">
           <AccordionItem v-for="person in mock_entrys" :key="person.name" :value="person.name">
             <AccordionTrigger>{{ person.name }}</AccordionTrigger>

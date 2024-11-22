@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/table';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Separator } from '@/components/ui/separator';
 
 const Tisch = "Tisch 1"
 
@@ -61,7 +62,9 @@ const calculateTotalSum = () => {
      
 
       <!-- Divider with a fixed position -->
-      <div class="flex w-full h-4 bg-primary my-4 fixed top-[9rem] left-0 z-10"></div>
+      <div class="flex w-full h-4 my-4 fixed top-[9rem] left-0 z-10">
+        <Separator class="h-1/3 bg-primary rounded" />
+      </div>
 
       <!-- Scrollable container, adjusts to fit between the headers and the footer -->
       <div class="items-center fixed mt-[8rem] mb-[6rem] ml-8 mr-8 overflow-y-auto max-h-[calc(100vh-16rem)] w-full">

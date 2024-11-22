@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { DefaultLayout } from "@/layouts/default";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 
 const Tisch = "Tisch 1"
+const Rabatt = reactive({value:0.10,checked: false})
 
 // Mock data with each item having its own 'checked' state
 const mock_entrys = ref([
@@ -39,15 +40,22 @@ const handleItemCheckboxChange = (checked: boolean, item: any, person: any) => {
 };
 
 const handlePersonCheckboxClick = (checked: boolean, person: any) => {
-      console.log(checked);
       person.checked = checked
       person.items.forEach(element => {element.checked = checked});
       person.total = calculateTotal(person);
     };
 
+const handleRabattCheckboxClick = (checked: boolean) => {
+  Rabatt.checked = checked
+}
+
 // Method to calculate the total sum for all people
 const calculateTotalSum = () => {
-  return mock_entrys.value.reduce((total, person) => total + person.total, 0);
+  let total = mock_entrys.value.reduce((total, person) => total + person.total, 0)
+  if (Rabatt.checked) {
+    total = total*(1-Rabatt.value)
+  }
+  return total;
 };
 </script>
 
@@ -75,7 +83,7 @@ const calculateTotalSum = () => {
       </div>
 
       <!-- Scrollable container, adjusts to fit between the headers and the footer -->
-      <div class="items-center fixed mt-[7rem] mb-[6rem] ml-8 mr-8 overflow-y-auto max-h-[calc(100vh-16rem)] w-full">
+      <div class="items-center fixed mt-[7rem] mb-[6rem] ml-8 mr-8 overflow-y-auto max-h-[calc(100vh-20rem)] w-full">
         <Accordion type="multiple" class="w-4/5">
           <AccordionItem v-for="person in mock_entrys" :key="person.name" :value="person.name">
             <AccordionTrigger>
@@ -94,7 +102,7 @@ const calculateTotalSum = () => {
                       <div>{{ item.name }}</div>
                     </TableCell>
                     <TableCell class="w-2/5">
-                      <div>{{ item.price }}€</div>
+                      <div>{{ item.price.toFixed(2) }}€</div>
                     </TableCell>
                     <TableCell class="w-1/5 ">
                       <Checkbox
@@ -105,7 +113,7 @@ const calculateTotalSum = () => {
                   </TableRow>
                 </TableBody>
               </Table>
-              <div class="flex items-center justify-center font-bold">{{ person.name }}: {{ calculateTotal(person) }}€</div>
+              <div class="flex items-center justify-center font-bold">{{ person.name }}: {{ calculateTotal(person).toFixed(2) }}€</div>
             </AccordionContent>
            
           </AccordionItem>
@@ -113,9 +121,31 @@ const calculateTotalSum = () => {
       </div>
 
       <!-- Fixed footer displaying total -->
-      <div class="fixed bottom-0 left-0 w-full bg-primary text-lg font-bold text-center py-4">
-        <strong>Total Sum: {{ calculateTotalSum() }}€</strong>
+      <div class="flex items-center fixed top-[34rem] ml-8">
+        <Checkbox
+          class="border-black border w-4 h-4 mr-2"
+          :checked="Rabatt.checked"
+          @update:checked="(checked) => handleRabattCheckboxClick(checked)"
+        />
+        <div>Rabatt von {{ Rabatt.value*100 }}%</div>
+      </div>
+      <div class="flex items-center fixed bottom-0 left-0 w-full bg-primary text-lg font-bold text-center py-4">
+        <Button class="w-1/5  ml-2 bg-secondary active:bg-primary text-black" @click="console.log('Bezahlen')">
+          Bezahlen
+          
+        </Button>
+        <strong class="w-3/5">Total Sum: {{ calculateTotalSum().toFixed(2) }}€</strong>
+        <Button class="w-1/5 mr-2 bg-secondary active:bg-primary text-black" @click="console.log('Anpassen')">
+          Anpassen
+        </Button>
       </div>
     </div>
   </DefaultLayout>
 </template>
+
+
+<!--TODO:
+Discount per person
+
+
+-->

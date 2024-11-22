@@ -11,6 +11,8 @@ import {
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { Checkbox } from '@/components/ui/checkbox';
 
+const Tisch = "Tisch 1"
+
 // Mock data with each item having its own 'checked' state
 const mock_entrys = ref([
   { name: 'Person 1', total: 0, items: [{ name: 'Mochi_a', price: 3, checked: false }, { name: 'Mochi_b', price: 3, checked: false }, { name: 'Sandwich', price: 4, checked: false }] },
@@ -50,35 +52,33 @@ const calculateTotalSum = () => {
           <img src="/ArrowBack.png" class="w-full h-full" />
         </Button>
         <div class="flex-grow text-black text-center p-2">
-          Bestellung
+          Bestellung<br>
+          {{ Tisch }}
         </div>
         <img class="w-12 h-12 text-white text-center p-2 mx-2" src="/shopping-cart.png" alt="icon" />
       </div>
 
-      <!-- Table section fixed just below the header -->
-      <div class="flex items-center justify-center h-16 fixed top-[6rem] left-0 w-full z-10">
-        Tisch 1
-      </div>
+     
 
       <!-- Divider with a fixed position -->
       <div class="flex w-full h-4 bg-primary my-4 fixed top-[9rem] left-0 z-10"></div>
 
       <!-- Scrollable container, adjusts to fit between the headers and the footer -->
-      <div class="items-center fixed mt-[8rem] mb-[6rem] ml-8 overflow-y-auto max-h-[calc(100vh-16rem)] mx-auto w-4/5 max-w-3xl">
-        <Accordion type="multiple" class="w-full mx-auto">
+      <div class="items-center fixed mt-[8rem] mb-[6rem] ml-8 mr-8 overflow-y-auto max-h-[calc(100vh-16rem)] w-full">
+        <Accordion type="multiple" class="w-4/5">
           <AccordionItem v-for="person in mock_entrys" :key="person.name" :value="person.name">
             <AccordionTrigger>{{ person.name }}</AccordionTrigger>
             <AccordionContent class="max-h-[80vh] overflow-y-auto">
               <Table>
                 <TableBody>
                   <TableRow v-for="(item, index) in person.items" :key="index">
-                    <TableCell>
+                    <TableCell class="w-2/5">
                       <div>{{ item.name }}</div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell class="w-2/5">
                       <div>{{ item.price }}€</div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell class="w-1/5 ">
                       <Checkbox
                         :checked="item.checked"
                         @update:checked="(checked) => handleCheckboxChange(checked, item, person)"

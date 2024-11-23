@@ -9,7 +9,7 @@ const props = defineProps<{
 
 <template>
   <div class="h-full grid grid-rows-[auto,1fr,auto]">
-    <header class="flex items-center p-2 gap-x-2 bg-gradient-to-b from-primary to-background">
+    <header class="flex items-center p-2 gap-x-2 bg-gradient-to-b from-primary via-primary to-background">
       <img :src="logoSrc" alt="logo" class="block rounded-full size-12" />
       <p>
         Supotso no Ochaya

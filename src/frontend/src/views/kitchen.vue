@@ -68,6 +68,7 @@ const printtab = () => {
   <!-- hidden-overflow -->
   <DefaultLayout class="flex flex-col h-screen justify-between"> 
     <!-- Tab Bar -->
+        <div class="flex gap-1 px-2">
 
             <button
             v-for="(tab, tabIndex) in tabs"

@@ -1,6 +1,7 @@
 import type { Component, VNode } from 'vue'
 import type { ToastProps } from '.'
 import { computed, ref } from 'vue'
+// @ts-expect-error: @vueuse/sound has a bad package.json file. nothing we can fix. would break build without this line
 import { useSound } from "@vueuse/sound";
 import bellSoundSrc from "@/assets/sounds/notification-bell.mp3";
 

@@ -61,10 +61,10 @@ const calculateTotalSum = () => {
 
 <template>
   <DefaultLayout class="grid place-content-start text-2xl bg-secondary w-full">
-    <div class="relative w-full">
+    <div class="fixed w-full">
 
-      <!-- Fixed header with title -->
-      <div class="flex items-center h-16 fixed top-[4rem] left-0 w-full z-10">
+      <!-- Header Section -->
+      <div class="flex items-center h-16 relative w-full z-10">
         <Button @click="() => { console.log('click'); }" class="w-12 h-12 text-center bg-accent p-2 m-2">
           <img src="/ArrowBack.png" class="w-full h-full" />
         </Button>
@@ -75,16 +75,14 @@ const calculateTotalSum = () => {
         <img class="w-12 h-12 text-white text-center p-2 mx-2" src="/shopping-cart.png" alt="icon" />
       </div>
 
-     
-
-      <!-- Divider with a fixed position -->
-      <div class="flex w-full h-4 my-4 fixed top-[8rem] left-0 z-10">
+      <!-- Divider -->
+      <div class="flex w-full h-4 my-4 z-10">
         <Separator class="h-1/3 bg-primary rounded text-xl font-bold"></Separator>
       </div>
 
-      <!-- Scrollable container, adjusts to fit between the headers and the footer -->
-      <div class="items-center fixed mt-[7rem] mb-[6rem] ml-8 mr-8 overflow-y-auto max-h-[calc(100vh-20rem)] w-full">
-        <Accordion type="multiple" class="w-4/5">
+      <!-- Scrollable Content Section -->
+      <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-20rem)] w-full">
+        <Accordion type="multiple" class="w-4/5 mx-auto">
           <AccordionItem v-for="person in mock_entrys" :key="person.name" :value="person.name">
             <AccordionTrigger>
               {{ person.name }} 
@@ -92,7 +90,7 @@ const calculateTotalSum = () => {
                 :checked="person.checked"
                 @update:checked="(checked) => handlePersonCheckboxClick(checked, person)"
                 @click.stop
-                />     
+              />     
             </AccordionTrigger>
             <AccordionContent class="max-h-[80vh] overflow-y-auto">
               <Table>
@@ -115,33 +113,40 @@ const calculateTotalSum = () => {
               </Table>
               <div class="flex items-center justify-center font-bold">{{ person.name }}: {{ calculateTotal(person).toFixed(2) }}€</div>
             </AccordionContent>
-           
           </AccordionItem>
         </Accordion>
       </div>
 
-      <!-- Fixed footer displaying total -->
-      <div class="flex items-center fixed top-[34rem] ml-8">
-        <Checkbox
-          class="border-black border w-4 h-4 mr-2"
-          :checked="Rabatt.checked"
-          @update:checked="(checked) => handleRabattCheckboxClick(checked)"
-        />
-        <div>Rabatt von {{ Rabatt.value*100 }}%</div>
+      <!-- Rabatt Section -->
+      <div class="flex fixed bottom-[6rem] left-0 w-full px-8">
+        <div class="flex items-center">
+          <Checkbox
+            class="border-black border w-4 h-4 mr-2"
+            :checked="Rabatt.checked"
+            @update:checked="(checked) => handleRabattCheckboxClick(checked)"
+          />
+          <div>Rabatt von {{ Rabatt.value * 100 }}%</div>
+        </div>
       </div>
+
+      <!-- Footer Section -->
       <div class="flex items-center fixed bottom-0 left-0 w-full bg-primary text-lg font-bold text-center py-4">
-        <Button class="w-1/5  ml-2 bg-secondary active:bg-primary text-black" @click="console.log('Bezahlen')">
+        <Button class="w-1/5 ml-2 bg-secondary active:bg-primary text-black" 
+        @click="console.log('Bezahlen')">
+        
           Bezahlen
-          
         </Button>
         <strong class="w-3/5">Total Sum: {{ calculateTotalSum().toFixed(2) }}€</strong>
         <Button class="w-1/5 mr-2 bg-secondary active:bg-primary text-black" @click="console.log('Anpassen')">
           Anpassen
         </Button>
       </div>
+
     </div>
   </DefaultLayout>
 </template>
+
+
 
 
 <!--TODO:

@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import Footer from "./_Footer.vue";
-import Header from "./_Header.vue";
 import type {HTMLAttributes} from "vue";
+import logoSrc from "@/assets/logo.png";
 
 const props = defineProps<{
   class?: HTMLAttributes['class']
@@ -9,11 +8,19 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="h-full grid grid-rows-[auto,1fr,auto]">
-    <Header />
+  <div class="min-h-screen grid grid-rows-[auto,1fr,auto]">
+    <header class="flex items-center p-2 gap-x-2 bg-gradient-to-b from-primary via-primary to-background">
+      <img :src="logoSrc" alt="logo" class="block rounded-full size-12" />
+      <p>
+        Supotso no Ochaya
+      </p>
+      <div class="grow" />
+    </header>
     <main :class="props.class">
       <slot />
     </main>
-    <Footer />
+    <footer>
+
+    </footer>
   </div>
 </template>

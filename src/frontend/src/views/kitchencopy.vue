@@ -68,21 +68,26 @@ const printtab = () => {
   <!-- hidden-overflow -->
   <DefaultLayout class="flex flex-col h-screen justify-between"> 
     <!-- Tab Bar -->
+      <ScrollArea class="flex flex-shrink-0 w-screen space-x-16 px-8 pt-2 ">
+        <div class="flex flex-nowrap">
 
+          <div v-for="(tab, tabIndex) in tabs" class="w-[25vw] p-x-2" >
             <button
-            v-for="(tab, tabIndex) in tabs"
             :key="tab"
             @click="activeTab.includes(tab) 
                   ? activeTab.splice(activeTab.indexOf(tab),1) 
                   : activeTab.length < 2 && activeTab.push(tab)"
-              class="rounded-md w-11/12 min-w-max border-amber-900 border-opacity-40 py"
+              class="px-8 space-x-4 rounded-md w-11/12 min-w-max border-amber-900 border-opacity-40 py"
               :class="activeTab[0] === tab | activeTab[1] === tab 
                   ? 'rounded-md  border-2 bg-primary bg-opacity-70' 
                   : 'bg-transparent border-b-2'"
               >
               {{ tab }}
             </button>
+          </div>
         </div>
+          <ScrollBar orientation="horizontal"/>
+      </ScrollArea>
       
 
     <!-- Content Area -->

@@ -1,4 +1,6 @@
-FROM node:22-alpine AS builder
+ARG NODE_VERSION=22
+
+FROM node:${NODE_VERSION}-alpine AS builder
 
 WORKDIR /code
 

@@ -133,8 +133,8 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
         <!-- Orders toDo -->
         <ScrollArea class="h-[65vh]">
         <div class="sticky z-10 w-full top-0 bg-gradient-to-b from-background to-transparent h-4"></div>
-        <div v-for="(order, orderIndex) in allOrders[activeStation]" :key="orderIndex" class="py-2 z-0">
-            <Table v-if="!order.allclicked" class="">
+        <div v-for="(order, orderIndex) in allOrders[activeStation]" :key="orderIndex" class="z-0">
+            <Table v-if="!order.allclicked" class="my-2">
                 <TableHeader>
                   <TableRow @click= "changeState(activeStation, orderIndex)"
                   class="border border-black w-full"

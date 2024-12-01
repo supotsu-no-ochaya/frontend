@@ -1,7 +1,7 @@
 
 <script setup>
 import DefaultLayout from '@/layouts/default/DefaultLayout.vue';
-import { computed, reactive, ref, onMounted } from 'vue';
+import { computed, reactive, ref, onMounted, watch } from 'vue';
 
 import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -32,29 +32,44 @@ const allOrders = reactive({
 
   ],
   Sandwiches: [
+    { id: '0', table: '4', waiter: 'Martin', time: '17:89 Uhr', state: false, orderlist: ['Käse'], allclicked: false, clicked: [false]},
     { id: '1', table: '6', waiter: 'Robin', time: '14 Uhr' , state: false, orderlist: ['Käse'], allclicked: false, clicked: [false]},
-    { id: '2', table: '4', waiter: 'Martin', time: '17:89 Uhr', state: false, orderlist: ['Käse'], allclicked: false, clicked: [false]},
   ],
   'Kaltgetränke': [],
   'Heißgetränke': [],
 });
 
-// const checkAllClicked = ()
+const trashcan = ref([])
+
+for (const stationName in allOrders) {
+  for (const order in allOrders[stationName]){
+    watch(
+      () => allOrders[stationName][order].clicked,
+      (newClicked) => {
+        allOrders[stationName][order].allclicked = newClicked.every(state => state === true);
+
+        console.log("check in watch", allOrders[stationName][order].clicked)
+        console.log("check in watch", allOrders[stationName][order].allclicked)
+      },
+      { deep: true }
+    )      
+    }
+}
 
 const changeState = (activeTab, index) => {
     allOrders[activeTab][index].state = !allOrders[activeTab][index].state;
 }
 const changeAbholbereit = (activeTab, index, itemIndex) => {
     allOrders[activeTab][index].clicked[itemIndex] = !allOrders[activeTab][index].clicked[itemIndex];
-    allOrders[activeTab][index].allclicked = !allOrders[activeTab][index].allclicked;
-
+    // console.log(allOrders[activeTab][index].clicked)
+    // console.log(allOrders[activeTab][index].allclicked)
 }
 </script>
 
 <template>
-  <DefaultLayout class="flex flex-col justify-between"> 
+  <DefaultLayout class="flex flex-col justify-between whitespace-nowrap"> 
     <!-- Tab Bar -->
-    <div class="flex gap-1 px-2">
+    <div class="flex gap-1 px-2 py-3">
         <button
         v-for="(tab, tabIndex) in foodstations"
         :key="tab"
@@ -72,17 +87,21 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
       
         
     <!-- Content Area -->
-    <div class="flex flex-1 pt-[10vh] justify-center">
+    <div class="flex flex-1 pt-[5vh] justify-center">
       <div v-if="!activeFoodStations.length" class="text-lg"> 
             Wähle deine Station aus.
       </div>
       <!-- Header declaring the station -->
-      <div v-for="(activeStation,activeStationIndex) in activeFoodStations" class="w-2/3 border-gray-500 px-24 h-full" :class="activeStationIndex != 0 ? 'border-l' : ''">
+      <div v-for="(activeStation,activeStationIndex) in activeFoodStations" 
+        class="w-1/2 h-full border-gray-500 px-[8vw]" 
+        :class="activeStationIndex != 0 ? 'border-l' : ''">
         <h2 class="text-xl italic mb-4">{{ activeStation }}</h2>
         <Table v-if="allOrders[activeStation].length">
           <TableBody>
             <TableRow class="text-base whitespace-nowrap">
-              <TableCell v-for="list in ['Tisch' , 'Kellner', 'Eingegangen um']"  class="indent-[-4rem] text-center w-1/3" :class="list == 'Eingegangen um' ? 'text-center indent-8' : ''">
+              <TableCell v-for="list in ['Tisch' , 'Kellner', 'Eingegangen um']"  
+                class="indent-[-4rem] text-center w-1/3" 
+                :class="list == 'Eingegangen um' ? 'text-center indent-8' : ''">
                 {{ list }} 
               </TableCell>
             </TableRow>
@@ -92,7 +111,7 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
         <ScrollArea class="h-[65vh]">
         <div class="sticky z-10 w-full top-0 bg-gradient-to-b from-background to-transparent h-4"></div>
         <div v-for="(order, orderIndex) in allOrders[activeStation]" :key="orderIndex" class="py-2 z-0">
-            <Table class="">
+            <Table v-if="!order.allclicked" class="">
                 <TableHeader>
                   <TableRow @click= "changeState(activeStation, orderIndex)"
                   class="border border-black w-full"

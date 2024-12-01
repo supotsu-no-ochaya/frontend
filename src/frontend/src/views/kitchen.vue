@@ -1,4 +1,3 @@
-
 <script setup>
 import DefaultLayout from '@/layouts/default/DefaultLayout.vue';
 import { computed, reactive, ref, onMounted, watch } from 'vue';
@@ -29,7 +28,6 @@ const allOrders = reactive({
     { id: '10', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: [ 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
     { id: '7', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
     { id: '12', table: '2', waiter: 'Lea', time: '16:03 Uhr' , state: false, orderlist: ['nutella', 'nutella', 'Käseschinken'], allclicked: false, clicked: [false,false,false]},
-
   ],
   Sandwiches: [
     { id: '0', table: '4', waiter: 'Martin', time: '17:89 Uhr', state: false, orderlist: ['Käse'], allclicked: false, clicked: [false]},
@@ -39,20 +37,45 @@ const allOrders = reactive({
   'Heißgetränke': [],
 });
 
-const trashcan = ref([])
+const trashcan = reactive({})
+const trashlen = 4  //max length of trashcan
+
+foodstations.forEach(stationName => {
+  trashcan[stationName] = [];  // Erstelle für jede Station ein leeres Array
+});
+
+// const trashOrders = computed(() => {
+//   return allOrders[]
+// }
+// )
 
 for (const stationName in allOrders) {
-  for (const order in allOrders[stationName]){
-    watch(
-      () => allOrders[stationName][order].clicked,
+  const stationOrders = allOrders[stationName]
+  for (const order of stationOrders){
+    watch(  //watching for changes in every clicked', updating allclicked
+      () => order.clicked,
       (newClicked) => {
-        allOrders[stationName][order].allclicked = newClicked.every(state => state === true);
-
-        console.log("check in watch", allOrders[stationName][order].clicked)
-        console.log("check in watch", allOrders[stationName][order].allclicked)
+        order.allclicked = newClicked.every(state => state === true);
       },
       { deep: true }
-    )      
+    );
+    watch(
+      () => order.allclicked,
+      ()=> {
+         if (order.allclicked ===false){
+          const index = trashcan[stationName].indexOf(order.id)
+          console.log(index)
+          trashcan[stationName].splice(index)
+        }
+        if (order.allclicked ===true){
+          trashcan[stationName].unshift(order.id);
+        } 
+        if (trashcan[stationName].length > trashlen){
+          trashcan[stationName].pop() //when does this, then pop from allOrders as well     MUSS NOCH GEMACHT WERDEN
+        }
+        console.log("trashcan:", trashcan[stationName])
+      }
+    )    
     }
 }
 
@@ -117,7 +140,7 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
                   class="border border-black w-full"
                   :class="order.state ? 'bg-primary ' : ''"
                   >
-                  <TableHead v-for="entry in ['table' ,'waiter', 'time']" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry == 'time' ? 'indent-8 text-center': ''"> 
+                  <TableHead v-for="entry in ['id' ,'waiter', 'time']" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry == 'time' ? 'indent-8 text-center': ''"> 
                     {{ order[entry] }} 
                   </TableHead>
                 </TableRow>
@@ -156,11 +179,38 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
           <PopoverTrigger class="fixed  bottom-2 text-white py-2" :class="activeStationIndex == 1 ? 'right-3': 'left-3'">
               <button class="px-4 py-2 bg-gray-800 rounded"> Verlauf Anzeigen </button>
           </PopoverTrigger>
-          <PopoverContent class="bg-primary opacity-90 border-amber-900 border-2 w-[40vw] h-[60vh] pr-4">
-            <h1> {{ activeStation}} </h1>
+          <PopoverContent class="bg-background opacity-90 border-amber-900 border-2 w-[40vw] h-[60vh] pr-4">
+            <h1> {{ activeStation }} </h1>
             <div> 
               hier kommen die fertigen Gerichte hin
             </div>
+            <ScrollArea class="h-[40vh]">
+              <div class="sticky z-10 w-full top-0 bg-gradient-to-b from-primary to-transparent h-4"></div>
+              <div v-for="trashID in trashcan[activeStation]" class="py-2 z-0">
+                <Table v-for="(order, orderIndex) in allOrders[activeStation]" :key="orderIndex" class="">
+                  <!-- && trashcan.includes(order.id) -->
+                    <TableHeader v-if="order.id === trashID">
+                      <TableRow class="border bg-primary border-black w-full"
+                      >
+                      <TableHead v-for="entry in ['id' ,'waiter', 'time']" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry == 'time' ? 'indent-8 text-center': ''"> 
+                        {{ order[entry] }} 
+                      </TableHead>
+                      <!-- <TableHead> h {{ order.id}} t {{orderID}} s {{ trashcan[activeStation] }} </TableHead> -->
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody v-if="order.id === trashID" v-for="(itemName, itemIndex) in order.orderlist" class="text-left indent-8">
+                    <TableRow   
+                    @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class=" justify-between pt-2">
+                      <TableCell  class=" line-through"> {{ itemName }} </TableCell>
+                      <TableCell> </TableCell>
+                      <TableCell class="text-center"> Abholbereit </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+              <div class="sticky bottom-[-2px] bg-gradient-to-t from-primary to-transparent h-16"></div>      
+              <ScrollBar orientation="vertical" />
+            </ScrollArea>
           </PopoverContent>
         </Popover>
       </div>

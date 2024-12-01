@@ -1,193 +1,150 @@
-<!-- <script setup lang ="ts">
-import { Toggle } from '../components/ui/toggle'
- -->
-<!-- </script> -->
 
 <script setup>
-import { computed, reactive, ref } from 'vue';
-import { Table, TableHeader, TableBody, TableRow, TableCell } from '@/components/ui/table';
 import DefaultLayout from '@/layouts/default/DefaultLayout.vue';
+import { computed, reactive, ref, onMounted } from 'vue';
+
 import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area"
-import { Popover, PopoverContent,PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from '@/components/ui/table';
 
 // Tabs and Orders
-const tabs = reactive(['Crepes', 'Sandwiches', 'Heißgetränke', 'Kaltgetränke',"Essen 2"]);
-const activeTab = ref([tabs[0]]);
+const foodstations = reactive(['Crepes', 'Sandwiches', 'Heißgetränke', 'Kaltgetränke',"Essen 2"]);
+const activeFoodStations = ref([foodstations[0]]);
 
-const orders = reactive({
+const allOrders = reactive({
   Crepes: [
-    { table: '2', waiter: 'Lea', time: '16:03 Uhr' , state: false, orderlist: ['nutella', 'nutella', 'Käseschinken'], clicked: [false,false,false]},
-    { table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], clicked: [false,false,false,false]},
-    { table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], clicked: [false,false,false,false]},
-    { table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], clicked: [false,false,false,false]},
-    { table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], clicked: [false,false,false,false]},
-    { table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], clicked: [false,false,false,false]},
+    { id: '0', table: '2', waiter: 'Lea', time: '16:03 Uhr' , state: false, allclicked: false,
+            orderlist: ['nutella', 'nutella', 'Käseschinken'], 
+            clicked: [false,false,false]},
 
-
-    { table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], clicked: [false,false,false,false]},
-    { table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], clicked: [false,false,false,false]},
-    { table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], clicked: [false,false,false,false]},
-    { table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], clicked: [false,false,false,false]},
-    { table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], clicked: [false,false,false,false]},
-    { table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], clicked: [false,false,false,false]},
-    { table: '2', waiter: 'Lea', time: '16:03 Uhr' , state: false, orderlist: ['nutella', 'nutella', 'Käseschinken'], clicked: [false,false,false]},
+    { id: '1', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
+    { id: '2', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
+    { id: '3', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
+    { id: '5', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
+    { id: '6', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
+    { id: '9', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
+    { id: '11', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
+    { id: '4', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken',], allclicked: false, clicked: [false,false,false,false]},
+    { id: '8', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt',  'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
+    { id: '10', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: [ 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
+    { id: '7', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
+    { id: '12', table: '2', waiter: 'Lea', time: '16:03 Uhr' , state: false, orderlist: ['nutella', 'nutella', 'Käseschinken'], allclicked: false, clicked: [false,false,false]},
 
   ],
   Sandwiches: [
-    { table: '6', waiter: 'Robin', time: '14 Uhr' , state: false, orderlist: ['Käse'], clicked: [false]},
-    { table: '4', waiter: 'Martin', time: '17:89 Uhr', state: false, orderlist: ['Käse'],  clicked: [false]},
+    { id: '1', table: '6', waiter: 'Robin', time: '14 Uhr' , state: false, orderlist: ['Käse'], allclicked: false, clicked: [false]},
+    { id: '2', table: '4', waiter: 'Martin', time: '17:89 Uhr', state: false, orderlist: ['Käse'], allclicked: false, clicked: [false]},
   ],
-  'Heißgetränke': [],
   'Kaltgetränke': [],
+  'Heißgetränke': [],
 });
 
-const changetime = (activeTab, index) => {
-    console.log(orders[activeTab])
-    orders[activeTab][index].state = !orders[activeTab][index].state;
-    console.log(orders[activeTab][index].state)
-    // var = console.log(orders[activeTab][index].state)
+// const checkAllClicked = ()
 
-    console.log(activeTab)
+const changeState = (activeTab, index) => {
+    allOrders[activeTab][index].state = !allOrders[activeTab][index].state;
 }
-const changeclicked = (activeTab, index, itemIndex) => {
-    console.log(orders[activeTab])
-    // orders[activeTab][index].state = !orders[activeTab][index].state;
-    orders[activeTab][index].clicked[itemIndex] = !orders[activeTab][index].clicked[itemIndex];
-    console.log(orders[activeTab][index].state)
-    // var = console.log(orders[activeTab][index].state)
+const changeAbholbereit = (activeTab, index, itemIndex) => {
+    allOrders[activeTab][index].clicked[itemIndex] = !allOrders[activeTab][index].clicked[itemIndex];
+    allOrders[activeTab][index].allclicked = !allOrders[activeTab][index].allclicked;
 
-    console.log(activeTab)
-}
-const printtab = () => {
-  // activeTab = tabs[tab]
-  console.log(activeTab.value)
 }
 </script>
 
 <template>
-  <!-- hidden-overflow -->
-  <DefaultLayout class="flex flex-col h-screen justify-between"> 
+  <DefaultLayout class="flex flex-col justify-between"> 
     <!-- Tab Bar -->
-        <div class="flex gap-1 px-2">
-
-            <button
-            v-for="(tab, tabIndex) in tabs"
-            :key="tab"
-            @click="activeTab.includes(tab) 
-                  ? activeTab.splice(activeTab.indexOf(tab),1) 
-                  : activeTab.length < 2 && activeTab.push(tab)"
-              class="rounded-md w-11/12 min-w-max border-amber-900 border-opacity-40 py"
-              :class="activeTab[0] === tab | activeTab[1] === tab 
-                  ? 'rounded-md  border-2 bg-primary bg-opacity-70' 
-                  : 'bg-transparent border-b-2'"
-              >
-              {{ tab }}
-            </button>
-        </div>
+    <div class="flex gap-1 px-2">
+        <button
+        v-for="(tab, tabIndex) in foodstations"
+        :key="tab"
+        @click="activeFoodStations.includes(tab) 
+              ? activeFoodStations.splice(activeFoodStations.indexOf(tab),1) 
+              : activeFoodStations.length < 2 && activeFoodStations.push(tab)"
+          class="rounded-md w-1/4 min-w-max border-amber-900 border-opacity-40 py"
+          :class="activeFoodStations[0] === tab | activeFoodStations[1] === tab 
+              ? 'rounded-md  border-2 bg-primary bg-opacity-70' 
+              : 'bg-transparent border-b-2'"
+          >
+          {{ tab }}
+        </button>
+    </div>
       
-
+        
     <!-- Content Area -->
-    <div class="flex flex-1 pt-8 justify-center">
-      <div v-if="activeTab.length == null" class="text-lg"> 
+    <div class="flex flex-1 pt-[10vh] justify-center">
+      <div v-if="!activeFoodStations.length" class="text-lg"> 
             Wähle deine Station aus.
       </div>
-      <div v-for="(tabSite,tabSiteIndex) in activeTab" class="w-2/3 border-gray-500 px-24 h-full" :class="tabSiteIndex != 0 ? 'border-l w-1/2' : ''">
-        <h2 class="text-xl italic mb-4">{{ tabSite }}</h2>
-        <div class="flex items-center text-base justify-between text-black px-4">
-            <span >Tisch</span>
-            <span >Kellner</span>
-            <span >Eingegangen um</span>
-        </div>
-        <ScrollArea scrollType="always" class="h-[70vh]">
-          <div v-for="(order, orderIndex) in orders[tabSite]" :key="orderIndex" class="py-2   ">
-              <button 
-                  @click= "changetime(activeTab, orderIndex)"
+      <!-- Header declaring the station -->
+      <div v-for="(activeStation,activeStationIndex) in activeFoodStations" class="w-2/3 border-gray-500 px-24 h-full" :class="activeStationIndex != 0 ? 'border-l' : ''">
+        <h2 class="text-xl italic mb-4">{{ activeStation }}</h2>
+        <Table v-if="allOrders[activeStation].length">
+          <TableBody>
+            <TableRow class="text-base whitespace-nowrap">
+              <TableCell v-for="list in ['Tisch' , 'Kellner', 'Eingegangen um']"  class="indent-[-4rem] text-center w-1/3" :class="list == 'Eingegangen um' ? 'text-center indent-8' : ''">
+                {{ list }} 
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+        <!-- Orders toDo -->
+        <ScrollArea class="h-[65vh]">
+        <div class="sticky z-10 w-full top-0 bg-gradient-to-b from-background to-transparent h-4"></div>
+        <div v-for="(order, orderIndex) in allOrders[activeStation]" :key="orderIndex" class="py-2 z-0">
+            <Table class="">
+                <TableHeader>
+                  <TableRow @click= "changeState(activeStation, orderIndex)"
                   class="border border-black w-full"
                   :class="order.state ? 'bg-primary ' : ''"
-
-              >
-              <div class="items-center justify-between py px-6 flex">
-                  <span> {{ order.table }} </span>
-                  <span> {{ order.waiter }} </span>
-                  <span> {{ order.time }} </span>
-              </div>
-              </button>
-              <div v-for="(itemName, itemIndex) in order.orderlist" >
-                <button v-if="order.clicked[itemIndex]" 
-                @click ="changeclicked(activeTab, orderIndex, itemIndex)" class="flex justify-between py-1 w-full">
-                <span class="line-through"> {{ itemName }} </span>
-                <span> Abholbereit </span>
-              </button>
-                <button @click="changeclicked(activeTab, orderIndex, itemIndex)" v-else-if="order.state" class="flex justify-between py-1 w-full">
-                  <span> {{ itemName }} </span>
-                  <span> In Bearbeitung</span>
-                </button>
-                  <button  v-else class="flex justify-between py-1 w-full"> <span> {{ itemName }} </span> <span> bestellt </span> </button>
-                  <!-- <Table>
-                      <TableBody class="justify-between">
-                          <TableRow v-for="item in orders[activeTab][index].orderlist" class="justify-between r-0">
-                              <TableCell class="flex right-0">{{ item }}</TableCell>
-                              <TableCell v-if="order.state" class="justify-between"> In Bearbeitung </TableCell>
-                              <TableCell v-else class="justify-between"> Bestellt </TableCell>
-                          </TableRow>
-                      </TableBody>
-                  </Table> -->
-              </div>
-              
-            </div>
-            <div class="text-center py-3">
-              Keine weitere Bestellungen . . .
-            </div>
-        <ScrollBar orientation="vertical" />
+                  >
+                  <TableHead v-for="entry in ['table' ,'waiter', 'time']" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry == 'time' ? 'indent-8 text-center': ''"> 
+                    {{ order[entry] }} 
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody v-for="(itemName, itemIndex) in order.orderlist" class="text-left indent-8">
+                <TableRow  v-if="order.clicked[itemIndex]" 
+                @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class=" justify-between pt-2">
+                  <TableCell  class=" line-through"> {{ itemName }} </TableCell>
+                  <TableCell> </TableCell>
+                  <TableCell class="text-center"> Abholbereit </TableCell>
+                </TableRow>
+                <TableRow @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" v-else-if="order.state" class=" justify-between pt-2">
+                  <TableCell > {{ itemName }} </TableCell>
+                  <TableCell> </TableCell>
+                  <TableCell class="text-center"> In Bearbeitung</TableCell>
+                </TableRow>
+                <TableRow  v-else class=" justify-between pt-2"> 
+                  <TableCell > {{ itemName }} </TableCell> 
+                  <TableCell> </TableCell>
+                  <TableCell class="text-center"> bestellt </TableCell> 
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+          <div v-if="allOrders[activeStation].length" class="text-center py-3">
+            Keine weitere Bestellungen . . .
+          </div>
+          <div v-else class="text-center">
+            Warte auf Bestellung . . .
+          </div>
+          <div class="sticky bottom-[-2px] bg-gradient-to-t from-background to-transparent h-16"></div>      
+          <ScrollBar orientation="vertical" />
         </ScrollArea>
-        </div>
-
-      <!-- Right Panel -->
-      <!-- <div class="w-1/2 flex items-center justify-center text-gray-500">
-        <p>Platzhalter für zukünftige Inhalte</p>
-      </div> -->
+        <!-- show completed orders -->
+        <Popover class="">
+          <PopoverTrigger class="fixed  bottom-2 text-white py-2" :class="activeStationIndex == 1 ? 'right-3': 'left-3'">
+              <button class="px-4 py-2 bg-gray-800 rounded"> Verlauf Anzeigen </button>
+          </PopoverTrigger>
+          <PopoverContent class="bg-primary opacity-90 border-amber-900 border-2 w-[40vw] h-[60vh] pr-4">
+            <h1> {{ activeStation}} </h1>
+            <div> 
+              hier kommen die fertigen Gerichte hin
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
     </div>
-
-    <!-- Footer -->
-     <Popover>
-        <PopoverTrigger class="fixed right-2 bottom-2 text-white py-2" >
-            <!-- <div class="fixed right-2 bottom-2 text-white py-2"> -->
-              <button class="px-4 py-2 bg-gray-800 rounded">Verlauf anzeigen</button>
-            <!-- </div> -->
-        </PopoverTrigger>
-        <PopoverContent as-child class="bg-primary fixed ">
-          test
-        </PopoverContent>
-     </Popover>
-
-
   </DefaultLayout>
-  
 </template>
-
-
-
-<style scoped>
-/* Custom colors */ 
-.bg-beige {
-  background-color: #ECD9C7;
-  ;
-}
-
-.bg-brown-400 {
-  background-color: #6b4226;
-}
-
-.bg-brown-300 {
-  background-color: #8c5e3b;
-}
-
-.bg-brown-200 {
-  background-color: #c6a890;
-}
-
-.bg-brown-100 {
-  background-color: #eed9c4;
-}
-
-</style>

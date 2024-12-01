@@ -9,11 +9,12 @@ import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from '@
 // Tabs and Orders
 const foodstations = reactive(['Crepes', 'Sandwiches', 'Heißgetränke', 'Kaltgetränke',"Essen 2"]);
 const activeFoodStations = ref([foodstations[0]]);
+const MAX_ACTIVE_STATIONS = 2;
 
 const allOrders = reactive({
   Crepes: [
     { id: '0', table: '2', waiter: 'Lea', time: '16:03 Uhr' , state: false, allclicked: false,
-            orderlist: ['nutella', 'nutella', 'Käseschinken'], 
+            orderlist: ['nutella', 'nutella', 'Käseschinken'],
             clicked: [false,false,false]},
 
     { id: '1', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
@@ -69,13 +70,13 @@ for (const stationName in allOrders) {
         }
         if (order.allclicked ===true){
           trashcan[stationName].unshift(order.id);
-        } 
+        }
         if (trashcan[stationName].length > trashlen){
           trashcan[stationName].pop() //when does this, then pop from allOrders as well     MUSS NOCH GEMACHT WERDEN
         }
         console.log("trashcan:", trashcan[stationName])
       }
-    )    
+    )
     }
 }
 
@@ -90,42 +91,49 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
 </script>
 
 <template>
-  <DefaultLayout class="flex flex-col justify-between whitespace-nowrap"> 
+  <DefaultLayout class="flex flex-col justify-between whitespace-nowrap">
     <!-- Tab Bar -->
     <div class="flex gap-1 px-2 py-3">
         <button
-        v-for="(tab, tabIndex) in foodstations"
-        :key="tab"
-        @click="activeFoodStations.includes(tab) 
-              ? activeFoodStations.splice(activeFoodStations.indexOf(tab),1) 
-              : activeFoodStations.length < 2 && activeFoodStations.push(tab)"
+        v-for="foodStationName in foodstations"
+        :key="foodStationName"
+        @click="() => {
+          if (activeFoodStations.includes(foodStationName)) {
+            activeFoodStations.splice(activeFoodStations.indexOf(foodStationName),1)
+          } else if (activeFoodStations.length < MAX_ACTIVE_STATIONS) {
+            activeFoodStations.push(foodStationName)
+          } else {
+            activeFoodStations.shift();  // todo: maybe Array.pop()
+            activeFoodStations.push(foodStationName);
+          }
+        }"
           class="rounded-md w-1/4 min-w-max border-amber-900 border-opacity-40 py"
-          :class="activeFoodStations[0] === tab | activeFoodStations[1] === tab 
-              ? 'rounded-md  border-2 bg-primary bg-opacity-70' 
+          :class="activeFoodStations.includes(foodStationName)
+              ? 'rounded-md  border-2 bg-primary bg-opacity-70'
               : 'bg-transparent border-b-2'"
           >
-          {{ tab }}
+          {{ foodStationName }}
         </button>
     </div>
-      
-        
+
+
     <!-- Content Area -->
     <div class="flex flex-1 pt-[5vh] justify-center">
-      <div v-if="!activeFoodStations.length" class="text-lg"> 
+      <div v-if="activeFoodStations.length === 0" class="text-lg">
             Wähle deine Station aus.
       </div>
       <!-- Header declaring the station -->
-      <div v-for="(activeStation,activeStationIndex) in activeFoodStations" 
-        class="w-1/2 h-full border-gray-500 px-[8vw]" 
-        :class="activeStationIndex != 0 ? 'border-l' : ''">
+      <div v-for="(activeStation, activeStationIndex) in activeFoodStations"
+        class="w-1/2 h-full border-gray-500 px-[8vw]"
+        :class="activeStationIndex !== 0 ? 'border-l' : ''">
         <h2 class="text-xl italic mb-4">{{ activeStation }}</h2>
         <Table v-if="allOrders[activeStation].length">
           <TableBody>
             <TableRow class="text-base whitespace-nowrap">
-              <TableCell v-for="list in ['Tisch' , 'Kellner', 'Eingegangen um']"  
-                class="indent-[-4rem] text-center w-1/3" 
-                :class="list == 'Eingegangen um' ? 'text-center indent-8' : ''">
-                {{ list }} 
+              <TableCell v-for="list in ['Tisch' , 'Kellner', 'Eingegangen um']"
+                class="indent-[-4rem] text-center w-1/3"
+                :class="list === 'Eingegangen um' ? 'text-center indent-8' : ''">
+                {{ list }}
               </TableCell>
             </TableRow>
           </TableBody>
@@ -136,31 +144,35 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
         <div v-for="(order, orderIndex) in allOrders[activeStation]" :key="orderIndex" class="z-0">
             <Table v-if="!order.allclicked" class="my-2">
                 <TableHeader>
-                  <TableRow @click= "changeState(activeStation, orderIndex)"
-                  class="border border-black w-full"
-                  :class="order.state ? 'bg-primary ' : ''"
+                  <TableRow
+                    @click="changeState(activeStation, orderIndex)"
+                    class="border border-black w-full"
+                    :class="order.state ? 'bg-primary ' : ''"
                   >
-                  <TableHead v-for="entry in ['id' ,'waiter', 'time']" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry == 'time' ? 'indent-8 text-center': ''"> 
-                    {{ order[entry] }} 
+                  <TableHead v-for="entry in ['id' ,'waiter', 'time']" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry === 'time' ? 'indent-8 text-center': ''">
+                    {{ order[entry] }}
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody v-for="(itemName, itemIndex) in order.orderlist" class="text-left indent-8">
-                <TableRow  v-if="order.clicked[itemIndex]" 
-                @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class=" justify-between pt-2">
-                  <TableCell  class=" line-through"> {{ itemName }} </TableCell>
-                  <TableCell> </TableCell>
+                <TableRow
+                  v-if="order.clicked[itemIndex]"
+                  @click="changeAbholbereit(activeStation, orderIndex, itemIndex)"
+                  class="justify-between"
+                >
+                  <TableCell class="line-through"> {{ itemName }} </TableCell>
+                  <TableCell />
                   <TableCell class="text-center"> Abholbereit </TableCell>
                 </TableRow>
-                <TableRow @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" v-else-if="order.state" class=" justify-between pt-2">
-                  <TableCell > {{ itemName }} </TableCell>
-                  <TableCell> </TableCell>
-                  <TableCell class="text-center"> In Bearbeitung</TableCell>
+                <TableRow v-else-if="order.state" @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class="justify-between">
+                  <TableCell> {{ itemName }} </TableCell>
+                  <TableCell />
+                  <TableCell class="text-center"> In Bearbeitung </TableCell>
                 </TableRow>
-                <TableRow  v-else class=" justify-between pt-2"> 
-                  <TableCell > {{ itemName }} </TableCell> 
-                  <TableCell> </TableCell>
-                  <TableCell class="text-center"> bestellt </TableCell> 
+                <TableRow v-else class="justify-between">
+                  <TableCell> {{ itemName }} </TableCell>
+                  <TableCell />
+                  <TableCell class="text-center"> Bestellt </TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -171,19 +183,16 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
           <div v-else class="text-center">
             Warte auf Bestellung . . .
           </div>
-          <div class="sticky bottom-[-2px] bg-gradient-to-t from-background to-transparent h-16"></div>      
+          <div class="sticky bottom-[-2px] bg-gradient-to-t from-background to-transparent h-16"></div>
           <ScrollBar orientation="vertical" />
         </ScrollArea>
         <!-- show completed orders -->
         <Popover class="">
-          <PopoverTrigger class="fixed  bottom-2 text-white py-2" :class="activeStationIndex == 1 ? 'right-3': 'left-3'">
+          <PopoverTrigger class="fixed bottom-2 text-white py-2" :class="activeStationIndex === 1 ? 'right-3': 'left-3'">
               <button class="px-4 py-2 bg-gray-800 rounded"> Verlauf Anzeigen </button>
           </PopoverTrigger>
           <PopoverContent class="bg-background opacity-90 border-amber-900 border-2 w-[40vw] h-[60vh] pr-4">
             <h1> {{ activeStation }} </h1>
-            <div> 
-              hier kommen die fertigen Gerichte hin
-            </div>
             <ScrollArea class="h-[40vh]">
               <div class="sticky z-10 w-full top-0 bg-gradient-to-b from-primary to-transparent h-4"></div>
               <div v-for="trashID in trashcan[activeStation]" class="py-2 z-0">
@@ -192,23 +201,23 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
                     <TableHeader v-if="order.id === trashID">
                       <TableRow class="border bg-primary border-black w-full"
                       >
-                      <TableHead v-for="entry in ['id' ,'waiter', 'time']" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry == 'time' ? 'indent-8 text-center': ''"> 
-                        {{ order[entry] }} 
+                      <TableHead v-for="entry in ['id' ,'waiter', 'time']" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry === 'time' ? 'indent-8 text-center': ''">
+                        {{ order[entry] }}
                       </TableHead>
                       <!-- <TableHead> h {{ order.id}} t {{orderID}} s {{ trashcan[activeStation] }} </TableHead> -->
                     </TableRow>
                   </TableHeader>
                   <TableBody v-if="order.id === trashID" v-for="(itemName, itemIndex) in order.orderlist" class="text-left indent-8">
-                    <TableRow   
+                    <TableRow
                     @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class=" justify-between pt-2">
-                      <TableCell  class=" line-through"> {{ itemName }} </TableCell>
-                      <TableCell> </TableCell>
+                      <TableCell class="line-through"> {{ itemName }} </TableCell>
+                      <TableCell />
                       <TableCell class="text-center"> Abholbereit </TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
               </div>
-              <div class="sticky bottom-[-2px] bg-gradient-to-t from-primary to-transparent h-16"></div>      
+              <div class="sticky bottom-[-2px] bg-gradient-to-t from-primary to-transparent h-16"></div>
               <ScrollBar orientation="vertical" />
             </ScrollArea>
           </PopoverContent>

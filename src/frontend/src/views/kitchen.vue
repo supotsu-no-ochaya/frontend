@@ -142,7 +142,7 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
         <ScrollArea class="h-[65vh]">
         <div class="sticky z-10 w-full top-0 bg-gradient-to-b from-background to-transparent h-4"></div>
         <div v-for="(order, orderIndex) in allOrders[activeStation]" :key="orderIndex" class="z-0">
-            <Table v-if="!order.allclicked" class="my-2">
+            <Table v-if="!order.allclicked" class="my-2 cursor-pointer">
                 <TableHeader>
                   <TableRow
                     @click="changeState(activeStation, orderIndex)"
@@ -192,7 +192,7 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
               <button class="px-4 py-2 bg-gray-800 rounded"> Verlauf Anzeigen </button>
           </PopoverTrigger>
           <PopoverContent class="bg-background opacity-90 border-amber-900 border-2 w-[40vw] h-[60vh] pr-4">
-            <h1> {{ activeStation }} </h1>
+            <h1 class="font-bold"> {{ activeStation }} </h1>
             <ScrollArea class="h-[40vh]">
               <div class="sticky z-10 w-full top-0 bg-gradient-to-b from-primary to-transparent h-4"></div>
               <div v-for="trashID in trashcan[activeStation]" class="py-2 z-0">
@@ -209,7 +209,7 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
                   </TableHeader>
                   <TableBody v-if="order.id === trashID" v-for="(itemName, itemIndex) in order.orderlist" class="text-left indent-8">
                     <TableRow
-                    @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class=" justify-between pt-2">
+                    @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class=" justify-between pt-2 cursor-pointer">
                       <TableCell class="line-through"> {{ itemName }} </TableCell>
                       <TableCell />
                       <TableCell class="text-center"> Abholbereit </TableCell>

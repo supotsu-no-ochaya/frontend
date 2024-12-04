@@ -6,7 +6,7 @@ import ManageDishesView from "@/views/admin/ManageDishesView.vue";
 
 export const adminRoutes: RouteRecordRaw[] = [
   {
-    path: 'admin',
+    path: '/admin',
     children: [
       {
         path: '',

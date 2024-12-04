@@ -9,7 +9,7 @@ import DishSelectionView from "@/views/waiter/table/order/dishes/DishSelectionVi
 
 export const waiterRoutes: RouteRecordRaw[] = [
   {
-    path: 'waiter',
+    path: '/waiter',
     children: [
       { path: '', name: 'waiter', redirect: { name: 'tables-list' } },
       {

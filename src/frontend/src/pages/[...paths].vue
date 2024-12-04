@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
       Die angeforderte URL wurde nicht gefunden.
       Wenn Sie die URL manuell eingegeben haben, überprüfen Sie bitte Ihre Schreibweise und versuchen Sie es erneut.
     </p>
-    <router-link :to="{ name: 'home' }" class="w-fit mx-auto">
+    <router-link :to="{ path: '/' }" class="w-fit mx-auto">
       <Button variant="link" size="lg" class="text-2xl">
         Startseite
       </Button>

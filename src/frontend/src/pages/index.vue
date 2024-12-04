@@ -2,6 +2,7 @@
 import {DefaultLayout} from "@/layouts/default";
 import {Button} from "@/components/ui/button";
 import {useToast} from "@/components/ui/toast";
+import { useRouter } from "vue-router";
 
 const { toast } = useToast();
 </script>

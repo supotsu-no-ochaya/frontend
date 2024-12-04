@@ -4,7 +4,7 @@ import KitchenView from "@/views/kitchen/KitchenView.vue";
 
 export const kitchenRoutes: RouteRecordRaw[] = [
   {
-    path: 'kitchen',
+    path: '/kitchen',
     children: [
       {
         path: '',

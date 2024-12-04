@@ -2,7 +2,7 @@
 import { useRoute } from "vue-router";
 import { computed } from "vue";
 
-const route = useRoute();
+const route = useRoute("/waiter/table/[tableId]/");
 const tableId = computed(() => route.params.tableId);
 </script>
 

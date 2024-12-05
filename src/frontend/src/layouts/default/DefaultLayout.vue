@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type {HTMLAttributes} from "vue";
+import { computed, type HTMLAttributes } from "vue";
 import logoSrc from "@/assets/logo.png";
-import type {RouteLocationRaw} from "vue-router";
+import { type RouteLocationRaw, useRoute } from "vue-router";
 
 import billSrc from "@/assets/icons/navigation/bill.svg";
 import homeSrc from "@/assets/icons/navigation/home.svg";
@@ -18,21 +18,23 @@ interface FooterLink {
   location: RouteLocationRaw
 }
 
+const route = useRoute("/waiter/table/[tableId]/");
+
 const footerLinks: FooterLink[] = [
   {
     iconSrc: homeSrc,
     alt: "Home",
-    location: {  },
+    location: { name: "/waiter/tables" },
   },
   {
     iconSrc: billSrc,
     alt: "Bill",
-    location: {  },
+    location: { name: "/waiter/table/[tableId]/payment", params: { tableId: route.params.tableId } },
   },
   {
     iconSrc: shoppingCartSrc,
     alt: "Shopping Cart",
-    location: {  },
+    location: { name: "/waiter/table/[tableId]/order/list", params: { tableId: route.params.tableId } },
   },
 ]
 </script>

@@ -60,7 +60,7 @@ const calculateTotalSum = () => {
 </script>
 
 <template>
-  <DefaultLayout show-navigation-footer class="grid place-content-start text-2xl bg-secondary w-full">
+  <DefaultLayout footer="waiter-nav" class="grid place-content-start text-2xl bg-secondary w-full">
     <div class="fixed w-full">
 
       <!-- Header Section -->
@@ -85,12 +85,12 @@ const calculateTotalSum = () => {
         <Accordion type="multiple" class="w-4/5 mx-auto">
           <AccordionItem v-for="person in mock_entrys" :key="person.name" :value="person.name">
             <AccordionTrigger>
-              {{ person.name }} 
+              {{ person.name }}
               <Checkbox
                 :checked="person.checked"
                 @update:checked="(checked) => handlePersonCheckboxClick(checked, person)"
                 @click.stop
-              />     
+              />
             </AccordionTrigger>
             <AccordionContent class="max-h-[80vh] overflow-y-auto">
               <Table>
@@ -131,9 +131,9 @@ const calculateTotalSum = () => {
 
       <!-- Footer Section -->
       <div class="flex items-center fixed bottom-16 left-0 w-full bg-primary text-lg font-bold text-center py-4">
-        <Button class="w-1/5 ml-2 bg-secondary active:bg-primary text-black" 
+        <Button class="w-1/5 ml-2 bg-secondary active:bg-primary text-black"
         @click="console.log('Bezahlen')">
-        
+
           Bezahlen
         </Button>
         <strong class="w-3/5">Total Sum: {{ calculateTotalSum().toFixed(2) }}€</strong>

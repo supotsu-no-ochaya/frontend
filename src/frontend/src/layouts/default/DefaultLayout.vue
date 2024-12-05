@@ -34,9 +34,9 @@ const footerLinks: FooterLink[] = [
   {
     iconSrc: shoppingCartSrc,
     alt: "Shopping Cart",
-    location: { name: "/waiter/table/[tableId]/order/list", params: { tableId: route.params.tableId } },
+    location: { name: "/waiter/table/[tableId]/order", params: { tableId: route.params.tableId } },
   },
-]
+];
 </script>
 
 <template>

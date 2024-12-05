@@ -65,7 +65,7 @@ const calculateTotalSum = () => {
 
       <!-- Header Section -->
       <div class="flex items-center h-16 relative w-full z-10">
-        <Button @click="() => { console.log('click'); }" class="w-12 h-12 text-center bg-accent p-2 m-2">
+        <Button variant="ghost" @click="() => { console.log('click'); }" class="w-12 h-12 text-center bg-accent p-2 m-2">
           <img src="/ArrowBack.png" class="w-full h-full" />
         </Button>
         <div class="flex-grow text-black text-center p-2">

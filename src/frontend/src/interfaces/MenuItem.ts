@@ -1,8 +1,8 @@
-export type MenuItem = {
+export type MenuItem<T extends BomTemplate> = {
   id: string;
   name: string;
   price: number;
-  bom_template: BomTemplate;
+  bom_template: T;
   created: string;
   updated: string;
 };
@@ -52,12 +52,14 @@ export type Product = {
 };
 
 // example use
-const handleList = (menuitems: MenuItem[]): void => {
+const handleList = (menuitems: MenuItem<BomTemplate>[]): void => {
   menuitems.map((e) => {
     if (e.bom_template.type == 'Fixed') {
+      let item = e as MenuItem<FixedTemplate>;
       let tpl = e.bom_template;
       console.log("FixedTemplate with products:", e.bom_template.products);
     } else {
+      let item = e as MenuItem<SelectionTemplate>;
       let tpl = e.bom_template;
       console.log("SelectionTemplate with options:", e.bom_template.options);
     }

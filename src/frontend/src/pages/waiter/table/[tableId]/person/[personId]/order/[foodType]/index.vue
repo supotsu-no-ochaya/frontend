@@ -20,9 +20,13 @@ const dishCategories = computed(() => foodCategory.value.categories);
     <WaiterControlHeader :label="foodCategory.label" icon="cutlery" />
     <div class="flex flex-col flex-1 gap-2 p-2">
       <template v-for="[dishCategory, details] in Object.entries(dishCategories)">
-        <router-link :to="{ name: '/waiter/table/[tableId]/person/[personId]/order/[foodType]/[dishCategory]/', params: { tableId, personId, foodType, dishCategory } }">
-          <Button class="w-full">
-            {{ details.label }}
+        <router-link class="group" :to="{ name: '/waiter/table/[tableId]/person/[personId]/order/[foodType]/[dishCategory]/', params: { tableId, personId, foodType, dishCategory } }">
+          <Button class="w-full flex gap-2 group-even:flex-row-reverse">
+            <img class="h-full" :src="details.iconSrc" :alt="details.label" />
+            <div class="grow" />
+            <div class="text-2xl">
+              {{ details.label }}
+            </div>
           </Button>
         </router-link>
       </template>

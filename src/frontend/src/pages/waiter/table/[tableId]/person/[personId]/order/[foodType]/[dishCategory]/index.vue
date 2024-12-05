@@ -22,22 +22,23 @@ const dishCategory = computed(() => foodCategory.value.categories[dishCategoryId
     <WaiterControlHeader :label="`${foodCategory.label}/${dishCategory.label}`" icon="cutlery" />
     <div class="grid grid-cols-2 p-2 gap-2">
       <template v-for="dish in dishCategory.elements">
-        <div class="bg-primary rounded-lg">
-          <div class="flex justify-evenly items-baseline">
-            <Button size="icon">
+        <div class="bg-primary rounded-xl mt-5">
+          <img class="mx-auto px-6 py-2 w-3/5 bg-background rounded-xl -mt-5" :src="dish.iconSrc" :alt="dish.label" />
+          <div class="flex justify-evenly px-1 py-2">
+            <Button size="icon" class="bg-background">
               <LucideMinus />
             </Button>
-            <div>
+            <div class="bg-background rounded-xl min-w-8 grid place-content-center">
               {{ 0 }}
             </div>
-            <Button size="icon">
+            <Button size="icon" class="bg-background">
               <LucidePlus />
             </Button>
           </div>
-          <div class="truncate text-xl">
+          <div class="truncate text-xl px-1">
             {{ dish.label }}
           </div>
-          <div class="text-sm">
+          <div class="text-sm px-1">
             {{ dish.price.toFixed(2) }}€
           </div>
         </div>

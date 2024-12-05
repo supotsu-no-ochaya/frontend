@@ -60,7 +60,7 @@ const calculateTotalSum = () => {
 </script>
 
 <template>
-  <DefaultLayout class="grid place-content-start text-2xl bg-secondary w-full">
+  <DefaultLayout show-navigation-footer class="grid place-content-start text-2xl bg-secondary w-full">
     <div class="fixed w-full">
 
       <!-- Header Section -->
@@ -81,7 +81,7 @@ const calculateTotalSum = () => {
       </div>
 
       <!-- Scrollable Content Section -->
-      <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-20rem)] w-full">
+      <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-22rem)] w-full">
         <Accordion type="multiple" class="w-4/5 mx-auto">
           <AccordionItem v-for="person in mock_entrys" :key="person.name" :value="person.name">
             <AccordionTrigger>
@@ -118,7 +118,7 @@ const calculateTotalSum = () => {
       </div>
 
       <!-- Rabatt Section -->
-      <div class="flex fixed bottom-[6rem] left-0 w-full px-8">
+      <div class="flex fixed bottom-33 left-16 w-full px-8">
         <div class="flex items-center">
           <Checkbox
             class="border-black border w-4 h-4 mr-2"
@@ -130,7 +130,7 @@ const calculateTotalSum = () => {
       </div>
 
       <!-- Footer Section -->
-      <div class="flex items-center fixed bottom-0 left-0 w-full bg-primary text-lg font-bold text-center py-4">
+      <div class="flex items-center fixed bottom-16 left-0 w-full bg-primary text-lg font-bold text-center py-4">
         <Button class="w-1/5 ml-2 bg-secondary active:bg-primary text-black" 
         @click="console.log('Bezahlen')">
         

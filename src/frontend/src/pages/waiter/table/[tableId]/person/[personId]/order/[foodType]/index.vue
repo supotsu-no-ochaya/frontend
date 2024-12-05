@@ -14,7 +14,7 @@ const dishCategories = computed(() => dishes[foodType.value].categories);
 </script>
 
 <template>
-  <DefaultLayout show-navigation-footer>
+  <DefaultLayout footer="waiter-nav">
     <div class="flex flex-col flex-1 gap-2 p-2">
       <template v-for="[dishCategory, details] in Object.entries(dishCategories)">
         <router-link :to="{ name: '/waiter/table/[tableId]/person/[personId]/order/[foodType]/[dishCategory]/', params: { tableId, personId, foodType, dishCategory } }">

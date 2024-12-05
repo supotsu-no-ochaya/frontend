@@ -16,7 +16,7 @@ const availableDishes = computed(() => dishes[foodType.value].categories[dishCat
 </script>
 
 <template>
-  <DefaultLayout show-navigation-footer>
+  <DefaultLayout footer="waiter-nav">
     <div class="grid grid-cols-2 p-2 gap-2">
       <template v-for="dish in availableDishes">
         <div class="bg-primary rounded-lg">

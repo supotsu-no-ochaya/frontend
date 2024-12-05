@@ -11,7 +11,7 @@ const personId = computed(() => route.params.personId);
 </script>
 
 <template>
-  <DefaultLayout show-navigation-footer>
+  <DefaultLayout footer="waiter-nav">
     <div class="flex flex-col flex-1 gap-2 p-2">
       <template v-for="[foodType, details] in Object.entries(dishes)">
         <router-link :to="{ name: '/waiter/table/[tableId]/person/[personId]/order/[foodType]/', params: { tableId, personId, foodType } }">

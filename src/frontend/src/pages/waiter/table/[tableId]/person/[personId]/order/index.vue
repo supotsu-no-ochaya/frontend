@@ -2,6 +2,8 @@
 import { useRoute } from "vue-router";
 import { computed } from "vue";
 import { DefaultLayout } from "@/layouts/default";
+import { dishes } from "@/test-data/dishes.ts";
+import { Button } from "@/components/ui/button";
 
 const route = useRoute("/waiter/table/[tableId]/person/[personId]/order/");
 const tableId = computed(() => route.params.tableId);
@@ -10,6 +12,14 @@ const personId = computed(() => route.params.personId);
 
 <template>
   <DefaultLayout show-navigation-footer>
-    Food Category
+    <div class="flex flex-col flex-1 gap-2 p-2">
+      <template v-for="[foodType, details] in Object.entries(dishes)">
+        <router-link :to="{ name: '/waiter/table/[tableId]/person/[personId]/order/[foodType]/', params: { tableId, personId, foodType } }">
+          <Button class="w-full">
+            {{ details.label }}
+          </Button>
+        </router-link>
+      </template>
+    </div>
   </DefaultLayout>
 </template>

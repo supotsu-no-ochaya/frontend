@@ -9,9 +9,9 @@ const nTables = ref(12);
 <template>
   <DefaultLayout>
     <WaiterControlHeader label="Tische" icon="cutlery" />
-    <div class="flex flex-1 flex-wrap justify-around items-baseline gap-5 p-2">
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(6rem,1fr))] gap-5 p-2">
       <template v-for="tableId in nTables" :key="tableId">
-        <router-link :to="{ name: '/waiter/table/[tableId]/', params: { tableId } }">
+        <router-link class="mx-auto" :to="{ name: '/waiter/table/[tableId]/', params: { tableId } }">
           <div class="grid place-content-center size-20 bg-primary rounded-full">
             {{ tableId }}
           </div>

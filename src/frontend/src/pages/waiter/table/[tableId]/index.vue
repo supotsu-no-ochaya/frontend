@@ -17,9 +17,9 @@ const tableData = reactive(({
 <template>
   <DefaultLayout footer="waiter-nav" class="flex flex-col p-2">
     <WaiterControlHeader :label="`Tisch ${tableId}`" icon="cutlery" />
-    <div class="flex flex-1 flex-wrap justify-around items-baseline gap-5 p-2">
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(6rem,1fr))] gap-5 p-2">
       <template v-for="personId in tableData.nPeople" :key="personId">
-        <router-link :to="{ name: '/waiter/table/[tableId]/person/[personId]/order/', params: { tableId, personId } }">
+        <router-link class="mx-auto" :to="{ name: '/waiter/table/[tableId]/person/[personId]/order/', params: { tableId, personId } }">
           <div class="relative size-20">
             <div class="absolute inset-2">
               <LucideShirt class="size-full" />

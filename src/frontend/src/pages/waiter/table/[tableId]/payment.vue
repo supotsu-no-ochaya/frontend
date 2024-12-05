@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { useRoute } from "vue-router";
+import { reactive, ref, computed } from 'vue';
 import { DefaultLayout } from "@/layouts/default";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +12,10 @@ import {
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
+import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 
-const Tisch = "Tisch 1"
+const route = useRoute("/waiter/table/[tableId]/");
+const tableId = computed(() => route.params.tableId);
 const Rabatt = reactive({value:0.10,checked: false})
 
 // Mock data with each item having its own 'checked' state
@@ -60,20 +63,11 @@ const calculateTotalSum = () => {
 </script>
 
 <template>
-  <DefaultLayout footer="waiter-nav" class="grid place-content-start text-2xl bg-secondary w-full">
+  <DefaultLayout footer="waiter-nav" class="grid place-content-start text-2xl w-full">
     <div class="fixed w-full">
 
       <!-- Header Section -->
-      <div class="flex items-center h-16 relative w-full z-10">
-        <Button variant="ghost" @click="() => { console.log('click'); }" class="w-12 h-12 text-center bg-accent p-2 m-2">
-          <img src="/ArrowBack.png" class="w-full h-full" />
-        </Button>
-        <div class="flex-grow text-black text-center p-2">
-          Bestellung<br>
-          {{ Tisch }}
-        </div>
-        <img class="w-12 h-12 text-white text-center p-2 mx-2" src="/shopping-cart.png" alt="icon" />
-      </div>
+      <WaiterControlHeader :label="`Bestellung Tisch ${tableId}`" icon="shopping-cart" />
 
       <!-- Divider -->
       <div class="flex w-full h-4 my-4 z-10">
@@ -137,7 +131,7 @@ const calculateTotalSum = () => {
           Bezahlen
         </Button>
         <strong class="w-3/5">Total Sum: {{ calculateTotalSum().toFixed(2) }}€</strong>
-        <Button class="w-1/5 mr-2 bg-secondary active:bg-primary text-black" @click="console.log('Anpassen')">
+        <Button class="w-1/5 mr-2 bg-accent active:bg-primary text-black" @click="console.log('Anpassen')">
           Anpassen
         </Button>
       </div>

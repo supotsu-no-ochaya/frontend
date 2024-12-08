@@ -26,7 +26,7 @@ declare module 'vue-router/auto-routes' {
     '/auth/login': RouteRecordInfo<'/auth/login', '/auth/login', Record<never, never>, Record<never, never>>,
     '/auth/logout': RouteRecordInfo<'/auth/logout', '/auth/logout', Record<never, never>, Record<never, never>>,
     '/kitchen/': RouteRecordInfo<'/kitchen/', '/kitchen', Record<never, never>, Record<never, never>>,
-    '/kitchen/kitchen': RouteRecordInfo<'/kitchen/kitchen', '/kitchen/kitchen', Record<never, never>, Record<never, never>>,
+    '/kitchen/testicle': RouteRecordInfo<'/kitchen/testicle', '/kitchen/testicle', Record<never, never>, Record<never, never>>,
     '/waiter/table/[tableId]/': RouteRecordInfo<'/waiter/table/[tableId]/', '/waiter/table/:tableId', { tableId: ParamValue<true> }, { tableId: ParamValue<false> }>,
     '/waiter/table/[tableId]/order': RouteRecordInfo<'/waiter/table/[tableId]/order', '/waiter/table/:tableId/order', { tableId: ParamValue<true> }, { tableId: ParamValue<false> }>,
     '/waiter/table/[tableId]/payment': RouteRecordInfo<'/waiter/table/[tableId]/payment', '/waiter/table/:tableId/payment', { tableId: ParamValue<true> }, { tableId: ParamValue<false> }>,

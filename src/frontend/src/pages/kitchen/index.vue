@@ -1,4 +1,7 @@
 <script setup>
+
+let localOrderId = 15 //ToDo: delete this var with the button in the end
+
 import DefaultLayout from '@/layouts/default/DefaultLayout.vue';
 import { computed, reactive, ref, onMounted, watch } from 'vue';
 
@@ -6,11 +9,11 @@ import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from '@/components/ui/table';
 
-import { allStationnames, allOrders } from "@/test-data/orders.ts"
+import { allStationnames, allOrders, addOrder } from "@/test-data/orders.ts"
 
 // Tabs and Orders
-const activeFoodStations = ref([allStationnames[0]]);
-const MAX_ACTIVE_STATIONS = 2;
+const activeFoodStations = ref([allStationnames[0]]); //ToDo: delete this line (start tab when login in)
+const MAX_ACTIVE_STATIONS = 2;  //number of displayed Stations at a time
 
 const trashcan = reactive({})
 const trashlength = 4  //max length of trashcan
@@ -19,47 +22,93 @@ allStationnames.forEach(stationName => {
   trashcan[stationName] = [];  // Erstelle für jede Station ein leeres Array
 });
 
-// const trashOrders = computed(() => {
-//   return allOrders[]
-// }
-// )
+watch(  //look for changes in allOders (when new Order arrives)
+  () => allOrders,
+  (newOrders) => {
+    for (const stationName in newOrders) {
+      const stationOrders = newOrders[stationName];
+      for (const order of stationOrders) {
+        if (!order.hasOwnProperty('allclicked')) {
+          // Initialisiere allclicked für neue Bestellungen
+          order.allclicked = order.clicked.every((state) => state === true);
+        }
 
-for (const stationName in allOrders) {
-  const stationOrders = allOrders[stationName]
-  for (const order of stationOrders){
-    watch(  //watching for changes in every clicked', updating allclicked
-      () => order.clicked,
-      (newClicked) => {
-        order.allclicked = newClicked.every(state => state === true);
-      },
-      { deep: true }
-    );
-    watch(
-      () => order.allclicked,
-      ()=> {
-         if (order.allclicked ===false){
-          const index = trashcan[stationName].indexOf(order.id)
-          console.log(index)
-          trashcan[stationName].splice(index)
-        }
-        if (order.allclicked ===true){
-          trashcan[stationName].unshift(order.id);
-        }
-        if (trashcan[stationName].length > trashlength){
-          trashcan[stationName].pop() //when does this, then pop from allOrders as well     MUSS NOCH GEMACHT WERDEN
-        }
-        console.log("trashcan:", trashcan[stationName])
+        watch(  //look for changes in clicked
+          () => order.clicked,
+          (newClicked) => {
+            order.allclicked = newClicked.every((state) => state === true);
+          },
+          { deep: true }
+        );
+
+        watch(  // when allclicked changes -> add order to trashcan / history
+          () => order.allclicked,
+          () => {
+            if (order.allclicked === false) {
+              const index = trashcan[stationName].indexOf(order.id);
+              if (index !== -1) {
+                trashcan[stationName].splice(index, 1);
+              }
+            }
+            if (order.allclicked === true) {
+              if (!trashcan[stationName].includes(order.id)) {
+                trashcan[stationName].unshift(order.id);
+              }
+            }
+            if (trashcan[stationName].length > trashlength) {
+              const removedOrderId = trashcan[stationName].pop();
+              const removedOrderIndex = stationOrders.findIndex(
+                (order) => order.id === removedOrderId
+              );
+              if (removedOrderIndex !== -1) {
+                stationOrders.splice(removedOrderIndex, 1);
+              }
+            }
+          }
+        );
       }
-    )
     }
-}
+  },
+  { deep: true, immediate: true }
+);
+
+
+// for (const stationName in allOrders) {   //ToDo: delete this loop
+//   const stationOrders = allOrders[stationName]
+//   for (const order of stationOrders){
+//     watch(  //watching for changes in every clicked', updating allclicked
+//       () => order.clicked,
+//       (newClicked) => {
+//         order.allclicked = newClicked.every(state => state === true);
+//       },
+//       { deep: true }
+//     );
+//     watch(
+//       () => order.allclicked,
+//       ()=> {
+//          if (order.allclicked ===false){
+//           const index = trashcan[stationName].indexOf(order.id)
+//           console.log(index)
+//           trashcan[stationName].splice(index)
+//         }
+//         if (order.allclicked ===true){
+//           trashcan[stationName].unshift(order.id);
+//         }
+//         if (trashcan[stationName].length > trashlength){
+//           trashcan[stationName].pop() //when does this, then pop from allOrders as well     MUSS NOCH GEMACHT WERDEN
+//         }
+//         console.log("trashcan:", trashcan[stationName])
+//       }
+//     )
+//     }
+// }
 
 const changeState = (activeTab, index) => {
     allOrders[activeTab][index].state = !allOrders[activeTab][index].state;
 }
 const changeAbholbereit = (activeTab, index, itemIndex) => {
     allOrders[activeTab][index].clicked[itemIndex] = !allOrders[activeTab][index].clicked[itemIndex];
-    // console.log(allOrders[activeTab][index].clicked)
+    // console.log(allOrders[activeTab][index].clicked)   //ToDo: delete these lines
     // console.log(allOrders[activeTab][index].allclicked)
 }
 </script>
@@ -161,15 +210,16 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
           <div class="sticky bottom-[-2px] bg-gradient-to-t from-background to-transparent h-16"></div>
           <ScrollBar orientation="vertical" />
         </ScrollArea>
+
         <!-- show completed orders -->
         <Popover class="">
           <PopoverTrigger class="fixed bottom-2 text-white py-2" :class="activeStationIndex === 1 ? 'right-3': 'left-3'">
               <button class="px-4 py-2 bg-gray-800 rounded"> Verlauf Anzeigen </button>
           </PopoverTrigger>
-          <PopoverContent class="bg-background opacity-90 border-amber-900 border-2 w-[40vw] h-[60vh] pr-4">
+          <PopoverContent class="bg-background opacity-90 border-amber-900 right-3 border-2 w-[45vw] h-[85vh] pr-4 ">
             <h1 class="font-bold"> {{ activeStation }} </h1>
-            <ScrollArea class="h-[40vh]">
-              <div class="sticky z-10 w-full top-0 bg-gradient-to-b from-primary to-transparent h-4"></div>
+            <ScrollArea class="h-[93%]">
+              <div class="sticky z-10 w-full top-0 bg-gradient-to-b from-background to-transparent h-4"></div>
               <div v-for="trashID in trashcan[activeStation]" class="py-2 z-0">
                 <Table v-for="(order, orderIndex) in allOrders[activeStation]" :key="orderIndex" class="">
                   <!-- && trashcan.includes(order.id) -->
@@ -192,12 +242,25 @@ const changeAbholbereit = (activeTab, index, itemIndex) => {
                   </TableBody>
                 </Table>
               </div>
-              <div class="sticky bottom-[-2px] bg-gradient-to-t from-primary to-transparent h-16"></div>
+              <div class="sticky bottom-[-2px] bg-gradient-to-t from-background to-transparent h-16"></div>
               <ScrollBar orientation="vertical" />
             </ScrollArea>
           </PopoverContent>
         </Popover>
       </div>
+      <button class="px-4 py-2 fixed bottom-2 bg-gray-800 rounded"  
+        @click="
+        addOrder(category = 'Sandwiches', //ToDo: delete this button with the var in the start
+        orderTable = localOrderId, 
+        orderId = '7', 
+        'Peter', 
+        ['Schoki', 'Honig Nuss'], 
+        'Extra Sahne');
+        localOrderId++;
+        console.log('trashcan', trashcan);
+        console.log('allOrders', allOrders);">
+          AddTestOrder 
+      </button>
     </div>
   </DefaultLayout>
 </template>

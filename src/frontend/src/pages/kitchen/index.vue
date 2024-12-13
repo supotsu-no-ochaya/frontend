@@ -143,31 +143,33 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
                   </TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody v-for="(item, itemIndex) in order.orderlist" class="text-left indent-8">
-                <TableRow
-                  v-if="item.clicked"
-                  @click="changeAbholbereit(activeStation, orderIndex, itemIndex)"
-                  class="justify-between"
-                >
-                  <TableCell class="line-through"> {{ item.name }} </TableCell>
-                  <TableCell />
-                  <TableCell class="text-center"> Abholbereit </TableCell>
-                </TableRow>
-                <TableRow v-else-if="order.state" @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class="justify-between">
-                  <TableCell> {{ item.name }} </TableCell>
-                  <TableCell />
-                  <TableCell class="text-center"> In Bearbeitung </TableCell>
-                </TableRow>
-                <TableRow v-else class="justify-between">
-                  <TableCell> {{ item.name }} </TableCell>
-                  <TableCell />
-                  <TableCell class="text-center"> Bestellt </TableCell>
-                </TableRow>
-                <!-- <TableRow v-if="order.notes[itemIndex] ">
-                  <TableCell>
-                    {{ order.notes[itemIndex] }}
-                  </TableCell>
-                </TableRow> -->
+              <TableBody>
+                <template v-for="(item, itemIndex) in order.orderlist" class="text-left indent-8">
+                    <TableRow
+                    v-if="item.clicked"
+                    @click="changeAbholbereit(activeStation, orderIndex, itemIndex)"
+                    class="justify-between"
+                    >
+                    <TableCell class="line-through"> {{ item.name }} </TableCell>
+                    <TableCell />
+                    <TableCell class="text-center"> Abholbereit </TableCell>
+                  </TableRow>
+                  <TableRow v-else-if="order.state" @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class="justify-between">
+                    <TableCell> {{ item.name }} </TableCell>
+                    <TableCell />
+                    <TableCell class="text-center"> In Bearbeitung </TableCell>
+                  </TableRow>
+                  <TableRow v-else class="justify-between">
+                    <TableCell> {{ item.name }} </TableCell>
+                    <TableCell />
+                    <TableCell class="text-center"> Bestellt </TableCell>
+                  </TableRow>
+                  <TableRow v-if="item.notes" class="indent-8 text-xs italic">
+                    <TableCell>
+                      - {{ item.notes }}
+                    </TableCell>
+                  </TableRow>
+                </template>
               </TableBody>
             </Table>
           </div>

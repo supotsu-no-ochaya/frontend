@@ -9,7 +9,7 @@ import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from '@/components/ui/table';
 
-import { allStationnames, allOrders, addOrder } from "@/test-data/orders.ts"
+import { allStationnames, allOrders, addOrder } from "@/test-data/old-orders"
 
 // Tabs and Orders
 const activeFoodStations = ref([]);
@@ -28,13 +28,11 @@ watch(  //look for changes in allOders (when new Order arrives)
     for (const stationName in newOrders) {
       const stationOrders = newOrders[stationName];
       for (const order of stationOrders) {  //going over every order in all categories
-
-        watch(  //look for changes in orderlist (clicked or notes)
-        () => order.orderlist,
-        (newOrderlist) => {
-            // for (const item in newOrderlist){
-            order.allclicked = newOrderlist.every((item) => item.clicked); //updating allclicked
-            // }
+        
+        watch(  //look for changes in clicked
+          () => order.clicked,
+          (newClicked) => {
+            order.allclicked = newClicked.every((state) => state === true); //updating allclicked
           },
           { deep: true }
         );
@@ -73,9 +71,8 @@ watch(  //look for changes in allOders (when new Order arrives)
 const changeState = (activeTab, index) => {
     allOrders[activeTab][index].state = !allOrders[activeTab][index].state;
 }
-const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
-    allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked = !allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked;
-    console.log('test')
+const changeAbholbereit = (activeTab, index, itemIndex) => {
+    allOrders[activeTab][index].clicked[itemIndex] = !allOrders[activeTab][index].clicked[itemIndex];
 }
 </script>
 
@@ -104,6 +101,7 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
           {{ foodStationName }}
         </button>
     </div>
+
 
     <!-- Content Area -->
     <div class="flex flex-1 pt-[5vh] justify-center">
@@ -138,36 +136,31 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
                     class="border border-black w-full"
                     :class="order.state ? 'bg-primary ' : ''"
                   >
-                  <TableHead v-for="entry in ['table' ,'waiter', 'time']" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry === 'time' ? 'indent-8 text-center': ''">
+                  <TableHead v-for="entry in ['id' ,'waiter', 'time']" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry === 'time' ? 'indent-8 text-center': ''">
                     {{ order[entry] }}
                   </TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody v-for="(item, itemIndex) in order.orderlist" class="text-left indent-8">
+              <TableBody v-for="(itemName, itemIndex) in order.orderlist" class="text-left indent-8">
                 <TableRow
-                  v-if="item.clicked"
+                  v-if="order.clicked[itemIndex]"
                   @click="changeAbholbereit(activeStation, orderIndex, itemIndex)"
                   class="justify-between"
                 >
-                  <TableCell class="line-through"> {{ item.name }} </TableCell>
+                  <TableCell class="line-through"> {{ itemName }} </TableCell>
                   <TableCell />
                   <TableCell class="text-center"> Abholbereit </TableCell>
                 </TableRow>
                 <TableRow v-else-if="order.state" @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class="justify-between">
-                  <TableCell> {{ item.name }} </TableCell>
+                  <TableCell> {{ itemName }} </TableCell>
                   <TableCell />
                   <TableCell class="text-center"> In Bearbeitung </TableCell>
                 </TableRow>
                 <TableRow v-else class="justify-between">
-                  <TableCell> {{ item.name }} </TableCell>
+                  <TableCell> {{ itemName }} </TableCell>
                   <TableCell />
                   <TableCell class="text-center"> Bestellt </TableCell>
                 </TableRow>
-                <!-- <TableRow v-if="order.notes[itemIndex] ">
-                  <TableCell>
-                    {{ order.notes[itemIndex] }}
-                  </TableCell>
-                </TableRow> -->
               </TableBody>
             </Table>
           </div>
@@ -200,10 +193,10 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
                       </TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody v-if="order.id === trashID" v-for="(item, itemIndex) in order.orderlist" class="text-left indent-8">
+                  <TableBody v-if="order.id === trashID" v-for="(itemName, itemIndex) in order.orderlist" class="text-left indent-8">
                     <TableRow
                     @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class=" justify-between pt-2 cursor-pointer">
-                      <TableCell class="line-through"> {{ item.name }} </TableCell>
+                      <TableCell class="line-through"> {{ itemName }} </TableCell>
                       <TableCell />
                       <TableCell class="text-center"> Abholbereit </TableCell>
                     </TableRow>

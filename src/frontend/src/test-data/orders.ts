@@ -2,40 +2,111 @@ import { reactive } from "vue";
 
 export const allStationnames = reactive(['Crepes', 'Sandwiches', 'Heißgetränke', 'Kaltgetränke', 'Station neu']);
 
-
 export const allOrders = reactive({
   Crepes: [
-    { id: '0', table: '2', waiter: 'Lea', time: '16:03 Uhr' , state: false, allclicked: false,
-            orderlist: ['nutella', 'nutella', 'Käseschinken'],
-            clicked: [false,false,false]},
-
-    { id: '1', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
-    { id: '2', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
-    { id: '3', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
-    { id: '5', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
-    { id: '6', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
-    { id: '9', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
-    { id: '11', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false,false]},
-    { id: '4', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Käseschinken',], allclicked: false, clicked: [false,false,false]},
-    { id: '8', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt',  'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false]},
-    { id: '10', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: [ 'nutella', 'Käseschinken', 'Zucker'], allclicked: false, clicked: [false,false,false]},
-    { id: '7', table: '3', waiter: 'Sylvie', time: '16:07 Uhr', state: false , orderlist: ['Zucker & Zimt', 'nutella', 'Zucker'], allclicked: false, clicked: [false,false,false]},
-    { id: '12', table: '2', waiter: 'Lea', time: '16:03 Uhr' , state: false, orderlist: ['nutella', 'nutella', 'Käseschinken'], allclicked: false, clicked: [false,false,false]},
+    {
+      id: '0',
+      table: '2',
+      waiter: 'Lea',
+      time: '12:45 Uhr',
+      state: false,
+      allclicked: false,
+      orderlist: [
+        { name: 'nutella', notes: 'Extra Sahne' , clicked: false },
+        { name: 'Banane', notes: '' , clicked: false },
+        { name: 'Käseschinken', notes: 'Ohne Käse' , clicked: false }
+      ],
+    },
+    {
+      id: '1',
+      table: '3',
+      waiter: 'Sylvie',
+      time: '12:50 Uhr',
+      state: false,
+      allclicked: false,
+      orderlist: [
+        { name: 'Zucker & Zimt', notes: '' , clicked: false },
+        { name: 'nutella', notes: 'Zusätzlicher Löffel Nutella' , clicked: false },
+        { name: 'Erdbeer', notes: '' , clicked: false },
+        { name: 'Zucker', notes: '' , clicked: false }
+      ],
+    },
+    {
+      id: '2',
+      table: '9',
+      waiter: 'Sylvie',
+      time: '12:56 Uhr',
+      state: false,
+      allclicked: false,
+      orderlist: [
+        { name: 'Zucker & Zimt', notes: '' , clicked: false },
+        { name: 'Banane', notes: '' , clicked: false },
+        { name: 'Käseschinken', notes: 'Ohne Butter' , clicked: false },
+        { name: 'Zucker', notes: '' , clicked: false }
+      ],
+    },
+    {
+      id: '3',
+      table: '1',
+      waiter: 'Sabine',
+      time: '12:59 Uhr',
+      state: false,
+      allclicked: false,
+      orderlist: [
+        { name: 'Erdbeer', notes: '' , clicked: false },
+        { name: 'Zucker & Zimt', notes: 'Leicht bestreut', clicked: false  },
+        { name: 'Banane', notes: '' , clicked: false },
+        { name: 'Zucker', notes: '', clicked: false  }
+      ],
+    },
+    {
+      id: '4',
+      table: '3',
+      waiter: 'Sylvie',
+      time: '13:04 Uhr',
+      state: false,
+      allclicked: false,
+      orderlist: [
+        { name: 'Apfel', notes: '' , clicked: false },
+        { name: 'Käseschinken', notes: '' , clicked: false },
+        { name: 'Schokolade', notes: '', clicked: false  }
+      ],
+    }
   ],
   Sandwiches: [
-    { id: '0', table: '4', waiter: 'Martin', time: '17:89 Uhr', state: false, orderlist: ['Käse'], allclicked: false, clicked: [false]},
-    { id: '1', table: '6', waiter: 'Robin', time: '14 Uhr' , state: false, orderlist: ['Käse'], allclicked: false, clicked: [false]},
+    {
+      id: '0',
+      table: '4',
+      waiter: 'Martin',
+      time: '17:89 Uhr',
+      state: false,
+      allclicked: false,
+      orderlist: [
+        { name: 'Käse', notes: '' , clicked: false }
+      ],
+    },
+    {
+      id: '1',
+      table: '6',
+      waiter: 'Robin',
+      time: '14 Uhr',
+      state: false,
+      allclicked: false,
+      orderlist: [
+        { name: 'Käse', notes: '' , clicked: false }
+      ],
+    }
   ],
   'Kaltgetränke': [],
-  'Heißgetränke': [],
+  'Heißgetränke': []
 });
 
-export function addOrder(category: string, orderId: String, orderTable: String, orderWaiter: String, orderlist: any[], orderNotes: string) {
+export function addOrder(category: string, orderId: String, orderTable: String, orderWaiter: String, orderlist: any[], orderNotes: any[]) {
   const newOrder = {
       id: String(orderId),
       table: String(orderTable),
       waiter: orderWaiter,
-      time: new Date().toLocaleTimeString('de-DE'), // Zeit wird automatisch hinzugefügt
+      time: new Date().toLocaleTimeString('de-DE', { hour: "2-digit", minute: "2-digit" }) + ' Uhr', // Zeit wird automatisch hinzugefügt
       state: false,
       orderlist: orderlist,
       allclicked: false,
@@ -55,9 +126,9 @@ export function addOrder(category: string, orderId: String, orderTable: String, 
   console.log(`Neue Bestellung in Kategorie "${category}" hinzugefügt:`, newOrder);
 }
 
-addOrder('Sandwiches', 
-    '13', 
-    '2', 
-    'Lea', 
-    ['Nutella', 'Banane'], 
-    'Extra Sahne');
+// addOrder('Sandwiches', 
+//     '13', 
+//     '2', 
+//     'Lea', 
+//     ['Nutella', 'Banane'], 
+//     [false, 'Extra Sahne']);

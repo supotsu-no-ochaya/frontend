@@ -1,7 +1,5 @@
 <script setup>
 
-let localOrderId = 15 //ToDo: delete this var with the button in the end
-
 import DefaultLayout from '@/layouts/default/DefaultLayout.vue';
 import { computed, reactive, ref, onMounted, watch } from 'vue';
 
@@ -9,17 +7,18 @@ import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from '@/components/ui/table';
 
-import { allStationnames, allOrders, addOrder } from "@/test-data/orders.ts"
+import { allStationnames, allOrders } from "@/test-data/orders.ts"
 
-// Tabs and Orders
-const activeFoodStations = ref([]);
-const maxActiveStations = 2;  //number of displayed Stations at a time
-
-const trashcan = reactive({})
+// MUTABLE //
+const maxActiveStations = 2;  //number of displayed stations at a time
 const trashlength = 4  //max length of trashcan
+// MUTABLE //
+
+const activeFoodStations = ref([]);
+const trashcan = reactive({})
 
 allStationnames.forEach(stationName => {
-  trashcan[stationName] = [];  // Erstelle für jede Station ein leeres Array in trashcan
+  trashcan[stationName] = [];  // Erstelle für jede Station ein leeres array in trashcan
 });
 
 watch(  //look for changes in allOders (when new Order arrives)
@@ -32,9 +31,7 @@ watch(  //look for changes in allOders (when new Order arrives)
         watch(  //look for changes in orderlist (clicked or notes)
         () => order.orderlist,
         (newOrderlist) => {
-            // for (const item in newOrderlist){
             order.allclicked = newOrderlist.every((item) => item.clicked); //updating allclicked
-            // }
           },
           { deep: true }
         );
@@ -70,8 +67,8 @@ watch(  //look for changes in allOders (when new Order arrives)
   { deep: true, immediate: true }
 );
 
-const changeState = (activeTab, index) => {
-    allOrders[activeTab][index].state = !allOrders[activeTab][index].state;
+const changeState = (activeStation, orderIndex) => {
+    allOrders[activeStation][orderIndex].state = !allOrders[activeStation][orderIndex].state;
 }
 const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
     allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked = !allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked;
@@ -81,6 +78,7 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
 
 <template>
   <DefaultLayout class="flex flex-col justify-between whitespace-nowrap">
+
     <!-- Tab Bar -->
     <div class="flex gap-1 px-2 py-3">
         <button
@@ -130,7 +128,7 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
         <!-- Orders toDo -->
         <ScrollArea class="h-[65vh]">
         <div class="sticky z-10 w-full top-0 bg-gradient-to-b from-background to-transparent h-4"></div>
-        <div v-for="(order, orderIndex) in allOrders[activeStation]" :key="orderIndex" class="z-0">
+          <template v-for="(order, orderIndex) in allOrders[activeStation]" :key="orderIndex" class="z-0">
             <Table v-if="!order.allclicked" class="my-2 cursor-pointer">
                 <TableHeader>
                   <TableRow
@@ -143,8 +141,8 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
                   </TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
-                <template v-for="(item, itemIndex) in order.orderlist" class="text-left indent-8">
+              <TableBody class="text-left indent-4">
+                <template v-for="(item, itemIndex) in order.orderlist" >
                     <TableRow
                     v-if="item.clicked"
                     @click="changeAbholbereit(activeStation, orderIndex, itemIndex)"
@@ -164,15 +162,15 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
                     <TableCell />
                     <TableCell class="text-center"> Bestellt </TableCell>
                   </TableRow>
-                  <TableRow v-if="item.notes" class="indent-8 text-xs italic">
-                    <TableCell>
+                  <p v-if="item.notes" class="indent-10 text-xs italic">
+                    <!-- <TableCell> -->
                       - {{ item.notes }}
-                    </TableCell>
-                  </TableRow>
+                    <!-- </TableCell> -->
+                  </p>
                 </template>
               </TableBody>
             </Table>
-          </div>
+          </template>
           <div v-if="allOrders[activeStation].length" class="text-center py-3">
             Keine weitere Bestellungen . . .
           </div>
@@ -197,18 +195,30 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
                     <TableHeader v-if="order.id === trashID">
                       <TableRow class="border bg-primary border-black w-full"
                       >
-                      <TableHead v-for="entry in ['table' ,'waiter', 'time']" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry === 'time' ? 'indent-8 text-center': ''">
+                      <TableHead 
+                        v-for="entry in ['table' ,'waiter', 'time']" 
+                        :key=entry 
+                        class="indent-[-4rem] font-normal w-1/3" 
+                        :class="entry === 'time' ? 'indent-8 text-center': ''"
+                        >
                         {{ order[entry] }}
                       </TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody v-if="order.id === trashID" v-for="(item, itemIndex) in order.orderlist" class="text-left indent-8">
-                    <TableRow
-                    @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class=" justify-between pt-2 cursor-pointer">
-                      <TableCell class="line-through"> {{ item.name }} </TableCell>
-                      <TableCell />
-                      <TableCell class="text-center"> Abholbereit </TableCell>
-                    </TableRow>
+                  <TableBody class="text-left indent-6">
+                    <template v-if="order.id === trashID" v-for="(item, itemIndex) in order.orderlist" >
+                      <TableRow
+                        @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class=" justify-between pt-2 cursor-pointer">
+                        <TableCell class="line-through"> {{ item.name }} </TableCell>
+                        <TableCell />
+                        <TableCell class="text-center"> Abholbereit </TableCell>
+                      </TableRow>
+                      <TableRow v-if="item.notes" class="indent-12 text-xs italic">
+                        <TableCell>
+                          - {{ item.notes }}
+                        </TableCell>
+                      </TableRow>
+                    </template>
                   </TableBody>
                 </Table>
               </div>
@@ -218,19 +228,6 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
           </PopoverContent>
         </Popover>
       </div>
-      <!-- <button class="px-4 py-2 fixed bottom-2 bg-gray-800 rounded"  
-        @click="
-        addOrder(category = 'Sandwiches', //ToDo: delete this button with the var in the start
-        orderTable = localOrderId, 
-        orderId = '7', 
-        'Peter', 
-        ['Schoki', 'Honig Nuss'], 
-        'Extra Sahne');
-        localOrderId++;
-        console.log('trashcan', trashcan);
-        console.log('allOrders', allOrders);">
-          AddTestOrder 
-      </button> -->
     </div>
   </DefaultLayout>
 </template>

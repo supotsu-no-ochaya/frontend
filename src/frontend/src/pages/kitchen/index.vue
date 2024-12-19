@@ -1,13 +1,13 @@
-<script setup>
-
+<script setup lang="ts">
 import DefaultLayout from '@/layouts/default/DefaultLayout.vue';
-import { computed, reactive, ref, onMounted, watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
 
 import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from '@/components/ui/table';
 
 import { allStationnames, allOrders } from "@/test-data/orders.ts"
+import type { WatchHandle } from "vue";
 
 // MUTABLE //
 const maxActiveStations = 2;  //number of displayed stations at a time
@@ -21,22 +21,28 @@ allStationnames.forEach(stationName => {
   trashcan[stationName] = [];  // Erstelle für jede Station ein leeres array in trashcan
 });
 
+const manualWatchers: WatchHandle[] = [];
+
 watch(  //look for changes in allOders (when new Order arrives)
   () => allOrders,
   (newOrders) => {
+    for (const manualWatcher of manualWatchers) {
+      manualWatcher.stop();
+    }
+
     for (const stationName in newOrders) {
       const stationOrders = newOrders[stationName];
       for (const order of stationOrders) {  //going over every order in all categories
 
-        watch(  //look for changes in orderlist (clicked or notes)
+        manualWatchers.push(watch(  //look for changes in orderlist (clicked or notes)
         () => order.orderlist,
         (newOrderlist) => {
             order.allclicked = newOrderlist.every((item) => item.clicked); //updating allclicked
           },
           { deep: true }
-        );
+        ));
 
-        watch(  // when allclicked changes -> add order to trashcan / history
+        manualWatchers.push(watch(  // when allclicked changes -> add order to trashcan / history
           () => order.allclicked,
           () => {
             if (order.allclicked === false) {
@@ -60,7 +66,7 @@ watch(  //look for changes in allOders (when new Order arrives)
               }
             }
           }
-        );
+        ));
       }
     }
   },
@@ -127,13 +133,13 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
         </Table>
         <!-- Orders toDo -->
         <ScrollArea class="h-[65vh]">
-        <div class="sticky z-10 w-full top-0 bg-gradient-to-b from-background to-transparent h-4"></div>
+          <div class="sticky z-10 top-0 bg-gradient-to-b from-background to-transparent h-4"></div>
           <template v-for="(order, orderIndex) in allOrders[activeStation]" :key="orderIndex" class="z-0">
             <Table v-if="!order.allclicked" class="my-2 cursor-pointer">
                 <TableHeader>
                   <TableRow
                     @click="changeState(activeStation, orderIndex)"
-                    class="border border-black w-full"
+                    class="border border-black"
                     :class="order.state ? 'bg-primary ' : ''"
                   >
                   <TableHead v-for="entry in ['table' ,'waiter', 'time']" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry === 'time' ? 'indent-8 text-center': ''">
@@ -142,31 +148,28 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
                 </TableRow>
               </TableHeader>
               <TableBody class="text-left indent-4">
-                <template v-for="(item, itemIndex) in order.orderlist" >
-                    <TableRow
+                <template v-for="(item, itemIndex) in order.orderlist">
+                  <TableRow
                     v-if="item.clicked"
                     @click="changeAbholbereit(activeStation, orderIndex, itemIndex)"
                     class="justify-between"
-                    >
-                    <TableCell class="line-through"> {{ item.name }} </TableCell>
-                    <TableCell />
+                  >
+                    <TableCell colspan="2" class="line-through"> {{ item.name }} </TableCell>
                     <TableCell class="text-center"> Abholbereit </TableCell>
                   </TableRow>
                   <TableRow v-else-if="order.state" @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class="justify-between">
-                    <TableCell> {{ item.name }} </TableCell>
-                    <TableCell />
+                    <TableCell colspan="2"> {{ item.name }} </TableCell>
                     <TableCell class="text-center"> In Bearbeitung </TableCell>
                   </TableRow>
                   <TableRow v-else class="justify-between">
-                    <TableCell> {{ item.name }} </TableCell>
-                    <TableCell />
+                    <TableCell colspan="2"> {{ item.name }} </TableCell>
                     <TableCell class="text-center"> Bestellt </TableCell>
                   </TableRow>
-                  <p v-if="item.notes" class="indent-10 text-xs italic">
-                    <!-- <TableCell> -->
-                      - {{ item.notes }}
-                    <!-- </TableCell> -->
-                  </p>
+                  <TableRow v-if="item.notes">
+                    <TableCell colspan="2" class="indent-0 pl-10 text-xs italic text-wrap relative before:absolute before:left-8 before:content-['_-_']">
+                      {{ item.notes }}
+                    </TableCell>
+                  </TableRow>
                 </template>
               </TableBody>
             </Table>
@@ -195,10 +198,10 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
                     <TableHeader v-if="order.id === trashID">
                       <TableRow class="border bg-primary border-black w-full"
                       >
-                      <TableHead 
-                        v-for="entry in ['table' ,'waiter', 'time']" 
-                        :key=entry 
-                        class="indent-[-4rem] font-normal w-1/3" 
+                      <TableHead
+                        v-for="entry in ['table' ,'waiter', 'time']"
+                        :key=entry
+                        class="indent-[-4rem] font-normal w-1/3"
                         :class="entry === 'time' ? 'indent-8 text-center': ''"
                         >
                         {{ order[entry] }}

@@ -53,7 +53,7 @@ export const allOrders = reactive({
       allclicked: false,
       orderlist: [
         { name: 'Zucker & Zimt', notes: '' , clicked: false },
-        { name: 'nutella', notes: 'Zusätzlicher Löffel Nutella und gaaaanz viele andere Extrawünsche' , clicked: false },
+        { name: 'nutella', notes: 'Zusätzlicher Löffel Nutella und gaaaanz viele andere Extrawünsche. Zusätzlicher Löffel Nutella und gaaaanz viele andere Extrawünsche' , clicked: false },
         { name: 'Erdbeer', notes: '' , clicked: false },
         { name: 'Zucker', notes: '' , clicked: false }
       ],

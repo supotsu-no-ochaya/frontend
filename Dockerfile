@@ -4,8 +4,9 @@ FROM node:${NODE_VERSION}-alpine AS builder
 
 WORKDIR /code
 
-COPY src/frontend/ ./
+COPY src/frontend/package*.json ./
 RUN npm clean-install
+COPY src/frontend/ ./
 RUN npm run build
 
 FROM pierrezemb/gostatic:latest AS runtime

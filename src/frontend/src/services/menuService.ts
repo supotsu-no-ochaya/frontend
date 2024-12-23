@@ -1,11 +1,12 @@
 import pb from '@/services/pocketbase';
-import type {BomTemplate, MenuItem} from '@/interfaces/MenuItem.ts';
-import {CrudService} from "@/services/crudService";
+import type {BomTemplate, MenuItem} from '@/interfaces/menu/MenuItem.ts';
+import PocketBase from "pocketbase";
+import {CrudService} from "@/services/crudService.ts";
 
 export class MenuService extends CrudService<MenuItem<BomTemplate>> {
-  constructor(pb: P) {
+  constructor(pb: PocketBase) {
     super(pb, 'menu_item');
   }
 }
 
-export default menuService = new MenuService(pb);
+export default new MenuService(pb);

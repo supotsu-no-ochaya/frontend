@@ -1,10 +1,9 @@
-export type MenuItem<T extends BomTemplate> = {
-  id: string;
-  name: string;
+import type {NamedEntity} from "@/interfaces/Entities.ts";
+
+export type MenuItem<T extends BomTemplate> = NamedEntity & {
   price: number;
   bom_template: T;
-  created: string;
-  updated: string;
+  category: string;
 };
 
 // ================================

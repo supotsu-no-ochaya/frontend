@@ -1,10 +1,10 @@
-import pb from '@/services/pocketbase';
+import pb from '@/services/pocketbase.ts';
 
 export const authService = {
   // Login
-  async login(email: string, password: string) {
+  async login(username: string, password: string) {
     try {
-      const authData = await pb.collection('users').authWithPassword(email, password);
+      const authData = await pb.collection('users').authWithPassword(username, password);
       // Store the auth token for further requests
       pb.authStore.save(authData.token, authData.record);
       return authData;

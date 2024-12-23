@@ -1,9 +1,10 @@
-import Pocketbase from "@/services/pocketbase";
-
+import PocketBase from 'pocketbase';
 
 export class CrudService<T> {
-  private pb: Pocketbase;
-  constructor(pb: Pocketbase, collectionName: string) {
+  private pb: PocketBase;
+  private collectionName: string;
+
+  constructor(pb: PocketBase, collectionName: string) {
     this.pb = pb
     this.collectionName = collectionName;
   }
@@ -22,4 +23,4 @@ export class CrudService<T> {
   async delete(id: string): Promise<boolean> {
     return this.pb.collection(this.collectionName).delete(id);
   }
-};
+}

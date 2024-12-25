@@ -9,4 +9,4 @@ export class ProductAttributeService extends CrudService<ProductAttribute> {
   }
 }
 
-new ProductAttributeService(pb);
+export const productAttributeService = new ProductAttributeService(pb);

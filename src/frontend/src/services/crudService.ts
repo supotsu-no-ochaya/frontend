@@ -23,4 +23,10 @@ export class CrudService<T> {
   async delete(id: string): Promise<boolean> {
     return this.pb.collection(this.collectionName).delete(id);
   }
+  getPocketbase(): PocketBase {
+    return this.pb;
+  }
+  getCollectionName(): string {
+    return this.collectionName;
+  }
 }

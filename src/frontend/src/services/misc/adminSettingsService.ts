@@ -9,4 +9,4 @@ export class AdminSettingsService extends CrudService<AdminSettings> {
   }
 }
 
-new AdminSettingsService(pb);
+export const adminSettingsService = new AdminSettingsService(pb);

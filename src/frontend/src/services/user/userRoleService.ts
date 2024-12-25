@@ -9,4 +9,4 @@ export class UserRoleService extends CrudService<UserRole> {
   }
 }
 
-export default new UserRoleService(pb);
+export const userRoleService =  new UserRoleService(pb);

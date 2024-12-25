@@ -9,4 +9,4 @@ export class UserService extends CrudService<User> {
   }
 }
 
-export default new UserService(pb);
+export const userService =  new UserService(pb);

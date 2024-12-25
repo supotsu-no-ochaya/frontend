@@ -9,4 +9,4 @@ export class PaymentOptionService extends CrudService<PaymentOption> {
   }
 }
 
-new PaymentOptionService(pb);
+export const paymentOptionService = new PaymentOptionService(pb);

@@ -7,6 +7,9 @@ export class MenuItemService extends CrudService<MenuItem<BomTemplate>> {
   constructor(pb: PocketBase) {
     super(pb, 'menu_item');
   }
-}
 
-new MenuItemService(pb);
+  async getAllMenuItemsWithCategory(): Promise<MenuItem<BomTemplate>[]> {
+    return this.getPocketbase().collection(this.getCollectionName()).getFullList()
+  }
+}
+export const menuItemService = new MenuItemService(pb);

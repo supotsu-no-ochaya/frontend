@@ -9,4 +9,4 @@ export class StationService extends CrudService<Station> {
   }
 }
 
-new StationService(pb);
+export const stationService = new StationService(pb);

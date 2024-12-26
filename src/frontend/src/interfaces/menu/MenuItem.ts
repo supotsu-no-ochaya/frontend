@@ -50,7 +50,6 @@ export type Product = {
   id: string;
 };
 
-// example use
 const handleList = (menuitems: MenuItem<BomTemplate>[]): void => {
   menuitems.map((e) => {
     if (e.bom_template.type == 'Fixed') {

@@ -18,6 +18,14 @@ export class MenuCategService extends CrudService<MenuCateg> {
 
     return records.length > 0 ? records[0] : null;
   }
+
+  async getAllMainCategories(): Promise<MenuCateg[]> {
+    return this.getPocketbase()
+      .collection(this.getCollectionName())
+      .getFullList<MenuCateg>({
+        filter: `parent_categ = ""`
+      });
+  }
 }
 
 export const menuCategService = new MenuCategService(pb);

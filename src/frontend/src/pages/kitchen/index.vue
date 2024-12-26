@@ -6,7 +6,7 @@ import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from '@/components/ui/table';
 
-import { allStationnames, allOrders } from "@/test-data/orders.ts"
+import { allStationnames, allOrders, type Order, type AllOrders } from "@/test-data/orders.ts"
 import type { WatchHandle } from "vue";
 
 // MUTABLE //
@@ -14,8 +14,8 @@ const maxActiveStations = 2;  //number of displayed stations at a time
 const trashlength = 4  //max length of trashcan
 // MUTABLE //
 
-const activeFoodStations = ref([]);
-const trashcan = reactive({})
+const activeFoodStations = reactive<string[]>([]);
+const trashcan = reactive<Record<string, Order["id"][]>>({})
 
 allStationnames.forEach(stationName => {
   trashcan[stationName] = [];  // Erstelle für jede Station ein leeres array in trashcan
@@ -73,10 +73,10 @@ watch(  //look for changes in allOders (when new Order arrives)
   { deep: true, immediate: true }
 );
 
-const changeState = (activeStation, orderIndex) => {
+const changeState = (activeStation: string, orderIndex: number) => {
     allOrders[activeStation][orderIndex].state = !allOrders[activeStation][orderIndex].state;
 }
-const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
+const changeAbholbereit = (activeTab: string, orderIndex: number, itemIndex: number) => {
     allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked = !allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked;
     console.log('test')
 }
@@ -125,7 +125,7 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
             <TableRow class="text-base whitespace-nowrap">
               <TableCell v-for="list in ['Tisch' , 'Kellner', 'Eingegangen um']"
                 class="indent-[-4rem] text-center w-1/3"
-                :class="list === 'Eingegangen um' ? 'text-center indent-8' : ''">
+                :class="list === 'Eingegangen um' ? 'text-center indent-0' : ''">
                 {{ list }}
               </TableCell>
             </TableRow>
@@ -133,40 +133,40 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
         </Table>
         <!-- Orders toDo -->
         <ScrollArea class="h-[65vh]">
-          <div class="sticky z-10 top-0 bg-gradient-to-b from-background to-transparent h-4"></div>
+          <div class="sticky z-10 top-0 bg-gradient-to-b from-background to-transparent h-4 pointer-events-none"></div>
           <template v-for="(order, orderIndex) in allOrders[activeStation]" :key="orderIndex" class="z-0">
-            <Table v-if="!order.allclicked" class="my-2 cursor-pointer">
+            <Table v-if="!order.allclicked" class="my-2 cursor-pointer text-wrap">
                 <TableHeader>
                   <TableRow
                     @click="changeState(activeStation, orderIndex)"
                     class="border border-black"
-                    :class="order.state ? 'bg-primary ' : ''"
+                    :class="order.state ? 'bg-primary' : ''"
                   >
-                  <TableHead v-for="entry in ['table' ,'waiter', 'time']" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry === 'time' ? 'indent-8 text-center': ''">
+                  <TableHead v-for="entry in Array.of<keyof Order>('table' ,'waiter', 'time')" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry === 'time' ? 'indent-0 text-center': ''">
                     {{ order[entry] }}
                   </TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody class="text-left indent-4">
+              <TableBody class="text-left">
                 <template v-for="(item, itemIndex) in order.orderlist">
                   <TableRow
                     v-if="item.clicked"
                     @click="changeAbholbereit(activeStation, orderIndex, itemIndex)"
                     class="justify-between"
                   >
-                    <TableCell colspan="2" class="line-through"> {{ item.name }} </TableCell>
+                    <TableCell colspan="2" class="line-through pl-4"> {{ item.name }} </TableCell>
                     <TableCell class="text-center"> Abholbereit </TableCell>
                   </TableRow>
                   <TableRow v-else-if="order.state" @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class="justify-between">
-                    <TableCell colspan="2"> {{ item.name }} </TableCell>
+                    <TableCell colspan="2" class="pl-4"> {{ item.name }} </TableCell>
                     <TableCell class="text-center"> In Bearbeitung </TableCell>
                   </TableRow>
                   <TableRow v-else class="justify-between">
-                    <TableCell colspan="2"> {{ item.name }} </TableCell>
+                    <TableCell colspan="2" class="pl-4"> {{ item.name }} </TableCell>
                     <TableCell class="text-center"> Bestellt </TableCell>
                   </TableRow>
                   <TableRow v-if="item.notes">
-                    <TableCell colspan="2" class="indent-0 pl-10 text-xs italic text-wrap relative before:absolute before:left-8 before:content-['_-_']">
+                    <TableCell colspan="2" class="indent-0 pl-10 text-xs italic relative before:absolute before:left-8 before:content-['_-_']">
                       {{ item.notes }}
                     </TableCell>
                   </TableRow>
@@ -180,7 +180,7 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
           <div v-else class="text-center">
             Warte auf Bestellung . . .
           </div>
-          <div class="sticky bottom-[-2px] bg-gradient-to-t from-background to-transparent h-16"></div>
+          <div class="sticky bottom-[-2px] bg-gradient-to-t from-background to-transparent h-16 pointer-events-none"></div>
           <ScrollBar orientation="vertical" />
         </ScrollArea>
 
@@ -192,40 +192,39 @@ const changeAbholbereit = (activeTab, orderIndex, itemIndex) => {
           <PopoverContent class="bg-background opacity-90 border-amber-900 right-3 border-2 w-[45vw] h-[85vh] pr-4 ">
             <h1 class="font-bold"> {{ activeStation }} </h1>
             <ScrollArea class="h-[93%]">
-              <div class="sticky z-10 w-full top-0 bg-gradient-to-b from-background to-transparent h-4"></div>
+              <div class="sticky z-10 w-full top-0 bg-gradient-to-b from-background to-transparent h-4 pointer-events-none"></div>
               <div v-for="trashID in trashcan[activeStation]" class="py-2 z-0">
                 <Table v-for="(order, orderIndex) in allOrders[activeStation]" :key="orderIndex" class="">
                     <TableHeader v-if="order.id === trashID">
                       <TableRow class="border bg-primary border-black w-full"
                       >
                       <TableHead
-                        v-for="entry in ['table' ,'waiter', 'time']"
+                        v-for="entry in Array.of<keyof Order>('table' ,'waiter', 'time')"
                         :key=entry
                         class="indent-[-4rem] font-normal w-1/3"
-                        :class="entry === 'time' ? 'indent-8 text-center': ''"
+                        :class="entry === 'time' ? 'indent-0 text-center': ''"
                         >
                         {{ order[entry] }}
                       </TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody class="text-left indent-6">
+                  <TableBody class="text-left">
                     <template v-if="order.id === trashID" v-for="(item, itemIndex) in order.orderlist" >
                       <TableRow
                         @click="changeAbholbereit(activeStation, orderIndex, itemIndex)" class=" justify-between pt-2 cursor-pointer">
-                        <TableCell class="line-through"> {{ item.name }} </TableCell>
-                        <TableCell />
+                        <TableCell colspan="2" class="line-through pl-4"> {{ item.name }} </TableCell>
                         <TableCell class="text-center"> Abholbereit </TableCell>
                       </TableRow>
-                      <TableRow v-if="item.notes" class="indent-12 text-xs italic">
-                        <TableCell>
-                          - {{ item.notes }}
+                      <TableRow v-if="item.notes">
+                        <TableCell colspan="2" class="indent-0 text-xs italic pl-10 relative before:absolute before:left-8 before:content-['_-_']">
+                          {{ item.notes }}
                         </TableCell>
                       </TableRow>
                     </template>
                   </TableBody>
                 </Table>
               </div>
-              <div class="sticky bottom-[-2px] bg-gradient-to-t from-background to-transparent h-16"></div>
+              <div class="sticky bottom-[-2px] bg-gradient-to-t from-background to-transparent h-16 pointer-events-none"></div>
               <ScrollBar orientation="vertical" />
             </ScrollArea>
           </PopoverContent>

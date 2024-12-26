@@ -8,7 +8,7 @@ const { toast } = useToast();
 </script>
 
 <template>
-  <DefaultLayout footer="waiter-nav" class="grid place-content-center text-2xl">
+  <DefaultLayout class="grid place-content-center text-2xl">
     <img class="size-20 mx-auto" src="/icon.svg" alt="icon" />
     <div>Hello World</div>
     <Button @click="() => {

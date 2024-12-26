@@ -1,35 +1,32 @@
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 
-interface orderItem {
+export interface OrderItem {
   name: string;           // Name of the item ordered
   notes: string;          // Additional notes specific to this item
   clicked: boolean;       // Indicates if the item has been processed
 }
 
 // Interface representing an individual order
-interface Order {
+export interface Order {
   id: string;             // Unique identifier for the order
   table: string;          // Table number where the order was placed
   waiter: string;         // Name of the waiter serving this order
   time: string;           // Time when the order was taken
   state: boolean;         // State of the order (eg, completed or not)
   allclicked: boolean;    // Indicates if all items in the order are clicked/processed
-  orderlist: orderItem[]; // List of items in the order
+  orderlist: OrderItem[]; // List of items in the order
 }
 
-// Interface representing a category of orders, such as Crepes or Sandwiches
-interface stationName {
-  [stationName: string]: Order[]; // Station name maps to an array of orders
-}
+type FoodStationName = string;
 
 // Interface representing the entire collection of all orders for all stations
-interface AllOrders {
-  stations: stationName;  // A mapping of station names to their respective orders
+export interface AllOrders {
+  [stationName: FoodStationName]: Order[]; // Station name maps to an array of orders
 }
 
-export const allStationnames = reactive(['Crepes', 'Sandwiches', 'Heißgetränke', 'Kaltgetränke', 'Station neu']);
+export const allStationnames = reactive<FoodStationName[]>(['Crepes', 'Sandwiches', 'Heißgetränke', 'Kaltgetränke', 'Station neu']);
 
-export const allOrders = reactive({
+export const allOrders = reactive<AllOrders>({
   Crepes: [
     {
       id: '0',
@@ -39,7 +36,7 @@ export const allOrders = reactive({
       state: false,
       allclicked: false,
       orderlist: [
-        { name: 'nutella', notes: 'Extra Sahne' , clicked: false },
+        { name: 'nutella das von vorneherein viele Special Zutaten hat', notes: 'Extra Sahne' , clicked: false },
         { name: 'Banane', notes: '' , clicked: false },
         { name: 'Käseschinken', notes: 'Ohne Käse' , clicked: false }
       ],
@@ -124,9 +121,16 @@ export const allOrders = reactive({
       ],
     }
   ],
-  'Kaltgetränke': [],
-  'Heißgetränke': []
 });
+
+// adds all unassigned stationnames to allOrders as empty list
+watch(allStationnames, (newStationnames) => {
+  newStationnames.forEach(stationName => {
+    if (!allOrders[stationName]) {
+      allOrders[stationName] = [];
+    }
+  });
+}, { deep: true, immediate: true });
 
 // export function addOrder(category: string, orderId: String, orderTable: String, orderWaiter: String, orderlist: any[], orderNotes: any[]) {
 //   const newOrder = {

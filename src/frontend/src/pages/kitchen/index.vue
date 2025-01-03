@@ -198,12 +198,13 @@ const changeAbholbereit = (activeTab: string, orderIndex: number, itemIndex: num
                     <TableHeader v-if="order.id === trashID">
                       <TableRow class="border bg-primary border-black w-full"
                       >
+                      <!-- ToDo: maybe declare entry in the script -->
                       <TableHead
-                        v-for="entry in Array.of<keyof Order>('table' ,'waiter', 'time')"
+                        v-for="entry in Array.of<keyof Order>('table' ,'waiter', 'time')" 
                         :key=entry
                         class="indent-[-4rem] font-normal w-1/3"
                         :class="entry === 'time' ? 'indent-0 text-center': ''"
-                        >
+                        > 
                         {{ order[entry] }}
                       </TableHead>
                     </TableRow>

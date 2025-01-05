@@ -1,8 +1,9 @@
 import pb from '@/services/pocketbase.ts';
-import type {BomTemplate, MenuItem, FixedTemplate, SelectionTemplate} from '@/interfaces/menu/MenuItem.ts';
+import type {BomTemplate, MenuItem} from '@/interfaces/menu/MenuItem.ts';
 import PocketBase from "pocketbase";
 import {CrudService} from "@/services/crudService.ts";
 import {menuCategService} from "@/services/menu/menuCategService.ts";
+import {productService} from "@/services/product/productService.ts";
 
 export class MenuItemService extends CrudService<MenuItem<BomTemplate>> {
   constructor(pb: PocketBase) {
@@ -35,12 +36,55 @@ export class MenuItemService extends CrudService<MenuItem<BomTemplate>> {
   }
 
   async IsValidBomTemplate(bomTemplate: BomTemplate): Promise<boolean> {
-    if (bomTemplate === undefined) {
+    if (!bomTemplate) return false;
+
+    const MAX_SELECT_LIMIT = 20;
+
+    try {
+      if (bomTemplate.type === "Fixed") {
+        // Validate products for Fixed type
+        for (const product of bomTemplate.products) {
+          if (!(await productService.exists(product.id))) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      // Validation for Selection type
+      if (!bomTemplate.options) return false;
+
+      for (const selection of bomTemplate.options) {
+        // Validate selection limits
+        if (
+          selection.min_select > selection.max_select ||
+          selection.min_select < 1 ||
+          selection.max_select > MAX_SELECT_LIMIT
+        ) {
+          return false;
+        }
+
+        // Validate based on selection specification
+        if (selection.selection_specification === "ProductSelection") {
+          for (const product of selection.products) {
+            if (!(await productService.exists(product.id))) {
+              return false;
+            }
+          }
+        } else {
+          if (!(await menuCategService.exists(selection.category_id))) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error validating BOM template:", error);
       return false;
     }
-    // TODO: finish me with type checks and db references
-    return true
   }
+
 
   async create(data: Partial<MenuItem<BomTemplate>>): Promise<MenuItem<BomTemplate>> {
     if (data.price === undefined || data.price < 0) {

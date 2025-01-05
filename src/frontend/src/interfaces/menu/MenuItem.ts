@@ -26,7 +26,7 @@ export type SelectionTemplate = {
 // ================================
 // ==== Selection
 // ================================
-export type Selection = ProductSelection | CategorySelection;
+export type Selection = ProductSelection | TypeSelection;
 
 export type BaseSelection = {
   min_select: number;
@@ -34,12 +34,12 @@ export type BaseSelection = {
 };
 
 export type ProductSelection = BaseSelection & {
-  selection_type: "ProductSelection";
+  selection_specification: "ProductSelection";
   products: Product[];
 };
 
-export type CategorySelection = BaseSelection & {
-  selection_type: "CategorySelection";
+export type TypeSelection = BaseSelection & {
+  selection_specification: "TypeSelection";
   category_id: string;
 };
 
@@ -48,18 +48,4 @@ export type CategorySelection = BaseSelection & {
 // ================================
 export type Product = {
   id: string;
-};
-
-const handleList = (menuitems: MenuItem<BomTemplate>[]): void => {
-  menuitems.map((e) => {
-    if (e.bom_template.type == 'Fixed') {
-      let item = e as MenuItem<FixedTemplate>;
-      let tpl = e.bom_template;
-      console.log("FixedTemplate with products:", e.bom_template.products);
-    } else {
-      let item = e as MenuItem<SelectionTemplate>;
-      let tpl = e.bom_template;
-      console.log("SelectionTemplate with options:", e.bom_template.options);
-    }
-  });
 };

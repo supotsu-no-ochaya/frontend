@@ -23,6 +23,19 @@ export class CrudService<T> {
   async delete(id: string): Promise<boolean> {
     return this.pb.collection(this.collectionName).delete(id);
   }
+  async exists(id: string): Promise<boolean> {
+    try {
+      await this.pb.collection(this.collectionName).getOne(id);
+      return true; // If no error, the product exists
+    } catch (error: any) {
+      if (error.status === 404) {
+        // If the error is 404, the product does not exist
+        return false;
+      }
+      // Re-throw for other errors
+      throw error;
+    }
+  }
   getPocketbase(): PocketBase {
     return this.pb;
   }

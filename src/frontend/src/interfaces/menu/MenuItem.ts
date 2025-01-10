@@ -1,0 +1,51 @@
+import type {NamedEntity} from "@/interfaces/Entities.ts";
+
+export type MenuItem<T extends BomTemplate> = NamedEntity & {
+  price: number;
+  bom_template: T;
+  category: string;
+};
+
+// ================================
+// ==== BomTemplate
+// ================================
+export type BomTemplate =
+  | FixedTemplate
+  | SelectionTemplate;
+
+export type FixedTemplate = {
+  type: "Fixed";
+  products: Product[];
+};
+
+export type SelectionTemplate = {
+  type: "Selection";
+  options: Selection[];
+};
+
+// ================================
+// ==== Selection
+// ================================
+export type Selection = ProductSelection | TypeSelection;
+
+export type BaseSelection = {
+  min_select: number;
+  max_select: number;
+};
+
+export type ProductSelection = BaseSelection & {
+  selection_specification: "ProductSelection";
+  products: Product[];
+};
+
+export type TypeSelection = BaseSelection & {
+  selection_specification: "TypeSelection";
+  category_id: string;
+};
+
+// ================================
+// ==== Product
+// ================================
+export type Product = {
+  id: string;
+};

@@ -26,6 +26,14 @@ export class MenuCategService extends CrudService<MenuCateg> {
         filter: `parent_categ = ""`
       });
   }
+
+  async getByParentCategoryID(categoryID: string): Promise<MenuCateg[] | null> {
+    return this.getPocketbase()
+      .collection(this.getCollectionName())
+      .getFullList<MenuCateg>({
+        filter: `parent_categ = "${categoryID}"`
+      });
+  }
 }
 
 export const menuCategService = new MenuCategService(pb);

@@ -1,23 +1,27 @@
 <script setup lang="ts">
-import {DefaultLayout} from "@/layouts/default";
-import {Button} from "@/components/ui/button";
-import {useToast} from "@/components/ui/toast";
+import { authService } from "@/services/user/authService.ts";
 import { useRouter } from "vue-router";
+import { userRoleService } from "@/services/user/userRoleService.ts";
 
-const { toast } = useToast();
+const router = useRouter();
+
+const user = authService.getCurrentUser();
+if (user === null) {
+  await router.push("/auth/login");
+} else {
+  const role = await userRoleService.getById(user.role);
+  if (role.role_name === "Kuechenchef") {
+      await router.push("/admin");
+  } else if (role.role_name === "Kellner") {
+    await router.push("/waiter");
+  } else if (role.role_name === "Kueche") {
+    await router.push("/kitchen");
+  } else {
+    throw new Error(`Unknown user role: '${role.role_name}'`);
+  }
+}
 </script>
 
 <template>
-  <DefaultLayout show-navigation-footer class="grid place-content-center text-2xl">
-    <img class="size-20 mx-auto" src="/icon.svg" alt="icon" />
-    <div>Hello World</div>
-    <Button @click="() => {
-      toast({
-        title: 'Hello World',
-        description: 'This is a Toast Notification',
-      });
-    }">
-      Show Toast
-    </Button>
-  </DefaultLayout>
+
 </template>

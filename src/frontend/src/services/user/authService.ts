@@ -1,4 +1,5 @@
 import pb from '@/services/pocketbase.ts';
+import type { User } from "@/interfaces/user/User.ts";
 
 export const authService = {
   // Login
@@ -28,7 +29,8 @@ export const authService = {
   },
 
   // Get the current user
-  getCurrentUser() {
-    return pb.authStore.record;
+  getCurrentUser(): User | null {
+    // todo: fix this
+    return pb.authStore.record as unknown as User;
   }
 };

@@ -14,7 +14,9 @@ const tableId = computed(() => route.params.tableId);
 const personId = computed(() => route.params.personId);
 const categoryIds = computed(() => route.params.categoryIds);
 
-const category = computedAsync(async () => await menuCategService.getById(categoryIds.value[categoryIds.value.length - 1]));
+const category = computedAsync(async () => {
+  return await menuCategService.getById(categoryIds.value[categoryIds.value.length - 1]);
+});
 
 const subCategories = computedAsync(async () => {
   if (!category.value) return null;

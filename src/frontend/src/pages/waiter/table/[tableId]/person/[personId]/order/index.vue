@@ -5,16 +5,13 @@ import { DefaultLayout } from "@/layouts/default";
 import { Button } from "@/components/ui/button";
 import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 import { menuCategService } from "@/services/menu/menuCategService.ts";
-import type { MenuCateg } from "@/interfaces/menu/MenuCateg.ts";
+import { computedAsync } from "@vueuse/core";
 
 const route = useRoute("/waiter/table/[tableId]/person/[personId]/order/");
 const tableId = computed(() => route.params.tableId);
 const personId = computed(() => route.params.personId);
 
-const mainCategories = ref<MenuCateg[]>([]);
-
-menuCategService.getAllMainCategories()
-  .then(async (res) => mainCategories.value = res);
+const mainCategories = computedAsync(() => menuCategService.getAllMainCategories());
 </script>
 
 <template>

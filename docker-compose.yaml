@@ -1,5 +1,12 @@
 services:
-  backend-dev-server:
-    image: ghcr.io/supotsu-no-ochaya/backend:latest
+  supotsu-backend:
+    image: ghcr.io/supotsu-no-ochaya/supotsu-backend:dev
+    container_name: supotsu-backend
     ports:
-      - "5000:80"
+      - "8090:8090"
+    volumes:
+      - ./pb_data:/app/pb_data
+# only required if not downloading testdata
+#    environment:
+#      - PB_SUPERUSER_EMAIL=admin@admin.admin
+#      - PB_SUPERUSER_PASSWORD=1234567890

@@ -8,7 +8,7 @@ const tableId = computed(() => route.params.tableId);
 </script>
 
 <template>
-  <DefaultLayout show-navigation-footer>
+  <DefaultLayout footer="waiter-nav">
     Table Payment
   </DefaultLayout>
 </template>

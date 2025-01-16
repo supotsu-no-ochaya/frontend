@@ -1,7 +1,7 @@
 import PocketBase from 'pocketbase';
 
 // Create and export a PocketBase instance
-const pb = new PocketBase('http://127.0.0.1:8090');
+const pb = new PocketBase();
 export default pb;
 
 // there is no need to check if the user is admin, as this can be set in Pocketbase directly

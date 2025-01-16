@@ -34,11 +34,10 @@ declare module 'vue-router/auto-routes' {
     '/auth/logout': RouteRecordInfo<'/auth/logout', '/auth/logout', Record<never, never>, Record<never, never>>,
     '/kitchen/': RouteRecordInfo<'/kitchen/', '/kitchen', Record<never, never>, Record<never, never>>,
     '/waiter/table/[tableId]/': RouteRecordInfo<'/waiter/table/[tableId]/', '/waiter/table/:tableId', { tableId: ParamValue<true> }, { tableId: ParamValue<false> }>,
-    '/waiter/table/[tableId]/order/': RouteRecordInfo<'/waiter/table/[tableId]/order/', '/waiter/table/:tableId/order', { tableId: ParamValue<true> }, { tableId: ParamValue<false> }>,
-    '/waiter/table/[tableId]/order/dishes/': RouteRecordInfo<'/waiter/table/[tableId]/order/dishes/', '/waiter/table/:tableId/order/dishes', { tableId: ParamValue<true> }, { tableId: ParamValue<false> }>,
-    '/waiter/table/[tableId]/order/dishes/[dishCategory]': RouteRecordInfo<'/waiter/table/[tableId]/order/dishes/[dishCategory]', '/waiter/table/:tableId/order/dishes/:dishCategory', { tableId: ParamValue<true>, dishCategory: ParamValue<true> }, { tableId: ParamValue<false>, dishCategory: ParamValue<false> }>,
-    '/waiter/table/[tableId]/order/list': RouteRecordInfo<'/waiter/table/[tableId]/order/list', '/waiter/table/:tableId/order/list', { tableId: ParamValue<true> }, { tableId: ParamValue<false> }>,
+    '/waiter/table/[tableId]/order': RouteRecordInfo<'/waiter/table/[tableId]/order', '/waiter/table/:tableId/order', { tableId: ParamValue<true> }, { tableId: ParamValue<false> }>,
     '/waiter/table/[tableId]/payment': RouteRecordInfo<'/waiter/table/[tableId]/payment', '/waiter/table/:tableId/payment', { tableId: ParamValue<true> }, { tableId: ParamValue<false> }>,
+    '/waiter/table/[tableId]/person/[personId]/order/': RouteRecordInfo<'/waiter/table/[tableId]/person/[personId]/order/', '/waiter/table/:tableId/person/:personId/order', { tableId: ParamValue<true>, personId: ParamValue<true> }, { tableId: ParamValue<false>, personId: ParamValue<false> }>,
+    '/waiter/table/[tableId]/person/[personId]/order/[categoryIds]+/': RouteRecordInfo<'/waiter/table/[tableId]/person/[personId]/order/[categoryIds]+/', '/waiter/table/:tableId/person/:personId/order/:categoryIds+', { tableId: ParamValue<true>, personId: ParamValue<true>, categoryIds: ParamValueOneOrMore<true> }, { tableId: ParamValue<false>, personId: ParamValue<false>, categoryIds: ParamValueOneOrMore<false> }>,
     '/waiter/tables': RouteRecordInfo<'/waiter/tables', '/waiter/tables', Record<never, never>, Record<never, never>>,
   }
 }

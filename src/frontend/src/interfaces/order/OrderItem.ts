@@ -12,9 +12,13 @@ export enum OrderStatus {
 export type OrderItem = BaseEntity & {
   order: string;
   price: number;
-  bom: BomTemplate;
+  bom: Bom;
   status: OrderStatus;
   menu_item: string;
   menu_item_name?: string;
+  notes: string
 };
 
+export type Bom = {
+  products: String[];
+}

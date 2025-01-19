@@ -1,14 +1,14 @@
 import pb from '@/services/pocketbase.ts';
 import PocketBase from "pocketbase";
 import {CrudService} from "@/services/crudService.ts";
-import {type OrderItem, OrderStatus} from "@/interfaces/order/OrderItem.ts";
+import {type OrderItem, OrderItemStatus} from "@/interfaces/order/OrderItem.ts";
 
 export class OrderItemService extends CrudService<OrderItem> {
   constructor(pb: PocketBase) {
     super(pb, 'order_item');
   }
 
-  async updateOrderItemToStatus(orderItemId: string, orderItemStatus: OrderStatus): Promise<OrderItem> {
+  async updateOrderItemToStatus(orderItemId: string, orderItemStatus: OrderItemStatus): Promise<OrderItem> {
     if (!orderItemId) {
       throw new Error("OrderItem must have a valid ID to update.");
     }
@@ -18,8 +18,8 @@ export class OrderItemService extends CrudService<OrderItem> {
     }
 
     // Validate the provided status
-    if (!Object.values(OrderStatus).includes(orderItemStatus)) {
-      throw new Error(`Invalid status: ${orderItemStatus}. Valid statuses are: ${Object.values(OrderStatus).join(", ")}`);
+    if (!Object.values(OrderItemStatus).includes(orderItemStatus)) {
+      throw new Error(`Invalid status: ${orderItemStatus}. Valid statuses are: ${Object.values(OrderItemStatus).join(", ")}`);
     }
 
     try {

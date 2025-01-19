@@ -22,8 +22,26 @@ export class OrderItemService extends CrudService<OrderItem> {
       throw new Error(`Invalid status: ${orderItemStatus}. Valid statuses are: ${Object.values(OrderItemStatus).join(", ")}`);
     }
 
+    // Define the valid order item status progression
+    const statusOrder = [
+      OrderItemStatus.Aufgegeben,
+      OrderItemStatus.InArbeit,
+      OrderItemStatus.Abholbereit,
+      OrderItemStatus.Geliefert
+    ];
+
     try {
       const currentOrderItem: OrderItem = await super.getById(orderItemId);
+
+      const currentIndex = statusOrder.indexOf(currentOrderItem.status);
+      const newIndex = statusOrder.indexOf(orderItemStatus);
+
+      // Ensure the new status is ahead of the current one
+      if (newIndex <= currentIndex) {
+        throw new Error(
+          `Invalid status update. "${orderItemStatus}" must be ahead of "${currentOrderItem.status}".`
+        );
+      }
 
       const updatedOrderItem: OrderItem = {
         ...currentOrderItem,

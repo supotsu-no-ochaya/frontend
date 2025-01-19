@@ -23,8 +23,27 @@ export class OrderService extends CrudService<Order> {
       throw new Error(`Invalid status: ${orderStatus}. Valid statuses are: ${Object.values(OrderStatus).join(", ")}`);
     }
 
+    // Define the valid order status progression
+    const statusOrder = [
+      OrderStatus.Aufgegeben,
+      OrderStatus.InArbeit,
+      OrderStatus.Abholbereit,
+      OrderStatus.Geliefert,
+      OrderStatus.Bezahlt
+    ];
+
     try {
       const currentOrder: Order = await super.getById(orderId);
+
+      const currentIndex = statusOrder.indexOf(currentOrder.status);
+      const newIndex = statusOrder.indexOf(orderStatus);
+
+      // Ensure the new status is ahead of the current one
+      if (newIndex <= currentIndex) {
+        throw new Error(
+          `Invalid status update. "${orderStatus}" must be ahead of "${currentOrder.status}".`
+        );
+      }
 
       const updatedOrder: Order = {
         ...currentOrder,

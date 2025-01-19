@@ -7,6 +7,7 @@ export enum OrderStatus {
   InArbeit = "InArbeit",
   Abholbereit = "Abholbereit",
   Geliefert = "Geliefert",
+  Bezahlt = "Bezahlt",
 }
 
 export type OrderItem = BaseEntity & {

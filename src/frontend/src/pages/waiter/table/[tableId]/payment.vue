@@ -7,6 +7,8 @@ import { reactive, ref, computed } from 'vue';
 import { orderService } from "@/services/order/orderService.ts";
 import { orderItemService } from "@/services/order/orderItemService.ts";
 import { menuItemService } from "@/services/menu/menuItemService.ts";
+import { menuCategService } from "@/services/menu/menuCategService.ts";
+
 
 import { Table, TableCell, TableBody, TableRow} from '@/components/ui/table';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -56,6 +58,16 @@ const handleItemCheckboxChange = (order: any, orderItem: any, checked: boolean) 
   // Recalculate the total for this order
   order.total = calculateTotal(order, orderItem, checked);
 };
+
+function handleOrderCheckboxChange(order, checked){
+  console.log("CHECKED",checked)
+  for (let _orderItem of orderItems.value) {
+    if (_orderItem.order == order.id){
+      console.log(_orderItem)
+      _orderItem.isChecked = checked
+    }
+  }
+}
 
 const handleRabattCheckboxClick = (checked: boolean) =>  {
   Rabatt.checked = checked
@@ -119,7 +131,13 @@ function updateOrderTotal(order){
     <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-22rem)] w-full">
       <Accordion type="multiple" class="w-4/5 mx-auto">
         <AccordionItem v-for="order in orders" :key="order.id" :value="order.status">
-          <AccordionTrigger>Bestellung: {{order.id}}</AccordionTrigger>
+          <AccordionTrigger @click.stop>Bestellung: {{order.id}}
+            <Checkbox
+              :v-model="order.isChecked"
+              @update:checked="(checked) => handleOrderCheckboxChange(order, checked)"
+              @click.stop
+            />
+          </AccordionTrigger>
           <AccordionContent>
             <Table>
               <TableBody>
@@ -133,7 +151,7 @@ function updateOrderTotal(order){
                   </TableCell>
                   <TableCell class="w-1/5" v-if="orderItem.order == order.id">
                     <Checkbox
-                      :v-model="orderItem.isChecked"
+                      :checked="orderItem.isChecked"
                       @update:checked="(checked) => handleItemCheckboxChange(order, orderItem, checked)"
                     />
                   </TableCell>
@@ -167,7 +185,7 @@ function updateOrderTotal(order){
         <Suspense>
         <strong class="w-3/5" id="totalSum">Total Sum: {{calculateTotalSum()}}€</strong>
         </Suspense>
-        <Button class="w-1/5 mr-2 bg-accent active:bg-primary text-black" @click="console.log('Anpassen')">
+        <Button class="w-1/5 mr-2 bg-accent active:bg-primary text-black" @click="getOrderItemsByStation()">
           Anpassen
         </Button>
       </div>

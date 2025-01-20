@@ -19,7 +19,7 @@ const tableId = computed(() => route.params.tableId);
 let Rabatt = reactive({value:0.10,checked: false})
 
 import { authService } from "@/services/user/authService.ts";
-authService.login("Test", "123456789");
+authService.login("Test", "1234567890");
 
 let orders = reactive(computedAsync(() =>
   orderService.getAll().then((orders) => 
@@ -69,8 +69,8 @@ const handleBezahlenButtonClick = async () =>{
         orderItemService.updateOrderItemToStatus(orderItem.id,"Bezahlt")
       }
     })
-    await new Promise(f => setTimeout(f, 1000));
-    router.go(0)
+    //await new Promise(f => setTimeout(f, 1000));
+    //router.go(0)
   }
 
 // Method to calculate total for a order bas  ed on checked items

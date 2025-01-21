@@ -1,14 +1,14 @@
 import pb from '@/services/pocketbase.ts';
 import PocketBase from "pocketbase";
 import {CrudService} from "@/services/crudService.ts";
-import {type OrderItem, OrderStatus} from "@/interfaces/order/OrderItem.ts";
+import {type OrderItem, OrderItemStatus} from "@/interfaces/order/OrderItem.ts";
 
 export class OrderItemService extends CrudService<OrderItem> {
   constructor(pb: PocketBase) {
     super(pb, 'order_item');
   }
 
-  async updateOrderItemToStatus(orderItemId: string, orderItemStatus: OrderStatus): Promise<OrderItem> {
+  async updateOrderItemToStatus(orderItemId: string, orderItemStatus: OrderItemStatus): Promise<OrderItem> {
     if (!orderItemId) {
       throw new Error("OrderItem must have a valid ID to update.");
     }
@@ -18,12 +18,30 @@ export class OrderItemService extends CrudService<OrderItem> {
     }
 
     // Validate the provided status
-    if (!Object.values(OrderStatus).includes(orderItemStatus)) {
-      throw new Error(`Invalid status: ${orderItemStatus}. Valid statuses are: ${Object.values(OrderStatus).join(", ")}`);
+    if (!Object.values(OrderItemStatus).includes(orderItemStatus)) {
+      throw new Error(`Invalid status: ${orderItemStatus}. Valid statuses are: ${Object.values(OrderItemStatus).join(", ")}`);
     }
+
+    // Define the valid order item status progression
+    const statusOrder = [
+      OrderItemStatus.Aufgegeben,
+      OrderItemStatus.InArbeit,
+      OrderItemStatus.Abholbereit,
+      OrderItemStatus.Geliefert
+    ];
 
     try {
       const currentOrderItem: OrderItem = await super.getById(orderItemId);
+
+      const currentIndex = statusOrder.indexOf(currentOrderItem.status);
+      const newIndex = statusOrder.indexOf(orderItemStatus);
+
+      // Ensure the new status is ahead of the current one
+      if (newIndex <= currentIndex) {
+        throw new Error(
+          `Invalid status update. "${orderItemStatus}" must be ahead of "${currentOrderItem.status}".`
+        );
+      }
 
       const updatedOrderItem: OrderItem = {
         ...currentOrderItem,

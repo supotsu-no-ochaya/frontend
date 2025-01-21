@@ -7,8 +7,8 @@ import { reactive, ref, computed } from 'vue';
 import { orderService } from "@/services/order/orderService.ts";
 import { orderItemService } from "@/services/order/orderItemService.ts";
 import { menuItemService } from "@/services/menu/menuItemService.ts";
-import { menuCategService } from "@/services/menu/menuCategService.ts";
-
+import { paymentService} from "@/services/payment/paymentService.ts";
+//import { Payment } from "@/interfaces/payment/Payment.ts";
 
 import { Table, TableCell, TableBody, TableRow} from '@/components/ui/table';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -24,7 +24,7 @@ import { authService } from "@/services/user/authService.ts";
 authService.login("Test", "123456789");
 
 let orders = reactive(computedAsync(() =>
-  orderService.getAll().then((orders) => 
+  orderService.getAll().then((orders) =>
     orders
       .filter(order => order.table === parseInt(tableId.value))
       .filter(order => order.status === "Geliefert")
@@ -37,7 +37,7 @@ let orders = reactive(computedAsync(() =>
 ));
 
 let orderItems = reactive(computedAsync(() =>
-  Promise.all([orderItemService.getAll(), orders.value]).then(([orderItems, currentOrders]) => 
+  Promise.all([orderItemService.getAll(), orders.value]).then(([orderItems, currentOrders]) =>
     orderItems
       .filter(item => currentOrders.some(order => order.id === item.order)) // Filter by matching order ID
       .filter(item => item.status === "Geliefert") // Filter by Status
@@ -65,8 +65,11 @@ function handleOrderCheckboxChange(order, checked){
     if (_orderItem.order == order.id){
       console.log(_orderItem)
       _orderItem.isChecked = checked
+      calculateTotal(order,_orderItem,_orderItem.isChecked)
     }
   }
+  updateOrderTotal(order)
+  updateTotalSum()
 }
 
 const handleRabattCheckboxClick = (checked: boolean) =>  {
@@ -75,12 +78,22 @@ const handleRabattCheckboxClick = (checked: boolean) =>  {
 }
 
 const handleBezahlenButtonClick = async () =>{
+
+  let  _orderItems: string[] = []
+  let _discount: number = 0;
+  let _total_amount = 0;
+  if (Rabatt.checked){
+    _discount = parseInt(Rabatt.value*100)
+  }
   orderItems.value.forEach(orderItem => {
-      console.log(orderItem)
       if (orderItem.isChecked){
+        _orderItems.push(orderItem.id)
+        _total_amount += orderItem.price
         orderItemService.updateOrderItemToStatus(orderItem.id,"Bezahlt")
       }
     })
+    paymentService.create({order_items: _orderItems,  discount_percent:_discount, total_amount: _total_amount})
+
     await new Promise(f => setTimeout(f, 1000));
     router.go(0)
   }
@@ -112,7 +125,7 @@ function calculateTotalSum() {
 }
 
 function updateTotalSum(){
-
+  console.log("updateTotalSum");
   document.getElementById("totalSum").textContent = "Total Sum: "+calculateTotalSum()+"€";
 }
 
@@ -127,11 +140,12 @@ function updateOrderTotal(order){
 <template>
   <DefaultLayout footer="waiter-nav">
     <WaiterControlHeader :label="'Bezahlen Tisch: '+tableId" icon="bill" />
+    {{orders}}
     <!-- Scrollable Content Section -->
     <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-22rem)] w-full">
       <Accordion type="multiple" class="w-4/5 mx-auto">
         <AccordionItem v-for="order in orders" :key="order.id" :value="order.status">
-          <AccordionTrigger @click.stop>Bestellung: {{order.id}}
+          <AccordionTrigger>Bestellung: {{order.id}}
             <Checkbox
               :v-model="order.isChecked"
               @update:checked="(checked) => handleOrderCheckboxChange(order, checked)"
@@ -141,7 +155,7 @@ function updateOrderTotal(order){
           <AccordionContent>
             <Table>
               <TableBody>
-                <TableRow 
+                <TableRow
                 v-for="orderItem in orderItems">
                   <TableCell class="w-2/5" v-if="orderItem.order == order.id" >
                     <div>{{menuItems.find(menuItem => menuItem.id === orderItem.menu_item).name}}</div>

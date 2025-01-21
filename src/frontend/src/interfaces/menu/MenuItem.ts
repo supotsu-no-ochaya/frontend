@@ -4,6 +4,10 @@ export type MenuItem<T extends BomTemplate> = NamedEntity & {
   price: number;
   bom_template: T;
   category: string;
+  /**
+   * Relation to `station`
+   */
+  station: string;
 };
 
 // ================================

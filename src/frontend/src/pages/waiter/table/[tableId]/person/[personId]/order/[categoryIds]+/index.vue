@@ -9,6 +9,8 @@ import { menuCategService } from "@/services/menu/menuCategService.ts";
 import { menuItemService } from "@/services/menu/menuItemService.ts";
 import { LucideMinus, LucidePlus } from "lucide-vue-next";
 
+import { useCartStore } from "@/components/cart.js";
+
 const route = useRoute("/waiter/table/[tableId]/person/[personId]/order/[categoryIds]+/");
 const tableId = computed(() => route.params.tableId);
 const personId = computed(() => route.params.personId);
@@ -27,6 +29,23 @@ const menuItems = computedAsync(async () => {
   if (!category.value) return null;
   return await menuItemService.getAllMenuItemsWithCategoryID(category.value.id);
 });
+
+const cartStore = useCartStore();
+
+const addToCart = (product,table, person) => {
+  cartStore.addToCart(product,table, person);
+};
+
+const subFromCart = (product,table, person) => {
+  cartStore.subFromCart(product,table, person);
+};
+
+const clearCart = () => {
+  cartStore.clearCart();
+}
+
+console.log(cartStore.cart);
+
 </script>
 
 <template>
@@ -35,7 +54,7 @@ const menuItems = computedAsync(async () => {
     <div class="flex flex-col flex-1 gap-2 p-2">
       <template v-if="subCategories !== null" v-for="subCategory in subCategories">
         <router-link class="group" :to="{ name: '/waiter/table/[tableId]/person/[personId]/order/[categoryIds]+/', params: { tableId, personId, categoryIds: [...categoryIds, subCategory.id] } }">
-          <Button class="w-full flex gap-2 group-even:flex-row-reverse">
+          <Button class="w-full flex gap-2 group-even:flex-row-reverse" >
 <!--            <img class="h-full" :src="subCategory.iconSrc" :alt="subCategory.name" />-->
             <div class="grow" />
             <div class="text-2xl">
@@ -50,13 +69,15 @@ const menuItems = computedAsync(async () => {
         <div class="bg-primary rounded-xl mt-5">
 <!--          <img class="mx-auto px-6 py-2 w-3/5 bg-background rounded-xl -mt-5" :src="menuItem.iconSrc" :alt="menuItem.name" />-->
           <div class="flex justify-evenly px-1 py-2">
-            <Button size="icon" class="bg-background">
+            <Button size="icon" class="bg-background" @click="subFromCart(menuItem,tableId, personId)">
               <LucideMinus />
             </Button>
             <div class="bg-background rounded-xl min-w-8 grid place-content-center">
-              {{ 0 }}
+              {{ cartStore.cart.find(item => item.id === menuItem.id && item.table === tableId && item.person === personId) ? 
+              cartStore.cart.find(item => item.id === menuItem.id && item.table === tableId && item.person === personId).quantity 
+              : 0 }}
             </div>
-            <Button size="icon" class="bg-background">
+            <Button size="icon" class="bg-background" @click="addToCart(menuItem,tableId, personId)">
               <LucidePlus />
             </Button>
           </div>

@@ -19,12 +19,10 @@ authService.login("Test", "123456789");
 
 const addToCart = (product,table, person) => {
   cartStore.addToCart(product,table, person);
-  console.log(cartStore.cart.find(item => item.id === product.id).quantity);
 };
 
 const subFromCart = (product,table, person) => {
   cartStore.subFromCart(product,table, person);
-  console.log(cartStore.cart.find(item => item.id === product.id).quantity);
 };
 
 const removeFromCart = (product,table, person) => {
@@ -46,13 +44,11 @@ async function handleOrderSend(person,table){
   if (cartStore.cart.filter(item => item.person === person && item.table === table).length > 0){
     const waiter = authService.getCurrentUser()
     const order = await orderService.create({table: tableId.value, waiter: waiter.id, status:'Aufgegeben'})
-    console.log(cartStore.cart.filter(item => item.person === person && item.table === table))
 
     let _orderItem = undefined;
     for (let orderItem of cartStore.cart.filter(item => item.person === person && item.table === table)){
       for (let i = 0; i < orderItem.quantity; i++){
         let _bom = orderItem.bom_template.products ? orderItem.bom_template.products : ["z3acikruw24l618"]
-        console.log(_bom)
         await orderItemService.create({order:order.id, price:orderItem.price, products:_bom, status:"Aufgegeben", menu_item:orderItem.id,menu_item_name:orderItem.name})
         _orderItem = orderItem
       }

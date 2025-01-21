@@ -60,10 +60,8 @@ const handleItemCheckboxChange = (order: any, orderItem: any, checked: boolean) 
 };
 
 function handleOrderCheckboxChange(order, checked){
-  console.log("CHECKED",checked)
   for (let _orderItem of orderItems.value) {
     if (_orderItem.order == order.id){
-      console.log(_orderItem)
       _orderItem.isChecked = checked
       calculateTotal(order,_orderItem,_orderItem.isChecked)
     }
@@ -118,14 +116,12 @@ function calculateTotalSum() {
     totalSum += orders.value[i].total;
   }
   if (Rabatt.checked) {
-    console.log(totalSum,Rabatt.value)
     totalSum = totalSum*(1-Rabatt.value)
   }
   return totalSum;
 }
 
 function updateTotalSum(){
-  console.log("updateTotalSum");
   document.getElementById("totalSum").textContent = "Total Sum: "+calculateTotalSum()+"€";
 }
 
@@ -140,7 +136,6 @@ function updateOrderTotal(order){
 <template>
   <DefaultLayout footer="waiter-nav">
     <WaiterControlHeader :label="'Bezahlen Tisch: '+tableId" icon="bill" />
-    {{orders}}
     <!-- Scrollable Content Section -->
     <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-22rem)] w-full">
       <Accordion type="multiple" class="w-4/5 mx-auto">

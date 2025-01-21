@@ -51,9 +51,9 @@ async function handleOrderSend(person,table){
     let _orderItem = undefined;
     for (let orderItem of cartStore.cart.filter(item => item.person === person && item.table === table)){
       for (let i = 0; i < orderItem.quantity; i++){
-        let _bom = orderItem.bom_template.products ? orderItem.bom_template.products : "MochiBox ist nervig"
+        let _bom = orderItem.bom_template.products ? orderItem.bom_template.products : ["z3acikruw24l618"]
         console.log(_bom)
-        await orderItemService.create({order:order.id, price:orderItem.price, bom:_bom, status:"Aufgegeben", menu_item:orderItem.id,menu_item_name:orderItem.name})
+        await orderItemService.create({order:order.id, price:orderItem.price, products:_bom, status:"Aufgegeben", menu_item:orderItem.id,menu_item_name:orderItem.name})
         _orderItem = orderItem
       }
     removeFromCart(_orderItem,_orderItem.table,_orderItem.person)

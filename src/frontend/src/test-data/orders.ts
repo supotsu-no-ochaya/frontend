@@ -50,7 +50,7 @@ watch(()=>environment.allStationnames_raw, (newStationnames)=>{
 // }
 //  const allStationnames
 
-const debouncedWatchCallback = debounce(async (newValues, oldValues) => {
+const debouncedWatchCallback = debounce(async (newValues: any, oldValues: any) => {
   // console.log("menuitem", menuItemService.getAllMenuItemsWithCategoryID("m6l80c3w6te7611"))
   StationDictMenuitem()
   console.log("&&&&&&&&&&&&&&&",environment.allStationnames_raw)
@@ -62,7 +62,7 @@ const debouncedWatchCallback = debounce(async (newValues, oldValues) => {
     //   console.log("station:", station.name)
     // }
     console.log("____________________")
-    const newOrders = await Promise.all(newValues.Orders_raw.map(async (Order) => {
+    const newOrders = await Promise.all(newValues.Orders_raw.map(async (Order: any) => {
       // const waiter = await userService.getById(raw.waiter);
       
       for (let station of allStationnames){
@@ -70,7 +70,7 @@ const debouncedWatchCallback = debounce(async (newValues, oldValues) => {
         console.log(station,allStationnames)
         // const temp = (await Promise.all(OrderItems_raw))
         // const temp2 = temp.map((Item)=> Item.menu_item)
-        const temp3 = newValues.menu_items_raw?.map((Item)=> Item.id)
+        const temp3 = newValues.menu_items_raw?.map((Item: any)=> Item.id)
         // console.log("temp", temp)
         // console.log("temp2", temp2)
         console.log("temp3", temp3)
@@ -83,7 +83,7 @@ const debouncedWatchCallback = debounce(async (newValues, oldValues) => {
           time: new Date(Order.created).toLocaleTimeString('de-DE', {timeZone: "UTC", hour: "2-digit", minute: "2-digit" }) + " Uhr", //Item.menu_item.map((ID)=>ID == menu_items_raw?.)
           state: false,
           orderlist: await Promise.all(newValues.OrderItems_raw?.
-              filter((OrderItem) => OrderItem.order === Order.id).  //take all Items from Orderitemsraw where their ID is the same as from Order
+              filter((OrderItem: any) => OrderItem.order === Order.id).  //take all Items from Orderitemsraw where their ID is the same as from Order
               // filter((OrderItem3)=> stationsDict[OrderItem3.menu_item])
               // filter((OrderItem3)=> (await menuCategService.getById(menuItemService.getById(OrderItem3.menu_item)).name === "Crepes")).
 
@@ -95,8 +95,8 @@ const debouncedWatchCallback = debounce(async (newValues, oldValues) => {
               //     filter(()=> XYZ)) ?? 
               //     STAT === "Crepes").  //compare to station.names
 
-              map(async (Item) => ({
-            name: newValues.menu_items_raw?.find((Item2) => Item2.id === Item.menu_item)?.name,
+              map(async (Item: any) => ({
+            name: newValues.menu_items_raw?.find((Item2: any) => Item2.id === Item.menu_item)?.name,
             notes: Item.notes,
             clicked: false
           })) ?? []),

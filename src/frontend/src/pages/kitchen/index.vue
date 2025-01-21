@@ -6,8 +6,10 @@ import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from '@/components/ui/table';
 
-import { allStationnames, allOrders, type Order, type AllOrders } from "@/test-data/orders.ts"
+import { allStationnames, allOrders, type Order, type AllOrders, trashcan } from "@/test-data/orders.ts"
 import type { WatchHandle } from "vue";
+
+
 
 // MUTABLE //
 const maxActiveStations = 2;  //number of displayed stations at a time
@@ -15,11 +17,13 @@ const trashlength = 4  //max length of trashcan
 // MUTABLE //
 
 const activeFoodStations = reactive<string[]>([]);
-const trashcan = reactive<Record<string, Order["id"][]>>({})
+// const trashcan = reactive<Record<string, Order["id"][]>>({})
 
-allStationnames.forEach(stationName => {
-  trashcan[stationName] = [];  // Erstelle für jede Station ein leeres array in trashcan
-});
+// allStationnames.forEach(stationName => {
+//   trashcan[stationName] = [];  // Erstelle für jede Station ein leeres array in trashcan
+// });
+
+console.log("trashcan",trashcan)
 
 const manualWatchers: WatchHandle[] = [];
 
@@ -52,6 +56,7 @@ watch(  //look for changes in allOders (when new Order arrives)
               }
             }
             if (order.allclicked === true) {
+              console.log("trashcan", trashcan)
               if (!trashcan[stationName].includes(order.id)) {
                 trashcan[stationName].unshift(order.id);  //add orderID as first El to trashcan
               }
@@ -77,8 +82,8 @@ const changeState = (activeStation: string, orderIndex: number) => {
     allOrders[activeStation][orderIndex].state = !allOrders[activeStation][orderIndex].state;
 }
 const changeAbholbereit = (activeTab: string, orderIndex: number, itemIndex: number) => {
+    console.log(allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked)
     allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked = !allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked;
-    console.log('test')
 }
 </script>
 

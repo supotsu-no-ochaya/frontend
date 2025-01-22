@@ -64,7 +64,7 @@ watch(  //look for changes in allOders (when new Order arrives)
               if (!trashcan[stationName].includes(order.id)) {
                 trashcan[stationName].unshift(order.id);  //add orderID as first El to trashcan
               }
-              orderService.updateOrderToStatus(order.id, OrderStatus.Abholbereit)
+              orderService.updateOrderToStatus(order.id, OrderStatus.Geliefert)
               // console.log("status of:", order.id, orderItemService.getById(order.id))
             }
             if (trashcan[stationName].length > trashlength) {

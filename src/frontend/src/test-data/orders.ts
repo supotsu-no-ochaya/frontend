@@ -1,9 +1,8 @@
-import { computedAsync, tryOnMounted } from "@vueuse/core";
-import { onMounted, reactive, toRefs, watch } from "vue";
+import { computedAsync } from "@vueuse/core";
+import { reactive, toRefs, watch } from "vue";
 import { authService } from "@/services/user/authService";
 import { menuCategService } from "@/services/menu/menuCategService";
-import { watchEffect } from "vue";
-import { orderItemService, OrderItemService } from "@/services/order/orderItemService";
+import { orderItemService } from "@/services/order/orderItemService";
 import { orderService } from "@/services/order/orderService";
 import { menuItemService } from "@/services/menu/menuItemService";
 import { userService } from "@/services/user/userService";
@@ -132,7 +131,7 @@ const debouncedWatchCallback = debounce(async (newValues: any, oldValues: any) =
           // waiter: waiter.name ?? waiter.username, //returns waiterID
           waiter: newValues.users_raw?.find((User: any)=> User.id == Order.waiter)?.username ?? "not loading",
           // waiter: Order.waiter,
-          time: new Date(Order.created).toLocaleTimeString('de-DE', {timeZone: "UTC", hour: "2-digit", minute: "2-digit" }) + " Uhr", //Item.menu_item.map((ID)=>ID == menu_items_raw?.)
+          time: new Date(Order.created).toLocaleTimeString('de-DE', {hour: "2-digit", minute: "2-digit" }) + " Uhr", //Item.menu_item.map((ID)=>ID == menu_items_raw?.)
           state: false,
           orderlist: await Promise.all(newValues.OrderItems_raw?.
               filter((OrderItem: any) => OrderItem.order === Order.id).  //take all Items from Orderitemsraw where their ID is the same as from Order
@@ -225,97 +224,97 @@ export interface AllOrders {
 export const allStationnames = reactive<FoodStationName[]>([]);
 
 export const allOrders = reactive<AllOrders>({
-  Crepes: [
-    {
-      id: '0',
-      table: '2',
-      waiter: 'Lea',
-      time: '12:45 Uhr',
-      state: false,
-      allclicked: false,
-      orderlist: [
-        { name: 'nutella das von vorneherein viele Special Zutaten hat', notes: 'Extra Sahne' , clicked: false },
-        { name: 'Banane', notes: '' , clicked: false },
-        { name: 'Käseschinken', notes: 'Ohne Käse' , clicked: false }
-      ],
-    },
-    {
-      id: '1',
-      table: '3',
-      waiter: 'Sylvie',
-      time: '12:50 Uhr',
-      state: false,
-      allclicked: false,
-      orderlist: [
-        { name: 'Zucker & Zimt', notes: '' , clicked: false },
-        { name: 'nutella', notes: 'Zusätzlicher Löffel Nutella und gaaaanz viele andere Extrawünsche. Zusätzlicher Löffel Nutella und gaaaanz viele andere Extrawünsche' , clicked: false },
-        { name: 'Erdbeer', notes: '' , clicked: false },
-        { name: 'Zucker', notes: '' , clicked: false }
-      ],
-    },
-    {
-      id: '2',
-      table: '9',
-      waiter: 'Sylvie',
-      time: '12:56 Uhr',
-      state: false,
-      allclicked: false,
-      orderlist: [
-        { name: 'Zucker & Zimt', notes: '' , clicked: false },
-      ],
-    },
-    {
-      id: '3',
-      table: '1',
-      waiter: 'Sabine',
-      time: '12:59 Uhr',
-      state: false,
-      allclicked: false,
-      orderlist: [
-        { name: 'Erdbeer', notes: '' , clicked: false },
-        { name: 'Zucker & Zimt', notes: 'Leicht bestreut', clicked: false  },
-        { name: 'Banane', notes: '' , clicked: false },
-        { name: 'Zucker', notes: '', clicked: false  }
-      ],
-    },
-    {
-      id: '4',
-      table: '3',
-      waiter: 'Sylvie',
-      time: '13:04 Uhr',
-      state: false,
-      allclicked: false,
-      orderlist: [
-        { name: 'Apfel', notes: '' , clicked: false },
-        { name: 'Käseschinken', notes: '' , clicked: false },
-        { name: 'Schokolade', notes: '', clicked: false  }
-      ],
-    }
-  ],
-  Sandwiches: [
-    {
-      id: '0',
-      table: '4',
-      waiter: 'Martin',
-      time: '17:89 Uhr',
-      state: false,
-      allclicked: false,
-      orderlist: [
-        { name: 'Käse', notes: '' , clicked: false }
-      ],
-    },
-    {
-      id: '1',
-      table: '6',
-      waiter: 'Robin',
-      time: '14 Uhr',
-      state: false,
-      allclicked: false,
-      orderlist: [
-        { name: 'Käse', notes: '' , clicked: false }
-      ],
-    }
-  ],
+//   Crepes: [
+//     {
+//       id: '0',
+//       table: '2',
+//       waiter: 'Lea',
+//       time: '12:45 Uhr',
+//       state: false,
+//       allclicked: false,
+//       orderlist: [
+//         { name: 'nutella das von vorneherein viele Special Zutaten hat', notes: 'Extra Sahne' , clicked: false },
+//         { name: 'Banane', notes: '' , clicked: false },
+//         { name: 'Käseschinken', notes: 'Ohne Käse' , clicked: false }
+//       ],
+//     },
+//     {
+//       id: '1',
+//       table: '3',
+//       waiter: 'Sylvie',
+//       time: '12:50 Uhr',
+//       state: false,
+//       allclicked: false,
+//       orderlist: [
+//         { name: 'Zucker & Zimt', notes: '' , clicked: false },
+//         { name: 'nutella', notes: 'Zusätzlicher Löffel Nutella und gaaaanz viele andere Extrawünsche. Zusätzlicher Löffel Nutella und gaaaanz viele andere Extrawünsche' , clicked: false },
+//         { name: 'Erdbeer', notes: '' , clicked: false },
+//         { name: 'Zucker', notes: '' , clicked: false }
+//       ],
+//     },
+//     {
+//       id: '2',
+//       table: '9',
+//       waiter: 'Sylvie',
+//       time: '12:56 Uhr',
+//       state: false,
+//       allclicked: false,
+//       orderlist: [
+//         { name: 'Zucker & Zimt', notes: '' , clicked: false },
+//       ],
+//     },
+//     {
+//       id: '3',
+//       table: '1',
+//       waiter: 'Sabine',
+//       time: '12:59 Uhr',
+//       state: false,
+//       allclicked: false,
+//       orderlist: [
+//         { name: 'Erdbeer', notes: '' , clicked: false },
+//         { name: 'Zucker & Zimt', notes: 'Leicht bestreut', clicked: false  },
+//         { name: 'Banane', notes: '' , clicked: false },
+//         { name: 'Zucker', notes: '', clicked: false  }
+//       ],
+//     },
+//     {
+//       id: '4',
+//       table: '3',
+//       waiter: 'Sylvie',
+//       time: '13:04 Uhr',
+//       state: false,
+//       allclicked: false,
+//       orderlist: [
+//         { name: 'Apfel', notes: '' , clicked: false },
+//         { name: 'Käseschinken', notes: '' , clicked: false },
+//         { name: 'Schokolade', notes: '', clicked: false  }
+//       ],
+//     }
+//   ],
+//   Sandwiches: [
+//     {
+//       id: '0',
+//       table: '4',
+//       waiter: 'Martin',
+//       time: '17:89 Uhr',
+//       state: false,
+//       allclicked: false,
+//       orderlist: [
+//         { name: 'Käse', notes: '' , clicked: false }
+//       ],
+//     },
+//     {
+//       id: '1',
+//       table: '6',
+//       waiter: 'Robin',
+//       time: '14 Uhr',
+//       state: false,
+//       allclicked: false,
+//       orderlist: [
+//         { name: 'Käse', notes: '' , clicked: false }
+//       ],
+//     }
+//   ],
 });
 
 export const trashcan = reactive<Record<string, Order["id"][]>>({})

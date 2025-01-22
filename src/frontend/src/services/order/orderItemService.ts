@@ -37,11 +37,11 @@ export class OrderItemService extends CrudService<OrderItem> {
       const newIndex = statusOrder.indexOf(orderItemStatus);
 
       // Ensure the new status is ahead of the current one
-      if (newIndex <= currentIndex) {
-        throw new Error(
-          `Invalid status update. "${orderItemStatus}" must be ahead of "${currentOrderItem.status}".`
-        );
-      }
+      // if (newIndex <= currentIndex) {
+      //   throw new Error(
+      //     `Invalid status update. "${orderItemStatus}" must be ahead of "${currentOrderItem.status}".`
+      //   );
+      // }
 
       const updatedOrderItem: OrderItem = {
         ...currentOrderItem,

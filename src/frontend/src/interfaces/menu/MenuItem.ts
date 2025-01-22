@@ -1,4 +1,6 @@
 import type {NamedEntity} from "@/interfaces/Entities.ts";
+import type {Station} from "@/interfaces/misc/Station.ts";
+import type {MenuCateg} from "@/interfaces/menu/MenuCateg.ts";
 
 export type MenuItem<T extends BomTemplate> = NamedEntity & {
   price: number;
@@ -8,6 +10,11 @@ export type MenuItem<T extends BomTemplate> = NamedEntity & {
    * Relation to `station`
    */
   station: string;
+
+  expand?: {
+    station?: Station;
+    category?: MenuCateg;
+  }
 };
 
 // ================================

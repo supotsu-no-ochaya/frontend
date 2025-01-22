@@ -1,4 +1,6 @@
 import type {NamedEntity} from "@/interfaces/Entities.ts";
+import type {ProductAttribute} from "@/interfaces/product/ProductAttribute.ts";
+import type {ProductType} from "@/interfaces/product/ProductType.ts";
 
 export type Product = NamedEntity & {
   is_available: boolean;
@@ -10,4 +12,9 @@ export type Product = NamedEntity & {
    * Relation to `product_type`
    */
   type?: string;
+
+  expand?: {
+    attribute?: ProductAttribute[];
+    type?: ProductType;
+  };
 };

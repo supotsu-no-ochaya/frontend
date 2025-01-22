@@ -8,11 +8,12 @@ export class CrudService<T> {
     this.pb = pb
     this.collectionName = collectionName;
   }
-  async getAll(): Promise<T[]> {
-    return this.pb.collection(this.collectionName).getFullList<T>();
+  async getAll(expand?: string): Promise<T[]> {
+    return (await this.pb.collection(this.collectionName).getFullList<T>({ expand: expand }));
   }
-  async getById(id: string): Promise<T> {
-    return this.pb.collection(this.collectionName).getOne<T>(id);
+
+  async getById(id: string, expand?: string): Promise<T> {
+    return this.pb.collection(this.collectionName).getOne<T>(id, { expand: expand });
   }
   async create(data: Partial<T>): Promise<T> {
     return this.pb.collection(this.collectionName).create(data);

@@ -9,7 +9,7 @@ export class CrudService<T> {
     this.collectionName = collectionName;
   }
   async getAll(expand?: string): Promise<T[]> {
-    return (await this.pb.collection(this.collectionName).getFullList<T>({ expand: expand }));
+    return this.pb.collection(this.collectionName).getFullList<T>({ expand: expand });
   }
 
   async getById(id: string, expand?: string): Promise<T> {

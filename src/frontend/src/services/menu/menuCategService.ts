@@ -25,6 +25,13 @@ export class MenuCategService extends CrudService<MenuCateg> {
       .getFullList<MenuCateg>({
         filter: `parent_categ = ""`
       });
+
+  }  async getStationsCategories(): Promise<MenuCateg[]> {
+    return this.getPocketbase()
+      .collection(this.getCollectionName())
+      .getFullList<MenuCateg>({
+        filter: `parent_categ != ""`
+      });
   }
 
   async getByParentCategoryID(categoryID: string): Promise<MenuCateg[] | null> {

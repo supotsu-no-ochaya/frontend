@@ -8,7 +8,7 @@ import { orderService } from "@/services/order/orderService.ts";
 import { orderItemService } from "@/services/order/orderItemService.ts";
 import { menuItemService } from "@/services/menu/menuItemService.ts";
 import { paymentService} from "@/services/payment/paymentService.ts";
-//import { Payment } from "@/interfaces/payment/Payment.ts";
+import { OrderStatus } from "@/interfaces/order/Order";
 
 import { Table, TableCell, TableBody, TableRow} from '@/components/ui/table';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -43,7 +43,7 @@ let orderItems = reactive(computedAsync(() =>
       .filter(item => item.status === "Geliefert") // Filter by Status
       .map((item) => ({
         ...item, // Spread existing properties
-        isChecked: false // Add the new property
+        isChecked: false, // Add the new property
       }))
   )
 ));
@@ -87,7 +87,7 @@ const handleBezahlenButtonClick = async () =>{
       if (orderItem.isChecked){
         _orderItems.push(orderItem.id)
         _total_amount += orderItem.price
-        orderItemService.updateOrderItemToStatus(orderItem.id,"Bezahlt")
+        orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt)
       }
     })
     paymentService.create({order_items: _orderItems,  discount_percent:_discount, total_amount: _total_amount})

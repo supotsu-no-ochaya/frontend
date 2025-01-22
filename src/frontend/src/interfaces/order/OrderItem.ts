@@ -18,9 +18,9 @@ export type OrderItem = BaseEntity & {
   status: OrderItemStatus;
   menu_item: string;
   menu_item_name?: string;
-  expand?: {
-    products?:  Product[];
-    menu_item?:  MenuItem<BomTemplate>;
-  };
+  notes: string
 };
 
+export type Bom = {
+  products: String[];
+}

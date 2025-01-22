@@ -8,6 +8,9 @@ import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from '@
 
 import { allStationnames, allOrders, type Order, type AllOrders, trashcan } from "@/test-data/orders.ts"
 import type { WatchHandle } from "vue";
+import { orderService } from '@/services/order/orderService';
+import { OrderStatus } from '@/interfaces/order/Order';
+import { orderItemService } from '@/services/order/orderItemService';
 
 
 
@@ -54,12 +57,15 @@ watch(  //look for changes in allOders (when new Order arrives)
               if (index !== -1) {
                 trashcan[stationName].splice(index, 1); //rmve from trashcan, when not all 'abholbereit' (!allclicked)
               }
+              orderService.updateOrderToStatus(order.id, OrderStatus.InArbeit)
             }
             if (order.allclicked === true) {
               console.log("trashcan", trashcan)
               if (!trashcan[stationName].includes(order.id)) {
                 trashcan[stationName].unshift(order.id);  //add orderID as first El to trashcan
               }
+              orderService.updateOrderToStatus(order.id, OrderStatus.Abholbereit)
+              // console.log("status of:", order.id, orderItemService.getById(order.id))
             }
             if (trashcan[stationName].length > trashlength) {
               const removedOrderId = trashcan[stationName].pop(); //rmve x+1 el of trashcan
@@ -82,7 +88,7 @@ const changeState = (activeStation: string, orderIndex: number) => {
     allOrders[activeStation][orderIndex].state = !allOrders[activeStation][orderIndex].state;
 }
 const changeAbholbereit = (activeTab: string, orderIndex: number, itemIndex: number) => {
-    console.log(allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked)
+    // console.log(allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked)
     allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked = !allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked;
 }
 </script>

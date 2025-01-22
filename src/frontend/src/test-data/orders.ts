@@ -1,5 +1,5 @@
-import { computedAsync } from "@vueuse/core";
-import { reactive, toRefs, watch } from "vue";
+import { computedAsync, tryOnMounted } from "@vueuse/core";
+import { onMounted, reactive, toRefs, watch } from "vue";
 import { authService } from "@/services/user/authService";
 import { menuCategService } from "@/services/menu/menuCategService";
 import { watchEffect } from "vue";
@@ -20,6 +20,65 @@ const environment = reactive({
   menu_items_raw: computedAsync(() => menuItemService.getAll()),
   users_raw: computedAsync(() => userService.getAll()),
 });
+
+let knownIds = new Set(); // Lokale Speicherung der bekannten IDs
+
+async function fetchChanges(all_records: any) {
+  // Finde neue oder geänderte Items
+  const newOrChanged = all_records.filter((item: any) => !knownIds.has(item.id));
+  // console.log(knownIds)
+  // Aktualisiere die bekannten IDs
+  newOrChanged.forEach((item: any) => knownIds.add(item.id));
+
+  console.log("Neue oder geänderte Items:", newOrChanged);
+  return newOrChanged;
+}
+
+async function addFetchedIDs(){
+  console.log(".................knownIDS:", knownIds)
+  let temp_1 = Promise.all(await fetchChanges(await environment.allStationnames_raw))
+  let temp_2 = Promise.all(await fetchChanges(await environment.OrderItems_raw))
+  let temp_3 = Promise.all(await fetchChanges(await environment.Orders_raw))
+  let temp_4 = Promise.all(await fetchChanges(await environment.menu_items_raw))
+  let temp_5 = Promise.all(await fetchChanges(await environment.users_raw))
+  console.log(".................knownIDS:", knownIds)
+}
+
+setTimeout(() => {
+  addFetchedIDs(); // Funktion nach 12 Sekunden aufrufen
+  console.log("Initialisierung der IDs gestartet.");
+}, 12_000);
+
+setInterval(async () => {
+  let temp_1 = await fetchChanges(await menuCategService.getStationsCategories())
+  let temp_2 = await fetchChanges(await orderItemService.getAll())
+  let temp_3 = await fetchChanges(await orderService.getAll())
+  let temp_4 = await fetchChanges(await menuItemService.getAll())
+  let temp_5 = await fetchChanges(await userService.getAll())
+  console.log("'''''''''''''''", environment.Orders_raw)
+
+  if (temp_1.length){environment.allStationnames_raw = temp_1}
+  if (temp_2.length){environment.OrderItems_raw = temp_2}
+  if (temp_3.length){environment.Orders_raw = temp_3}
+  if (temp_4.length){environment.menu_items_raw = temp_4}
+  if (temp_5.length){environment.users_raw = temp_5}
+
+//  if (environment.allStationnames_raw) {
+//     environment.allStationnames_raw.push(...temp_1); // Spread-Syntax verwenden
+//   }
+//   if (environment.OrderItems_raw) {
+//     environment.OrderItems_raw.push(...temp_2);
+//   }
+//   if (environment.Orders_raw) {
+//     environment.Orders_raw.push(...temp_3);
+//   }
+//   if (environment.menu_items_raw) {
+//     environment.menu_items_raw.push(...temp_4);
+//   }
+//   if (environment.users_raw) {
+//     environment.users_raw.push(...temp_5);
+//   }
+}, 20_000);
 
 watch(()=>environment.allStationnames_raw, (newStationnames)=>{
   if (Array.isArray(environment.allStationnames_raw)) {
@@ -63,23 +122,16 @@ const debouncedWatchCallback = debounce(async (newValues: any, oldValues: any) =
     // }
     console.log("____________________")
     const newOrders = await Promise.all(newValues.Orders_raw.map(async (Order: any) => {
-      // const waiter = await userService.getById(raw.waiter);
-      
       for (let station of allStationnames){
-        
-        console.log(station,allStationnames)
-        // const temp = (await Promise.all(OrderItems_raw))
-        // const temp2 = temp.map((Item)=> Item.menu_item)
+        console.log(station, allStationnames)
         const temp3 = newValues.menu_items_raw?.map((Item: any)=> Item.id)
-        // console.log("temp", temp)
-        // console.log("temp2", temp2)
-        console.log("temp3", temp3)
+        console.log("temp3", newValues.users_raw)
         return {[station]:<Order>{
           id: String(Order.id),
           table: String(Order.table),
           // waiter: waiter.name ?? waiter.username, //returns waiterID
-          waiter: Order.waiter,
-          // time: raw.created.toString() + " Uhr",          //wrong format
+          waiter: newValues.users_raw?.find((User: any)=> User.id == Order.waiter)?.username ?? "not loading",
+          // waiter: Order.waiter,
           time: new Date(Order.created).toLocaleTimeString('de-DE', {timeZone: "UTC", hour: "2-digit", minute: "2-digit" }) + " Uhr", //Item.menu_item.map((ID)=>ID == menu_items_raw?.)
           state: false,
           orderlist: await Promise.all(newValues.OrderItems_raw?.
@@ -114,9 +166,7 @@ const debouncedWatchCallback = debounce(async (newValues: any, oldValues: any) =
       }
     }
   }
-  },
-// { deep: true } // Ermöglicht das Überwachen von verschachtelten Änderungen
- 500);
+}, 500);
 
 watch(environment, debouncedWatchCallback, { deep: true });
 
@@ -140,6 +190,7 @@ function StationDictMenuitem(){
   console.log("dict:", stationsDict) //["57vya5pa711gnk7"])
   console.log(environment.allStationnames_raw)
 }
+
 
 export interface OrderItem {
   /** Name of the item ordered */
@@ -170,101 +221,6 @@ export interface AllOrders {
 }
 
 export const allStationnames = reactive<FoodStationName[]>([]);
-
-// watch(allStationnames_raw, (newStationnames)=>{
-//   if (allStationnames_raw.value) {
-//     // Zugriff auf die Daten, sobald sie geladen sind
-//     for (let station of allStationnames_raw.value){
-//       allStationnames.push(station.name)
-//       console.log("stationpushed:", station.name)
-//     }
-//   }
-// });
-
-// function StationDictMenuitem(){
-//   const stationsDict = {}
-//   for (let temp_menuitem of menu_items_raw.value){
-//     // console.log("menuitems", temp_menuitem)
-//     let temp_category = temp_menuitem.category
-//     let temp_id = temp_menuitem.id
-//     for (let temp_orderitem of OrderItems_raw.value){
-//       if (temp_orderitem.menu_item == temp_id){
-//       for (let temp_station of allStationnames_raw.value)
-//         if (temp_station.id == temp_menuitem.category){
-//           let temp_station_name = temp_station.name
-//           Object.assign(stationsDict, {[temp_id]: temp_station_name})
-//         }
-//       }
-//     }
-//   }
-//   console.log("dict:", stationsDict) //["57vya5pa711gnk7"])
-// }
-
-// // function GetStationByMenuId(ID){
-// //   return stationsDict[ID]
-// // }
-
-// watchEffect(async () => {
-//   // console.log("menuitem", menuItemService.getAllMenuItemsWithCategoryID("m6l80c3w6te7611"))
-//   StationDictMenuitem()
-//   if (allStationnames_raw.value && Orders_raw.value && users_raw && menu_items_raw) {
-//     // Zugriff auf die Daten, sobald sie geladen sind
-//     // for (let station of allStationnames_raw.value){
-//     //   allStationnames.push(station.name)
-//     //   console.log("station:", station.name)
-//     // }
-//     const newOrders = await Promise.all(Orders_raw.value.map(async (Order) => {
-//       // const waiter = await userService.getById(raw.waiter);
-//       for (let station of allStationnames){
-//         console.log(station)
-//         // const temp = (await Promise.all(OrderItems_raw.value))
-//         // const temp2 = temp.map((Item)=> Item.menu_item)
-//         const temp3 = menu_items_raw.value?.map((Item)=> Item.id)
-//         // console.log("temp", temp)
-//         // console.log("temp2", temp2)
-//         console.log("temp3", temp3)
-//         return {[station]:<Order>{
-//           id: String(Order.id),
-//           table: String(Order.table),
-//           // waiter: waiter.name ?? waiter.username, //returns waiterID
-//           waiter: Order.waiter,
-//           // time: raw.created.toString() + " Uhr",          //wrong format
-//           time: new Date(Order.created).toLocaleTimeString('de-DE', {timeZone: "UTC", hour: "2-digit", minute: "2-digit" }) + " Uhr", //Item.menu_item.map((ID)=>ID == menu_items_raw.value?.)
-//           state: false,
-//           orderlist: await Promise.all(OrderItems_raw.value?.
-//               filter((OrderItem) => OrderItem.order === Order.id).  //take all Items from Orderitemsraw where their ID is the same as from Order
-//               // filter((OrderItem3)=> stationsDict[OrderItem3.menu_item])
-//               // filter((OrderItem3)=> (await menuCategService.getById(menuItemService.getById(OrderItem3.menu_item)).name === "Crepes")).
-
-//               // filter((OrderItem2)=> allStationnames_raw.value?.  //keep all items for on station
-//               //     map((STAT)=> STAT.name).      //have all station.names
-//               //     filter((XYZ) => menu_items_raw.value?.    
-//               //     filter((MenuItem)=> MenuItem.id === OrderItem2.menu_item)?.  //keep the only stationname that is realted to this Order
-//               //     map((MenuItem2)=>MenuItem2.category).
-//               //     filter(()=> XYZ)) ?? 
-//               //     STAT === "Crepes").  //compare to station.names
-
-//               map(async (Item) => ({
-//             name: (await menuItemService.getById(Item.menu_item)).name,
-//             notes: Item.notes,
-//             clicked: false
-//           })) ?? []),
-//           allclicked: false,
-//         }};
-//       }}));
-//     console.log("newOrders:", newOrders, allStationnames);
-//     for (let newOrder of newOrders){
-//       for (let station of allStationnames){
-//         // console.log("here:", newOrder[station]??[], station)
-//         if (newOrder[station]){
-//           console.log("added:", newOrder[station])
-//           allOrders[station].push(newOrder[station])
-//         }
-//       }
-//     }
-//   }
-// });
-// console.log(allStationnames)
 
 export const allOrders = reactive<AllOrders>({
   Crepes: [
@@ -389,28 +345,3 @@ function addtrashcan(Stationname: string){
     console.log("added Station")
     }
 }
-
-// export function addOrder(category: string, orderId: String, orderTable: String, orderWaiter: String, orderlist: any[], orderNotes: any[]) {
-//   const newOrder = {
-//       id: String(orderId),
-//       table: String(orderTable),
-//       waiter: orderWaiter,
-//       time: new Date().toLocaleTimeString('de-DE', { hour: "2-digit", minute: "2-digit" }) + ' Uhr', // Zeit wird automatisch hinzugefügt
-//       state: false,
-//       orderlist: orderlist,
-//       allclicked: false,
-//       clicked: orderlist.map(() => false), // Für jeden Eintrag in orderlist wird false hinzugefügt
-//       notes: orderNotes // Bemerkungen zur Bestellung
-//   };
-
-//   // Überprüfen, ob die Kategorie existiert
-//   if (!allOrders[category]) {
-//       console.error(`Kategorie "${category}" existiert nicht.`);
-//       return;
-//   }
-
-//   // Bestellung zur Kategorie hinzufügen
-//   allOrders[category].push(newOrder);
-
-//   console.log(`Neue Bestellung in Kategorie "${category}" hinzugefügt:`, newOrder);
-// }

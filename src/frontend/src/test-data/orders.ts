@@ -160,8 +160,10 @@ const debouncedWatchCallback = debounce(async (newValues: any, oldValues: any) =
       for (let station of allStationnames){
         // console.log("here:", newOrder[station]??[], station)
         if (newOrder[station]){
-          console.log("added:", newOrder[station])
-          allOrders[station].push(newOrder[station])
+          if (newOrder[station]["orderlist"].length){
+            console.log("added:", newOrder[station])
+            allOrders[station].push(newOrder[station])
+          }
         }
       }
     }
@@ -260,9 +262,6 @@ export const allOrders = reactive<AllOrders>({
       allclicked: false,
       orderlist: [
         { name: 'Zucker & Zimt', notes: '' , clicked: false },
-        { name: 'Banane', notes: '' , clicked: false },
-        { name: 'Käseschinken', notes: 'Ohne Butter' , clicked: false },
-        { name: 'Zucker', notes: '' , clicked: false }
       ],
     },
     {

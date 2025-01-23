@@ -155,7 +155,6 @@ function updateOrderTotal(order){
                     <div>{{menuItems.find(menuItem => menuItem.id === orderItem.menu_item).name}}</div>
                   </TableCell>
                   <TableCell class="w-2/5" v-if="orderItem.order == order.id" >
-                    Test
                     <div>{{ orderItem.price/100 }}€</div>
                   </TableCell>
                   <TableCell class="w-1/5" v-if="orderItem.order == order.id">

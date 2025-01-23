@@ -7,6 +7,7 @@ import { orderService } from "@/services/order/orderService";
 import { menuItemService } from "@/services/menu/menuItemService";
 import { userService } from "@/services/user/userService";
 import { debounce } from "lodash";
+import { OrderStatus } from "@/interfaces/order/Order";
 
 const environment = reactive({
   allStationnames_raw: computedAsync(() => menuCategService.getStationsCategories()),
@@ -71,45 +72,55 @@ const addNewOrders = debounce(async (newValues: any, oldValues: any) => {
   // StationDictMenuitem()          // TODO map order_items to stations not all to mochi
   // Zugriff auf die Daten, sobald sie geladen sind
   if (newValues.allStationnames_raw && newValues.Orders_raw && newValues.users_raw &&newValues.menu_items_raw && allStationnames) {
-    const newOrders = await Promise.all(newValues.Orders_raw.map(async (Order: any) => {
-      for (let station of allStationnames){
+    for (let station of allStationnames){
+      const newOrders = await Promise.all(newValues.Orders_raw.map(async (Order: any) => {
         const temp3 = newValues.menu_items_raw?.map((Item: any)=> Item.id)
-        return {[station]:<Order>{
-          id: String(Order.id),
-          table: String(Order.table),
-          waiter: newValues.users_raw?.find((User: any)=> User.id == Order.waiter)?.username ?? "not loading",
-          time: new Date(Order.created).toLocaleTimeString('de-DE', {hour: "2-digit", minute: "2-digit" }) + " Uhr", //Item.menu_item.map((ID)=>ID == menu_items_raw?.)
-          state: false,
-          orderlist: await Promise.all(newValues.OrderItems_raw?.
-              filter((OrderItem: any) => OrderItem.order === Order.id).  //take all Items from Orderitemsraw where their ID is the same as from Order
-              // filter((OrderItem3)=> stationsDict[OrderItem3.menu_item])
-              // filter((OrderItem3)=> (await menuCategService.getById(menuItemService.getById(OrderItem3.menu_item)).name === "Crepes")).
+        if (Order.status === OrderStatus.Aufgegeben){
+          return {[station]:<Order>{
+            id: String(Order.id),
+            table: String(Order.table),
+            waiter: newValues.users_raw?.find((User: any)=> User.id == Order.waiter)?.username ?? "not loading",
+            time: new Date(Order.created).toLocaleTimeString('de-DE', {hour: "2-digit", minute: "2-digit" }) + " Uhr", //Item.menu_item.map((ID)=>ID == menu_items_raw?.)
+            state: false,
+            orderlist: await Promise.all(newValues.OrderItems_raw?.
+                filter((OrderItem: any) => OrderItem.order === Order.id).  //take all Items from Orderitemsraw where their ID is the same as from Order
+                // filter((OrderItem3)=> stationsDict[OrderItem3.menu_item])
+                // filter((OrderItem3)=> (await menuCategService.getById(menuItemService.getById(OrderItem3.menu_item)).name === "Crepes")).
 
-              // filter((OrderItem2)=> allStationnames_raw?.  //keep all items for on station
-              //     map((STAT)=> STAT.name).      //have all station.names
-              //     filter((XYZ) => menu_items_raw?.    
-              //     filter((MenuItem)=> MenuItem.id === OrderItem2.menu_item)?.  //keep the only stationname that is realted to this Order
-              //     map((MenuItem2)=>MenuItem2.category).
-              //     filter(()=> XYZ)) ?? 
-              //     STAT === "Crepes").  //compare to station.names
-
-              map(async (Item: any) => ({
-            name: newValues.menu_items_raw?.find((Item2: any) => Item2.id === Item.menu_item)?.name,
-            notes: Item.notes,
-            clicked: false
-          })) ?? []),
-          allclicked: false,
-        }};
-      }
-    }));
-    for (let newOrder of newOrders){
-      for (let station of allStationnames){
-        if (newOrder[station]){
-          // only if there are Order_items within an Order
-          if (newOrder[station]["orderlist"].length){
-            allOrders[station].push(newOrder[station])
-          }
-        } 
+                // filter((OrderItem2)=> allStationnames_raw?.  //keep all items for on station
+                //     map((STAT)=> STAT.name).      //have all station.names
+                //     filter((XYZ) => menu_items_raw?.    
+                //     filter((MenuItem)=> MenuItem.id === OrderItem2.menu_item)?.  //keep the only stationname that is realted to this Order
+                //     map((MenuItem2)=>MenuItem2.category).
+                //     filter(()=> XYZ)) ?? 
+                //     STAT === "Crepes").  //compare to station.names
+                filter((OrderItem2: any) => newValues.allStationnames_raw?.
+                    find((Item4: any)=> Item4.id === newValues.menu_items_raw?.
+                    find((menitem: any)=> menitem.id === temp3.
+                    find((temp: string)=> temp === OrderItem2.menu_item))?.category)?.name === station).
+                map(async (Item: any) => ({
+              name: newValues.menu_items_raw?.find((Item2: any) => Item2.id === Item.menu_item)?.name,
+              notes: Item.notes,
+              clicked: false
+            })) ?? []),
+            allclicked: false,
+          }};
+        } else{return {}}}
+      ));
+      // const temp3 = newValues.menu_items_raw?.map((Item: any)=> Item.id)
+      // console.log(temp3.find((menitem)=> menitem.id === environment.OrderItems_raw.menu_item))  //menuitemid
+      // console.log(environment.menu_items_raw?.find((menitem)=> menitem.id === temp3.find(()=> temp3.id === environment.OrderItems_raw.menu_item)))
+      // console.log(environment.allStationnames_raw?.find((Item)=> Item.id === environment.menu_items_raw?.find((menitem)=> menitem.id === temp3.find(()=> temp3.id === environment.OrderItems_raw.menu_item))?.category)?.name )
+      console.log(newOrders)
+      for (let newOrder of newOrders){
+        for (let station of allStationnames){
+          if (newOrder[station]){
+            // only if there are Order_items within an Order
+            if (newOrder[station]["orderlist"].length){
+              allOrders[station].push(newOrder[station])
+            }
+          } 
+        }
       }
     }
     console.log("NEUE BESTELLUNG IST DRIN")

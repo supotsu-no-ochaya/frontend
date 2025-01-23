@@ -7,7 +7,8 @@ WORKDIR /code
 COPY src/frontend/package*.json ./
 RUN npm clean-install
 COPY src/frontend/ ./
-RUN npm run build
+# todo: change back to `npm run build`
+RUN npm run build-only
 
 FROM pierrezemb/gostatic:latest AS runtime
 

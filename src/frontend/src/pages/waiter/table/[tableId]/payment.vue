@@ -127,7 +127,9 @@ function updateTotalSum(){
 function updateOrderTotal(order){
   const id = "order-"+order.id
 
-  document.getElementById(id).textContent = order.id+': '+order.total.toFixed(2)+'€';
+  const element = document.getElementById(id);
+  if (element !== null)
+    element.textContent = order.id+': '+(order.total/100).toFixed(2)+'€';
 }
 
 </script>
@@ -166,7 +168,7 @@ function updateOrderTotal(order){
                 </TableRow>
               </TableBody>
             </Table>
-            <div class="flex items-center justify-center font-bold mt-2" :id="'order-' + order.id">{{ order.id }}: 0€</div>
+            <div class="flex items-center justify-center font-bold mt-2" :id="'order-' + order.id">{{ order.id }}: 0.00€</div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>

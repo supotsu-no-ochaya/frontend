@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
-import { computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { DefaultLayout } from "@/layouts/default";
 import { useCartStore } from "@/components/cart.js";
 import { Table, TableCell, TableBody, TableRow} from '@/components/ui/table';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+
+import { reactive, ref, computed } from 'vue';
 import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 
 import { orderService } from "@/services/order/orderService.ts";
 import { orderItemService } from "@/services/order/orderItemService.ts";
 
+const router = useRouter();
 const route = useRoute("/waiter/table/[tableId]/order");
 const tableId = computed(() => route.params.tableId);
 
-const cartStore = useCartStore();
+const cartStore = reactive(useCartStore());
 
 import { authService } from "@/services/user/authService.ts";
 
@@ -45,16 +47,25 @@ async function handleOrderSend(person,table){
     const waiter = authService.getCurrentUser()
     const order = await orderService.create({table: tableId.value, waiter: waiter.id, status:'Aufgegeben'})
 
+
     let _orderItem = undefined;
-    for (let orderItem of cartStore.cart.filter(item => item.person === person && item.table === table)){
+    for (let orderItem of (cartStore.cart.filter(item => item.person === person && item.table === table))){
+      let count = 0
       for (let i = 0; i < orderItem.quantity; i++){
         let _bom = orderItem.bom_template.products ? orderItem.bom_template.products : ["z3acikruw24l618"]
         await orderItemService.create({order:order.id, price:orderItem.price, products:_bom, status:"Aufgegeben", menu_item:orderItem.id,menu_item_name:orderItem.name})
         _orderItem = orderItem
+        count += 1
       }
-    removeFromCart(_orderItem,_orderItem.table,_orderItem.person)
-  }}
+      orderItem.quantity -= count   
+
+      if (orderItem.quantity <= 0){
+        removeFromCart(orderItem,orderItem.table,orderItem.person)
+      } 
+    }
+  }
 }
+
 </script>
 
 <template>

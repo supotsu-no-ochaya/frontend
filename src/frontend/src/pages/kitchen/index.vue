@@ -14,23 +14,17 @@ import { orderItemService } from '@/services/order/orderItemService';
 
 
 
-// MUTABLE //
+//* MUTABLE
 const maxActiveStations = 2;  //number of displayed stations at a time
 const trashlength = 4  //max length of trashcan
 // MUTABLE //
 
 const activeFoodStations = reactive<string[]>([]);
-// const trashcan = reactive<Record<string, Order["id"][]>>({})
-
-// allStationnames.forEach(stationName => {
-//   trashcan[stationName] = [];  // Erstelle für jede Station ein leeres array in trashcan
-// });
-
-console.log("trashcan",trashcan)
 
 const manualWatchers: WatchHandle[] = [];
 
-watch(  //look for changes in allOders (when new Order arrives)
+ //look for changes in allOders (when new Order arrives)
+watch(
   () => allOrders,
   (newOrders) => {
     for (const manualWatcher of manualWatchers) {
@@ -39,41 +33,46 @@ watch(  //look for changes in allOders (when new Order arrives)
 
     for (const stationName in newOrders) {
       const stationOrders = newOrders[stationName];
-      for (const order of stationOrders) {  //going over every order in all categories
-
-        manualWatchers.push(watch(  //look for changes in orderlist (clicked or notes)
+      //going over every order in all categories
+      for (const order of stationOrders) {
+        //look for changes in orderlist (clicked or notes)
+        manualWatchers.push(watch(
         () => order.orderlist,
         (newOrderlist) => {
-            order.allclicked = newOrderlist.every((item) => item.clicked); //updating allclicked
+          //updating allclicked
+          order.allclicked = newOrderlist.every((item) => item.clicked);
           },
           { deep: true }
         ));
-
-        manualWatchers.push(watch(  // when allclicked changes -> add order to trashcan / history
+        // when allclicked changes -> add order to trashcan / history
+        manualWatchers.push(watch( 
           () => order.allclicked,
           () => {
             if (order.allclicked === false) {
               const index = trashcan[stationName].indexOf(order.id);
               if (index !== -1) {
-                trashcan[stationName].splice(index, 1); //rmve from trashcan, when not all 'abholbereit' (!allclicked)
+                //rmve from trashcan, when not all 'abholbereit' (!allclicked)
+                trashcan[stationName].splice(index, 1);
               }
               orderService.updateOrderToStatus(order.id, OrderStatus.InArbeit)
             }
             if (order.allclicked === true) {
               console.log("trashcan", trashcan)
               if (!trashcan[stationName].includes(order.id)) {
-                trashcan[stationName].unshift(order.id);  //add orderID as first El to trashcan
+                //add orderID as first El to trashcan
+                trashcan[stationName].unshift(order.id);
               }
               orderService.updateOrderToStatus(order.id, OrderStatus.Geliefert)
-              // console.log("status of:", order.id, orderItemService.getById(order.id))
             }
             if (trashcan[stationName].length > trashlength) {
-              const removedOrderId = trashcan[stationName].pop(); //rmve x+1 el of trashcan
+              //rmve x+1 el of trashcan
+              const removedOrderId = trashcan[stationName].pop
               const removedOrderIndex = stationOrders.findIndex(
                 (order) => order.id === removedOrderId
               );
               if (removedOrderIndex !== -1) {
-                stationOrders.splice(removedOrderIndex, 1); //rmve completed order from allOrders
+                //rmve completed order from allOrders
+                stationOrders.splice(removedOrderIndex, 1);
               }
             }
           }
@@ -88,7 +87,6 @@ const changeState = (activeStation: string, orderIndex: number) => {
     allOrders[activeStation][orderIndex].state = !allOrders[activeStation][orderIndex].state;
 }
 const changeAbholbereit = (activeTab: string, orderIndex: number, itemIndex: number) => {
-    // console.log(allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked)
     allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked = !allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked;
 }
 </script>
@@ -107,7 +105,7 @@ const changeAbholbereit = (activeTab: string, orderIndex: number, itemIndex: num
           } else if (activeFoodStations.length < maxActiveStations) {
             activeFoodStations.push(foodStationName)
           } else {
-            activeFoodStations.shift();  // todo: maybe Array.pop()
+            activeFoodStations.shift();  // TODO maybe Array.pop()
             activeFoodStations.push(foodStationName);
           }
         }"
@@ -125,7 +123,7 @@ const changeAbholbereit = (activeTab: string, orderIndex: number, itemIndex: num
       <div v-if="activeFoodStations.length === 0" class="text-lg">
             Wähle deine Station aus.
       </div>
-      <div v-for="x in allStationnames"></div>
+      <div v-for="_ in allStationnames"></div>
       <!-- Header declaring the station -->
       <div v-for="(activeStation, activeStationIndex) in activeFoodStations"
         class="w-1/2 h-full border-gray-500 px-[8vw]"

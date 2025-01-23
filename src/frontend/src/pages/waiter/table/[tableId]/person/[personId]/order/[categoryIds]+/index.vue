@@ -85,7 +85,7 @@ console.log(cartStore.cart);
             {{ menuItem.name }}
           </div>
           <div class="text-sm px-1">
-            {{ menuItem.price.toFixed(2) }}€
+            {{ (menuItem.price/100).toFixed(2) }}€
           </div>
         </div>
       </template>

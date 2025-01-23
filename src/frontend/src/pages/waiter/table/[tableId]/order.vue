@@ -42,12 +42,10 @@ for (let orderItem of cartStore.cart){
 }
 
 async function handleOrderSend(person,table){
-  console.log(person,table);
   if (cartStore.cart.filter(item => item.person === person && item.table === table).length > 0){
     const waiter = authService.getCurrentUser()
     const order = await orderService.create({table: tableId.value, waiter: waiter.id, status:'Aufgegeben'})
 
-    console.log(cartStore.cart.filter(item => item.person === person && item.table === table))
 
     let _orderItem = undefined;
     for (let orderItem of (cartStore.cart.filter(item => item.person === person && item.table === table))){
@@ -60,7 +58,6 @@ async function handleOrderSend(person,table){
       }
       orderItem.quantity -= count   
 
-      console.log("orderItem.quantity",orderItem.quantity)
       if (orderItem.quantity <= 0){
         removeFromCart(orderItem,orderItem.table,orderItem.person)
       } 

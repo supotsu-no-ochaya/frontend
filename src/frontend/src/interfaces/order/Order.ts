@@ -1,4 +1,5 @@
 import type {BaseEntity} from "@/interfaces/Entities.ts";
+import type {User} from "@/interfaces/user/User.ts";
 
 // Enum for Order status
 export enum OrderStatus {
@@ -16,4 +17,7 @@ export type Order = BaseEntity & {
    */
   waiter: string;
   status: OrderStatus
+  expand?: {
+    waiter?: User;
+  }
 };

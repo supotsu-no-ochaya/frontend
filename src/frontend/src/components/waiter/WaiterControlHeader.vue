@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { LucideArrowLeft, LucideCupSoda, LucideShoppingCart, LucideUtensils } from "lucide-vue-next";
+import { LucideArrowLeft, LucideCupSoda, LucideShoppingCart, LucideUtensils, ReceiptEuro  } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 
 const ICONS = {
   "cutlery": LucideUtensils,
   "drink": LucideCupSoda,
   "shopping-cart": LucideShoppingCart,
+  "bill": ReceiptEuro
 }
 
 defineProps<{

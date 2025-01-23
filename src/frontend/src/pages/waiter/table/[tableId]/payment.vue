@@ -21,7 +21,6 @@ const tableId = computed(() => route.params.tableId);
 let Rabatt = reactive({value:0.10,checked: false})
 
 import { authService } from "@/services/user/authService.ts";
-authService.login("Test", "123456789");
 
 let orders = reactive(computedAsync(() =>
   orderService.getAll().then((orders) =>

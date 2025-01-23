@@ -8,10 +8,6 @@ import { menuItemService } from "@/services/menu/menuItemService";
 import { userService } from "@/services/user/userService";
 import { debounce } from "lodash";
 
-authService.login("kitchen", "testtest");
-
-// const allStationnames_raw = computedAsync(() => menuCategService.getAllMainCategories());
-
 const environment = reactive({
   allStationnames_raw: computedAsync(() => menuCategService.getStationsCategories()),
   OrderItems_raw: computedAsync(() => orderItemService.getAll()),
@@ -20,117 +16,68 @@ const environment = reactive({
   users_raw: computedAsync(() => userService.getAll()),
 });
 
-let knownIds = new Set(); // Lokale Speicherung der bekannten IDs
+let knownIds = new Set(); // local storage of fetched Data by ID
 
 async function fetchChanges(all_records: any) {
-  // Finde neue oder geänderte Items
+  // find new data
   const newOrChanged = all_records.filter((item: any) => !knownIds.has(item.id));
-  // console.log(knownIds)
-  // Aktualisiere die bekannten IDs
+  // add new IDs to list
   newOrChanged.forEach((item: any) => knownIds.add(item.id));
 
-  console.log("Neue oder geänderte Items:", newOrChanged);
   return newOrChanged;
 }
 
+// Add IDs of Mounted Data after 12 secs
 async function addFetchedIDs(){
-  console.log(".................knownIDS:", knownIds)
   let temp_1 = Promise.all(await fetchChanges(await environment.allStationnames_raw))
   let temp_2 = Promise.all(await fetchChanges(await environment.OrderItems_raw))
   let temp_3 = Promise.all(await fetchChanges(await environment.Orders_raw))
   let temp_4 = Promise.all(await fetchChanges(await environment.menu_items_raw))
   let temp_5 = Promise.all(await fetchChanges(await environment.users_raw))
-  console.log(".................knownIDS:", knownIds)
 }
 
 setTimeout(() => {
-  addFetchedIDs(); // Funktion nach 12 Sekunden aufrufen
-  console.log("Initialisierung der IDs gestartet.");
+  addFetchedIDs();
 }, 12_000);
 
+
+// syncs new data every 20 sec
 setInterval(async () => {
   let temp_1 = await fetchChanges(await menuCategService.getStationsCategories())
   let temp_2 = await fetchChanges(await orderItemService.getAll())
   let temp_3 = await fetchChanges(await orderService.getAll())
   let temp_4 = await fetchChanges(await menuItemService.getAll())
   let temp_5 = await fetchChanges(await userService.getAll())
-  console.log("'''''''''''''''", environment.Orders_raw)
 
   if (temp_1.length){environment.allStationnames_raw = temp_1}
   if (temp_2.length){environment.OrderItems_raw = temp_2}
   if (temp_3.length){environment.Orders_raw = temp_3}
   if (temp_4.length){environment.menu_items_raw = temp_4}
   if (temp_5.length){environment.users_raw = temp_5}
-
-//  if (environment.allStationnames_raw) {
-//     environment.allStationnames_raw.push(...temp_1); // Spread-Syntax verwenden
-//   }
-//   if (environment.OrderItems_raw) {
-//     environment.OrderItems_raw.push(...temp_2);
-//   }
-//   if (environment.Orders_raw) {
-//     environment.Orders_raw.push(...temp_3);
-//   }
-//   if (environment.menu_items_raw) {
-//     environment.menu_items_raw.push(...temp_4);
-//   }
-//   if (environment.users_raw) {
-//     environment.users_raw.push(...temp_5);
-//   }
 }, 20_000);
 
+// adds all stations
 watch(()=>environment.allStationnames_raw, (newStationnames)=>{
   if (Array.isArray(environment.allStationnames_raw)) {
     // Zugriff auf die Daten, sobald sie geladen sind
-    console.log("test222")
     for (let station of environment.allStationnames_raw){
       allStationnames.push(station.name)
-      console.log("stationpushed:", station.name)
     }
   }
 });
-// const allStationnames_raw = computedAsync(() => menuCategService.getStationsCategories());
-// const OrderItems_raw = computedAsync(() => orderItemService.getAll());
-// const Orders_raw = computedAsync(() => orderService.getAll());
-// const menu_items_raw = computedAsync(()=> menuItemService.getAll());
-// const users_raw =computedAsync(() => userService.getAll());
 
-// const asyncData = computedAsync(async () => {
-//   return await Promise.all([
-//     menuCategService.getStationsCategories(), orderItemService.getAll(), orderService.getAll(), menuItemService.getAll(), userService.getAll()
-//   ])
-// }, [[], [], [], [], []] as const);
-// const { value: [allStationnames_raw, OrderItems_raw, Orders_raw, menu_items_raw, users_raw] } = toRefs(asyncData);
-// console.log("users:", users_raw.value)
-// console.log("stations:", allStationnames_raw.value)
-// for (let station of allStationnames_raw._value){
-//   console.log(station)
-// }
-//  const allStationnames
-
-const debouncedWatchCallback = debounce(async (newValues: any, oldValues: any) => {
-  // console.log("menuitem", menuItemService.getAllMenuItemsWithCategoryID("m6l80c3w6te7611"))
-  StationDictMenuitem()
-  console.log("&&&&&&&&&&&&&&&",environment.allStationnames_raw)
-  console.log("NEUE BESTELLUNG IST DRIN")
+// main fct for adding new Orders
+const addNewOrders = debounce(async (newValues: any, oldValues: any) => {
+  // StationDictMenuitem()          // TODO map order_items to stations not all to mochi
+  // Zugriff auf die Daten, sobald sie geladen sind
   if (newValues.allStationnames_raw && newValues.Orders_raw && newValues.users_raw &&newValues.menu_items_raw && allStationnames) {
-    // Zugriff auf die Daten, sobald sie geladen sind
-    // for (let station of allStationnames_raw){
-    //   allStationnames.push(station.name)
-    //   console.log("station:", station.name)
-    // }
-    console.log("____________________")
     const newOrders = await Promise.all(newValues.Orders_raw.map(async (Order: any) => {
       for (let station of allStationnames){
-        console.log(station, allStationnames)
         const temp3 = newValues.menu_items_raw?.map((Item: any)=> Item.id)
-        console.log("temp3", newValues.users_raw)
         return {[station]:<Order>{
           id: String(Order.id),
           table: String(Order.table),
-          // waiter: waiter.name ?? waiter.username, //returns waiterID
           waiter: newValues.users_raw?.find((User: any)=> User.id == Order.waiter)?.username ?? "not loading",
-          // waiter: Order.waiter,
           time: new Date(Order.created).toLocaleTimeString('de-DE', {hour: "2-digit", minute: "2-digit" }) + " Uhr", //Item.menu_item.map((ID)=>ID == menu_items_raw?.)
           state: false,
           orderlist: await Promise.all(newValues.OrderItems_raw?.
@@ -153,29 +100,30 @@ const debouncedWatchCallback = debounce(async (newValues: any, oldValues: any) =
           })) ?? []),
           allclicked: false,
         }};
-      }}));
-    console.log("newOrders:", newOrders, allStationnames);
+      }
+    }));
     for (let newOrder of newOrders){
       for (let station of allStationnames){
-        // console.log("here:", newOrder[station]??[], station)
         if (newOrder[station]){
+          // only if there are Order_items within an Order
           if (newOrder[station]["orderlist"].length){
-            console.log("added:", newOrder[station])
             allOrders[station].push(newOrder[station])
           }
-        }
+        } 
       }
     }
+    console.log("NEUE BESTELLUNG IST DRIN")
   }
 }, 500);
 
-watch(environment, debouncedWatchCallback, { deep: true });
+// if new entry in env, execute addNewOrders
+watch(environment, addNewOrders, { deep: true });
 
+// give every Menu_item a Station and save it locally to avoid severus PB-requests
 function StationDictMenuitem(){
   const stationsDict = {}
   if (Array.isArray(environment.menu_items_raw)&&Array.isArray(environment.allStationnames_raw)&&Array.isArray(environment.OrderItems_raw)){
   for (let temp_menuitem of environment.menu_items_raw){
-    // console.log("menuitems", temp_menuitem)
     let temp_category = temp_menuitem.category
     let temp_id = temp_menuitem.id
     for (let temp_orderitem of environment.OrderItems_raw){
@@ -188,10 +136,10 @@ function StationDictMenuitem(){
       }
     }
   }}
-  console.log("dict:", stationsDict) //["57vya5pa711gnk7"])
-  console.log(environment.allStationnames_raw)
 }
 
+
+//* here are All InterFfaces necessary for allOrders
 
 export interface OrderItem {
   /** Name of the item ordered */
@@ -204,26 +152,35 @@ export interface OrderItem {
 
 // Interface representing an individual order
 export interface Order {
-  id: string;             // Unique identifier for the order
-  table: string;          // Table number where the order was placed
-  waiter: string;         // Name of the waiter serving this order
-  time: string;           // Time when the order was taken
-  state: boolean;         // State of the order (eg, completed or not)
-  allclicked: boolean;    // Indicates if all items in the order are clicked/processed
-  orderlist: OrderItem[]; // List of items in the order
+  /** Unique identifier for the order */
+  id: string;
+  /** Table number where the order was placed */
+  table: string;          
+  /** Name of the waiter serving this order */
+  waiter: string;
+  /**  Time when the order was taken */
+  time: string;          
+  /**  State of the order (eg, completed or not) */
+  state: boolean; 
+  /**  Indicates if all items in the order are clicked/processed */
+  allclicked: boolean;
+  /**  List of items in the order */
+  orderlist: OrderItem[]; 
 }
 
 type FoodStationName = string;
 
-// Interface representing the entire collection of all orders for all stations
+//* Interface representing the entire collection of all orders for all stations
 export interface AllOrders {
   /** Station name maps to an array of orders */
   [stationName: FoodStationName]: Order[];
 }
 
+
 export const allStationnames = reactive<FoodStationName[]>([]);
 
 export const allOrders = reactive<AllOrders>({
+//TODO delete testdata
 //   Crepes: [
 //     {
 //       id: '0',
@@ -317,9 +274,10 @@ export const allOrders = reactive<AllOrders>({
 //   ],
 });
 
+//* temp storage for completed Orders for restoring
 export const trashcan = reactive<Record<string, Order["id"][]>>({})
 
-// adds all unassigned stationnames to allOrders as empty list
+//* adds all unassigned stationnames to allOrders as empty list
 watch(allStationnames, (newStationnames) => {
   newStationnames.forEach(stationName => {
     if (!allOrders[stationName]) {
@@ -334,12 +292,11 @@ watch(allStationnames, (newStationnames) => {
 function addStation(Stationname: string){
   if (!allOrders[Stationname]) {
     allOrders[Stationname] = []
-    console.log("added Station")
     }
 }
+
 function addtrashcan(Stationname: string){
   if (!trashcan[Stationname]) {
     trashcan[Stationname] = []
-    console.log("added Station")
     }
 }

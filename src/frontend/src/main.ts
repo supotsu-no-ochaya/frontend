@@ -6,7 +6,7 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { VueQueryPlugin } from "@tanstack/vue-query";
 
-import App from "./App.vue";
+import App from "./AppWithErrorWrapper.vue";
 import router from "./router";
 
 axios.defaults.baseURL = "."

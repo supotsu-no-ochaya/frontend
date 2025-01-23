@@ -5,19 +5,26 @@ import { userRoleService } from "@/services/user/userRoleService.ts";
 
 const router = useRouter();
 
+const roleIds = {
+  kitchen: "0nv0hftq0zu38m6",
+  waiter: "7p0190henr3658i",
+  admin: "f9161921yq36029",
+}
+
 const user = authService.getCurrentUser();
 if (user === null) {
   await router.push("/auth/login");
 } else {
-  const role = await userRoleService.getById(user.role);
-  if (role.role_name === "Kuechenchef") {
+  // const role = await userRoleService.getById(user.role);
+  // role.user_name ===
+  if (user.role === roleIds.admin) {
       await router.push("/admin");
-  } else if (role.role_name === "Kellner") {
+  } else if (user.role === roleIds.waiter) {
     await router.push("/waiter");
-  } else if (role.role_name === "Kueche") {
+  } else if (user.role === roleIds.kitchen) {
     await router.push("/kitchen");
   } else {
-    throw new Error(`Unknown user role: '${role.role_name}'`);
+    throw new Error(`Unknown user role: '${user.role}'`);
   }
 }
 </script>

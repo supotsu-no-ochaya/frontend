@@ -3,9 +3,6 @@ import { DefaultLayout } from "@/layouts/default";
 import { ref } from "vue";
 import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 
-import { authService } from "@/services/user/authService.ts"; 
-authService.login("Test", "123456789");
-
 const nTables = ref(12);
 </script>
 

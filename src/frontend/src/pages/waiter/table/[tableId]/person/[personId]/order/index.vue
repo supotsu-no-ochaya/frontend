@@ -25,6 +25,8 @@ const mainCategories = computedAsync(() => menuCategService.getAllMainCategories
             <div class="grow" />
             <div class="text-2xl">
               {{ mainCategory.name }}
+
+              
             </div>
           </Button>
         </router-link>

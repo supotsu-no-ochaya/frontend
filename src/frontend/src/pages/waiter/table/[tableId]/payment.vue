@@ -21,7 +21,6 @@ const tableId = computed(() => route.params.tableId);
 let Rabatt = reactive({value:0.10,checked: false})
 
 import { authService } from "@/services/user/authService.ts";
-authService.login("Test", "123456789");
 
 let orders = reactive(computedAsync(() =>
   orderService.getAll().then((orders) =>
@@ -156,7 +155,8 @@ function updateOrderTotal(order){
                     <div>{{menuItems.find(menuItem => menuItem.id === orderItem.menu_item).name}}</div>
                   </TableCell>
                   <TableCell class="w-2/5" v-if="orderItem.order == order.id" >
-                    <div>{{ orderItem.price }}€</div>
+                    Test
+                    <div>{{ orderItem.price/100 }}€</div>
                   </TableCell>
                   <TableCell class="w-1/5" v-if="orderItem.order == order.id">
                     <Checkbox
@@ -192,7 +192,7 @@ function updateOrderTotal(order){
           Bezahlen
         </Button>
         <Suspense>
-        <strong class="w-3/5" id="totalSum">Total Sum: {{calculateTotalSum()}}€</strong>
+        <strong class="w-3/5" id="totalSum">Total Sum: {{calculateTotalSum()/100}}€</strong>
         </Suspense>
         <Button class="w-1/5 mr-2 bg-accent active:bg-primary text-black" @click="getOrderItemsByStation()">
           Anpassen

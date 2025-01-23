@@ -15,8 +15,11 @@ export const useCartStore = defineStore('cart', () => {
 
   const subFromCart = (product,table, person) => {
     const existing = cart.value.find(item => item.id === product.id && item.table === table && item.person === person);
+    console.log("exiisting: " + existing)
     if (existing) {
+      console.log("Item: ",cart.value.find(item => item.id === product.id),cart.value.find(item => item.id === product.id).quantity)
       if (cart.value.find(item => item.id === product.id).quantity > 0){
+        console.log("*")
         existing.quantity -= 1;
       }
     } else {
@@ -25,7 +28,7 @@ export const useCartStore = defineStore('cart', () => {
   };
 
   const removeFromCart = (product,table, person) => {
-    cart.value = cart.value.filter(item => item.id !== product.id && item.table !== table && item.person !== person);
+    cart.value = cart.value.filter(item => !(item.id === product.id && item.table === table && item.person === person));
   };
 
   const clearCart = () => {

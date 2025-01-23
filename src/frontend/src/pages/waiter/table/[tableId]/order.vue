@@ -5,6 +5,7 @@ import { DefaultLayout } from "@/layouts/default";
 import { useCartStore } from "@/components/cart.js";
 import { Table, TableCell, TableBody, TableRow} from '@/components/ui/table';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 
 import { orderService } from "@/services/order/orderService.ts";
 import { orderItemService } from "@/services/order/orderItemService.ts";
@@ -15,7 +16,6 @@ const tableId = computed(() => route.params.tableId);
 const cartStore = useCartStore();
 
 import { authService } from "@/services/user/authService.ts";
-authService.login("Test", "123456789");
 
 const addToCart = (product,table, person) => {
   cartStore.addToCart(product,table, person);

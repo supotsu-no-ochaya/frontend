@@ -64,8 +64,6 @@ async function handleOrderSend(person,table){
       } 
     }
   }
-  //await new Promise(f => setTimeout(f, 1000));
-  //router.go(0)
 }
 
 </script>

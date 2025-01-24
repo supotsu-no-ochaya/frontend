@@ -19,6 +19,9 @@ const cartStore = reactive(useCartStore());
 
 import { authService } from "@/services/user/authService.ts";
 import { OrderStatus } from "@/interfaces/order/Order";
+import Collapsible from "@/components/ui/collapsible/Collapsible.vue";
+import CollapsibleContent from "@/components/ui/collapsible/CollapsibleContent.vue";
+import CollapsibleTrigger from "@/components/ui/collapsible/CollapsibleTrigger.vue";
 
 const addToCart = (product,table, person) => {
   cartStore.addToCart(product,table, person);
@@ -42,6 +45,8 @@ for (let orderItem of cartStore.cart){
     persons.push(orderItem.person)
   }
 }
+
+const isOpen = ref(false)
 
 async function handleOrderSend(person,table){
   if (cartStore.cart.filter(item => item.person === person && item.table === table).length > 0){
@@ -87,17 +92,21 @@ async function handleOrderSend(person,table){
               <TableBody>
                 <template v-for="orderItem in cartStore.cart.filter(item => item.person === person && item.table === tableId)">
                   <template v-for="index in orderItem.quantity">
-                    <TableRow>
-                      <TableCell class="w-3/5">
-                        {{orderItem.name}}
+                    <Collapsible as-child>
+                      <CollapsibleTrigger as-child>
+                        <TableRow>
+                          <TableCell class="w-3/5">
+                            {{orderItem.name}}
                       </TableCell>
                       <TableCell class="w-2/5">
                         {{((orderItem.price)/100).toFixed(2)}}€
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell colspan="2">
-                        <input id="input"
+                  </CollapsibleTrigger>
+                    <CollapsibleContent v-model:open="isOpen">
+                      <TableRow>
+                        <TableCell colspan="2">
+                          <input id="input"
                           v-model="orderItem.notes[parseInt(index-1)]"
                           type="text" collspan="2"
                           class=" block w-full rounded-md border"
@@ -106,6 +115,8 @@ async function handleOrderSend(person,table){
                         </input>       
                       </TableCell>
                     </TableRow>
+                    </CollapsibleContent>
+                    </Collapsible>
                   </template>
                 </template>
               </TableBody>

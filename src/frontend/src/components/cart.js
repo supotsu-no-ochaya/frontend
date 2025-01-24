@@ -9,7 +9,7 @@ export const useCartStore = defineStore('cart', () => {
     if (existing) {
       existing.quantity += 1;
     } else {
-      cart.value.push({ ...product, quantity: 1, table, person });
+      cart.value.push({ ...product, quantity: 1, table, person, notes: "" });
     }
   };
 
@@ -20,7 +20,7 @@ export const useCartStore = defineStore('cart', () => {
         existing.quantity -= 1;
       }
     } else {
-      cart.value.push({ ...product, quantity: -1, table, person });
+      cart.value.push({ ...product, quantity: 0, table, person, notes: "" });
     }
   };
 

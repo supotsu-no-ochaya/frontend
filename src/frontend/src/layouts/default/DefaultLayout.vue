@@ -2,7 +2,10 @@
 import { type HTMLAttributes } from "vue";
 import logoSrc from "@/assets/logo.png";
 import WaiterNavFooter from "@/components/waiter/WaiterNavFooter.vue";
+import { authService } from "@/services/user/authService";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 
 const footers = {
   "waiter-nav": WaiterNavFooter,
@@ -23,6 +26,9 @@ const props = defineProps<{
         Supotso no Ochaya
       </p>
       <div class="grow" />
+      <button @click="async ()=>{authService.logout; await router.push('/auth/login')}" class="border-black border-2 rounded-md">
+          Logout
+      </button>
     </header>
     <main :class="props.class">
       <slot />

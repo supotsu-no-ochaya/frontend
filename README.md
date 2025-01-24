@@ -39,7 +39,7 @@
 - Rechte verwalten (Nutzer, Menü)
 - Sperren von Speisen
 
-## Installation
+## Installation (Windows)
 
 ### init
 
@@ -75,8 +75,8 @@ docker compose up
 localhost:8090/_/
 ```
 
--- **email**: admin@admin.admin
--- **password**: 1234567890
+- **email**: admin@admin.admin
+-  **password**: 1234567890
 
 `Terminal 2`
 
@@ -92,5 +92,5 @@ if you don't have permission to execute try
 - open projekt with
 
 ```shell
-localhost:5431/#/login/
+localhost:5431/#/auth/login/
 ```

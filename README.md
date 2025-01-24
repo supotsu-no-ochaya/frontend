@@ -5,11 +5,13 @@
 ### startup
 
 `Terminal 1`
+
 ```shell
 docker compose up
 ```
 
 `Terminal 2`
+
 ```shell
 cd src/frontend/
 [npm install]  # only once or after package.lock changes

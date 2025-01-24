@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useRouter } from "vue-router";
 import { type HTMLAttributes } from "vue";
 import logoSrc from "@/assets/logo.png";
 import WaiterNavFooter from "@/components/waiter/WaiterNavFooter.vue";
 import { authService } from "@/services/user/authService";
-import { useRouter } from "vue-router";
 import { LucideLogOut } from "lucide-vue-next";
 import AlertDialog from "@/components/ui/alert-dialog/AlertDialog.vue";
 import AlertDialogTrigger from "@/components/ui/alert-dialog/AlertDialogTrigger.vue";
@@ -13,7 +13,30 @@ import AlertDialogCancel from "@/components/ui/alert-dialog/AlertDialogCancel.vu
 import AlertDialogAction from "@/components/ui/alert-dialog/AlertDialogAction.vue";
 import AlertDialogContent from "@/components/ui/alert-dialog/AlertDialogContent.vue";
 
+import { onMounted } from 'vue';
+
 const router = useRouter();
+
+onMounted(() => {
+  if (authService.isLoggedIn()){
+    console.log("logged in")
+  } else {
+    console.log("logged out")
+    router.push("/auth/login")
+  }
+
+})
+
+const footers = {
+  "waiter-nav": WaiterNavFooter,
+}
+
+const props = defineProps<{
+  class?: HTMLAttributes['class']
+  footer?: keyof typeof footers;
+}>();
+
+</script>
 
 const footers = {
   "waiter-nav": WaiterNavFooter,

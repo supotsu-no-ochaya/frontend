@@ -22,16 +22,17 @@ import { OrderStatus } from "@/interfaces/order/Order";
 import Collapsible from "@/components/ui/collapsible/Collapsible.vue";
 import CollapsibleContent from "@/components/ui/collapsible/CollapsibleContent.vue";
 import CollapsibleTrigger from "@/components/ui/collapsible/CollapsibleTrigger.vue";
+import { OrderItemStatus } from "@/interfaces/order/OrderItem";
 
-const addToCart = (product,table, person) => {
+const addToCart = (product: string, table: string, person: string) => {
   cartStore.addToCart(product,table, person);
 };
 
-const subFromCart = (product,table, person) => {
+const subFromCart = (product: string, table: string, person: string) => {
   cartStore.subFromCart(product,table, person);
 };
 
-const removeFromCart = (product,table, person) => {
+const removeFromCart = (product: string, table: string, person: string) => {
   cartStore.removeFromCart(product,table, person);
 };
 
@@ -39,7 +40,7 @@ const clearCart = () => {
   cartStore.clearCart();
 }
 
-let persons = []
+let persons: string[] = []
 for (let orderItem of cartStore.cart){
   if (persons.includes(orderItem.person) == false){
     persons.push(orderItem.person)
@@ -48,21 +49,23 @@ for (let orderItem of cartStore.cart){
 
 const isOpen = ref(false)
 
-async function handleOrderSend(person,table){
-  if (cartStore.cart.filter(item => item.person === person && item.table === table).length > 0){
+async function handleOrderSend(person:string, table: string){
+  if (cartStore.cart.filter((item: any) => item.person === person && item.table === table).length > 0){
+    let tableIdInt= parseInt(tableId.value)
+
     const waiter = authService.getCurrentUser()
-    const order = await orderService.create({table: tableId.value, waiter: waiter.id, status:'Aufgegeben'})
+    const order = await orderService.create({table: tableIdInt, waiter: waiter.id, status: OrderStatus.Aufgegeben})
 
 
     let _orderItem = undefined;
-    for (let orderItem of (cartStore.cart.filter(item => item.person === person && item.table === table))){
+    for (let orderItem of (cartStore.cart.filter((item: any) => item.person === person && item.table === table))){
       console.log(orderItem.notes)
 
       let count = 0
       console.log(orderItem)
       for (let i = 0; i < orderItem.quantity; i++){
         let _bom = orderItem.bom_template.products ? orderItem.bom_template.products : ["z3acikruw24l618"]
-        await orderItemService.create({order:order.id, price:orderItem.price, products:_bom, status: OrderStatus.Aufgegeben , menu_item:orderItem.id,menu_item_name:orderItem.name, notes: orderItem.notes[i]})
+        await orderItemService.create({order:order.id, price:orderItem.price, products:_bom, status: OrderItemStatus.Aufgegeben, menu_item:orderItem.id,menu_item_name:orderItem.name, notes: orderItem.notes[i]})
         _orderItem = orderItem
         count += 1
       }
@@ -89,34 +92,33 @@ async function handleOrderSend(person,table){
           </AccordionTrigger>
           <AccordionContent>
             <Table>
-              <TableBody>
-                <template v-for="orderItem in cartStore.cart.filter(item => item.person === person && item.table === tableId)">
+              <TableBody as-child>
+                <template v-for="orderItem in cartStore.cart.filter((item: any) => item.person === person && item.table === tableId)">
                   <template v-for="index in orderItem.quantity">
-                    <Collapsible as-child>
-                      <CollapsibleTrigger as-child>
+                    <Collapsible as-child v-model:open="orderItem.isOpen[parseInt(index-1)]">
+                      <CollapsibleTrigger as-child @click="()=>{console.log(orderItem); if (orderItem.notes[parseInt(index-1)]!==''){orderItem.isOpen[parseInt(index-1)]=true}}">
+                        <TableRow as-child>
+                          <TableCell class="w-3/5" as-child>
+                              {{orderItem.name}}
+                          </TableCell>
+                          <TableCell class="w-2/5">
+                            {{((orderItem.price)/100).toFixed(2)}}€
+                          </TableCell>
+                        </TableRow>
+                      </CollapsibleTrigger >
+                      <CollapsibleContent>
                         <TableRow>
-                          <TableCell class="w-3/5">
-                            {{orderItem.name}}
-                      </TableCell>
-                      <TableCell class="w-2/5">
-                        {{((orderItem.price)/100).toFixed(2)}}€
-                      </TableCell>
-                    </TableRow>
-                  </CollapsibleTrigger>
-                    <CollapsibleContent v-model:open="isOpen">
-                      <TableRow>
-                        <TableCell colspan="2">
-                          <input id="input"
-                          v-model="orderItem.notes[parseInt(index-1)]"
-                          type="text" collspan="2"
-                          class=" block w-full rounded-md border"
-                          :placeholder="Notiz">  <!-- focus:border-blue-500 focus:ring focus:ring-blue-100 focus:ring-opacity-50"> -->
-                          
-                        </input>       
-                      </TableCell>
-                    </TableRow>
-                    </CollapsibleContent>
-                    </Collapsible>
+                          <TableCell colspan="2">
+                            <input id="input"
+                              v-model="orderItem.notes[parseInt(index-1)]"
+                              type="text" collspan="2"
+                              class=" block w-full rounded-md border">
+                              <!-- :placeholder="Notiz">  -->
+                            </input>       
+                          </TableCell>
+                        </TableRow>
+                      </CollapsibleContent>
+                    </Collapsible>     
                   </template>
                 </template>
               </TableBody>

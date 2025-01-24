@@ -9,8 +9,9 @@ export const useCartStore = defineStore('cart', () => {
     if (existing) {
       existing.quantity += 1;
       existing.notes.push("")
+      existing.isOpen.push(false)
     } else {
-      cart.value.push({ ...product, quantity: 1, table, person, notes: [""] });
+      cart.value.push({ ...product, quantity: 1, table, person, notes: [""], isOpen: [] });
     }
   };
 
@@ -22,9 +23,10 @@ export const useCartStore = defineStore('cart', () => {
         console.log(existing.notes)
         existing.notes.pop()
         console.log(existing.notes)
+        existing.isOpen.push(false)
       }
     } else {
-      cart.value.push({ ...product, quantity: 0, table, person, notes: [] });
+      cart.value.push({ ...product, quantity: 0, table, person, notes: [], isOpen: [] });
     }
   };
 

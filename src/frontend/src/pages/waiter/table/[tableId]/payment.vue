@@ -116,7 +116,6 @@ function calculateTotalSum() {
       totalSum = totalSum*(1-Rabatt.value)
     }
   } catch{
-    console.error("Fail du opfer")
   }
   return totalSum;
 }

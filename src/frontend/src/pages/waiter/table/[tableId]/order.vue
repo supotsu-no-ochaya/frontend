@@ -51,11 +51,13 @@ async function handleOrderSend(person,table){
 
     let _orderItem = undefined;
     for (let orderItem of (cartStore.cart.filter(item => item.person === person && item.table === table))){
+      console.log(orderItem.notes)
+
       let count = 0
       console.log(orderItem)
       for (let i = 0; i < orderItem.quantity; i++){
         let _bom = orderItem.bom_template.products ? orderItem.bom_template.products : ["z3acikruw24l618"]
-        await orderItemService.create({order:order.id, price:orderItem.price, products:_bom, status: OrderStatus.Aufgegeben , menu_item:orderItem.id,menu_item_name:orderItem.name, notes: orderItem.notes})
+        await orderItemService.create({order:order.id, price:orderItem.price, products:_bom, status: OrderStatus.Aufgegeben , menu_item:orderItem.id,menu_item_name:orderItem.name, notes: orderItem.notes[i]})
         _orderItem = orderItem
         count += 1
       }
@@ -84,7 +86,7 @@ async function handleOrderSend(person,table){
             <Table>
               <TableBody>
                 <template v-for="orderItem in cartStore.cart.filter(item => item.person === person && item.table === tableId)">
-                  <template v-for="_ in orderItem.quantity">
+                  <template v-for="index in orderItem.quantity">
                     <TableRow>
                       <TableCell class="w-3/5">
                         {{orderItem.name}}
@@ -96,7 +98,7 @@ async function handleOrderSend(person,table){
                     <TableRow>
                       <TableCell colspan="2">
                         <input id="input"
-                          v-model="orderItem.notes"
+                          v-model="orderItem.notes[parseInt(index-1)]"
                           type="text" collspan="2"
                           class=" block w-full rounded-md border"
                           :placeholder="Notiz">  <!-- focus:border-blue-500 focus:ring focus:ring-blue-100 focus:ring-opacity-50"> -->

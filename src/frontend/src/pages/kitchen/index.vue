@@ -6,7 +6,7 @@ import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from '@/components/ui/table';
 
-import { allStationnames, allOrders, type Order, type AllOrders, trashcan } from "@/test-data/orders.ts"
+import { allStationnames, allOrders, type Order, type AllOrders, trashcan } from "@/stores/orders"
 import type { WatchHandle } from "vue";
 import { orderService } from '@/services/order/orderService';
 import { OrderStatus } from '@/interfaces/order/Order';

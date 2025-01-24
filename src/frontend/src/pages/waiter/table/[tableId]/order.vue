@@ -52,6 +52,7 @@ const isOpen = ref(false)
 async function handleOrderSend(person:string, table: string){
   if (cartStore.cart.filter((item: any) => item.person === person && item.table === table).length > 0){
     let tableIdInt= parseInt(tableId.value)
+
     const waiter = authService.getCurrentUser()
     const order = await orderService.create({table: tableIdInt, waiter: waiter.id, status: OrderStatus.Aufgegeben})
 

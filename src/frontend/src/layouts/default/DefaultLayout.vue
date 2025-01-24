@@ -1,8 +1,22 @@
 <script setup lang="ts">
+import { useRouter } from "vue-router";
 import { type HTMLAttributes } from "vue";
 import logoSrc from "@/assets/logo.png";
 import WaiterNavFooter from "@/components/waiter/WaiterNavFooter.vue";
+import { onMounted } from 'vue';
+import { authService } from "@/services/user/authService.ts";
 
+const router = useRouter();
+
+onMounted(() => {
+  if (authService.isLoggedIn()){
+    console.log("logged in")
+  } else {
+    console.log("logged out")
+    router.push("/auth/login")
+  }
+
+})
 
 const footers = {
   "waiter-nav": WaiterNavFooter,

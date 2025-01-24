@@ -8,8 +8,9 @@ export const useCartStore = defineStore('cart', () => {
     const existing = cart.value.find(item => item.id === product.id && item.table === table && item.person === person);
     if (existing) {
       existing.quantity += 1;
+      existing.notes.push("")
     } else {
-      cart.value.push({ ...product, quantity: 1, table, person });
+      cart.value.push({ ...product, quantity: 1, table, person, notes: [""] });
     }
   };
 
@@ -18,9 +19,12 @@ export const useCartStore = defineStore('cart', () => {
     if (existing) {
       if (cart.value.find(item => item.id === product.id).quantity > 0){
         existing.quantity -= 1;
+        console.log(existing.notes)
+        existing.notes.pop()
+        console.log(existing.notes)
       }
     } else {
-      cart.value.push({ ...product, quantity: -1, table, person });
+      cart.value.push({ ...product, quantity: 0, table, person, notes: [] });
     }
   };
 

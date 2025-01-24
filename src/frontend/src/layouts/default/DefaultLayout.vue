@@ -2,7 +2,18 @@
 import { type HTMLAttributes } from "vue";
 import logoSrc from "@/assets/logo.png";
 import WaiterNavFooter from "@/components/waiter/WaiterNavFooter.vue";
+import { authService } from "@/services/user/authService";
+import { useRouter } from "vue-router";
+import { LucideLogOut } from "lucide-vue-next";
+import AlertDialog from "@/components/ui/alert-dialog/AlertDialog.vue";
+import AlertDialogTrigger from "@/components/ui/alert-dialog/AlertDialogTrigger.vue";
+import AlertDialogTitle from "@/components/ui/alert-dialog/AlertDialogTitle.vue";
+import AlertDialogFooter from "@/components/ui/alert-dialog/AlertDialogFooter.vue";
+import AlertDialogCancel from "@/components/ui/alert-dialog/AlertDialogCancel.vue";
+import AlertDialogAction from "@/components/ui/alert-dialog/AlertDialogAction.vue";
+import AlertDialogContent from "@/components/ui/alert-dialog/AlertDialogContent.vue";
 
+const router = useRouter();
 
 const footers = {
   "waiter-nav": WaiterNavFooter,
@@ -23,6 +34,25 @@ const props = defineProps<{
         Supotso no Ochaya
       </p>
       <div class="grow" />
+
+      <AlertDialog>
+        <AlertDialogTrigger>
+          <!-- <button> </button>async ()=>{authService.logout; await router.push('/auth/login')}"> -->
+              <LucideLogOut class="size-10" />
+          <!-- </button> -->
+        </AlertDialogTrigger>
+
+        <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle> Möchten Sie sich ausloggen? </AlertDialogTitle>
+
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Nein</AlertDialogCancel>
+                <AlertDialogAction @click="router.push('/auth/logout')">Ja</AlertDialogAction>
+              </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </header>
     <main :class="props.class">
       <slot />

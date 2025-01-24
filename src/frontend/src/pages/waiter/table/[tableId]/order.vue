@@ -18,6 +18,7 @@ const tableId = computed(() => route.params.tableId);
 const cartStore = reactive(useCartStore());
 
 import { authService } from "@/services/user/authService.ts";
+import { OrderStatus } from "@/interfaces/order/Order";
 
 const addToCart = (product,table, person) => {
   cartStore.addToCart(product,table, person);
@@ -50,10 +51,13 @@ async function handleOrderSend(person,table){
 
     let _orderItem = undefined;
     for (let orderItem of (cartStore.cart.filter(item => item.person === person && item.table === table))){
+      console.log(orderItem.notes)
+
       let count = 0
+      console.log(orderItem)
       for (let i = 0; i < orderItem.quantity; i++){
         let _bom = orderItem.bom_template.products ? orderItem.bom_template.products : ["z3acikruw24l618"]
-        await orderItemService.create({order:order.id, price:orderItem.price, products:_bom, status:"Aufgegeben", menu_item:orderItem.id,menu_item_name:orderItem.name})
+        await orderItemService.create({order:order.id, price:orderItem.price, products:_bom, status: OrderStatus.Aufgegeben , menu_item:orderItem.id,menu_item_name:orderItem.name, notes: orderItem.notes[i]})
         _orderItem = orderItem
         count += 1
       }
@@ -81,15 +85,29 @@ async function handleOrderSend(person,table){
           <AccordionContent>
             <Table>
               <TableBody>
-                <TableRow
-                v-for="orderItem in cartStore.cart.filter(item => item.person === person && item.table === tableId)">
-                  <TableCell class="w-3/5">
-                    {{orderItem.quantity}}x {{orderItem.name}}
-                  </TableCell>
-                  <TableCell class="w-2/5">
-                    {{((orderItem.price*orderItem.quantity)/100).toFixed(2)}}€
-                  </TableCell>
-                </TableRow>
+                <template v-for="orderItem in cartStore.cart.filter(item => item.person === person && item.table === tableId)">
+                  <template v-for="index in orderItem.quantity">
+                    <TableRow>
+                      <TableCell class="w-3/5">
+                        {{orderItem.name}}
+                      </TableCell>
+                      <TableCell class="w-2/5">
+                        {{((orderItem.price)/100).toFixed(2)}}€
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell colspan="2">
+                        <input id="input"
+                          v-model="orderItem.notes[parseInt(index-1)]"
+                          type="text" collspan="2"
+                          class=" block w-full rounded-md border"
+                          :placeholder="Notiz">  <!-- focus:border-blue-500 focus:ring focus:ring-blue-100 focus:ring-opacity-50"> -->
+                          
+                        </input>       
+                      </TableCell>
+                    </TableRow>
+                  </template>
+                </template>
               </TableBody>
             </Table>
           </AccordionContent>

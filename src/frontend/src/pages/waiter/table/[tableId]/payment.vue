@@ -90,9 +90,6 @@ const handleBezahlenButtonClick = async () =>{
       }
     })
     paymentService.create({order_items: _orderItems,  discount_percent:_discount, total_amount: _total_amount})
-
-    await new Promise(f => setTimeout(f, 1000));
-    router.go(0)
   }
 
 // Method to calculate total for a order bas  ed on checked items
@@ -111,11 +108,15 @@ const calculateTotal = (order, orderItem, checked) => {
 
 function calculateTotalSum() {
   var totalSum = 0.00;
-  for (let i = 0; i < orders.value.length; i++) {
-    totalSum += orders.value[i].total;
-  }
-  if (Rabatt.checked) {
-    totalSum = totalSum*(1-Rabatt.value)
+  try{
+    for (let i = 0; i < orders.value.length; i++) {
+      totalSum += orders.value[i].total;
+    }
+    if (Rabatt.checked) {
+      totalSum = totalSum*(1-Rabatt.value)
+    }
+  } catch{
+    console.error("Fail du opfer")
   }
   return totalSum;
 }

@@ -20,8 +20,6 @@ const route = useRoute("/waiter/table/[tableId]/payment");
 const tableId = computed(() => route.params.tableId);
 let Rabatt = reactive({value:0.10,checked: false})
 
-import { authService } from "@/services/user/authService.ts";
-
 let orders = reactive(computedAsync(() =>
   orderService.getAll().then((orders) =>
     orders

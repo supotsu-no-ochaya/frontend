@@ -1,12 +1,12 @@
 import { computedAsync } from "@vueuse/core";
 import { reactive, toRefs, watch } from "vue";
-import { authService } from "@/services/user/authService";
 import { menuCategService } from "@/services/menu/menuCategService";
 import { orderItemService } from "@/services/order/orderItemService";
 import { orderService } from "@/services/order/orderService";
 import { menuItemService } from "@/services/menu/menuItemService";
 import { userService } from "@/services/user/userService";
 import { debounce } from "lodash";
+//TODO debounce von vue.use
 import { OrderStatus } from "@/interfaces/order/Order";
 
 const environment = reactive({
@@ -69,7 +69,6 @@ watch(()=>environment.allStationnames_raw, (newStationnames)=>{
 
 // main fct for adding new Orders
 const addNewOrders = debounce(async (newValues: any, oldValues: any) => {
-  // StationDictMenuitem()          // TODO map order_items to stations not all to mochi
   // Zugriff auf die Daten, sobald sie geladen sind
   if (newValues.allStationnames_raw && newValues.Orders_raw && newValues.users_raw &&newValues.menu_items_raw && allStationnames) {
     for (let station of allStationnames){
@@ -83,17 +82,8 @@ const addNewOrders = debounce(async (newValues: any, oldValues: any) => {
             time: new Date(Order.created).toLocaleTimeString('de-DE', {hour: "2-digit", minute: "2-digit" }) + " Uhr", //Item.menu_item.map((ID)=>ID == menu_items_raw?.)
             state: false,
             orderlist: await Promise.all(newValues.OrderItems_raw?.
-                filter((OrderItem: any) => OrderItem.order === Order.id).  //take all Items from Orderitemsraw where their ID is the same as from Order
-                // filter((OrderItem3)=> stationsDict[OrderItem3.menu_item])
-                // filter((OrderItem3)=> (await menuCategService.getById(menuItemService.getById(OrderItem3.menu_item)).name === "Crepes")).
-
-                // filter((OrderItem2)=> allStationnames_raw?.  //keep all items for on station
-                //     map((STAT)=> STAT.name).      //have all station.names
-                //     filter((XYZ) => menu_items_raw?.    
-                //     filter((MenuItem)=> MenuItem.id === OrderItem2.menu_item)?.  //keep the only stationname that is realted to this Order
-                //     map((MenuItem2)=>MenuItem2.category).
-                //     filter(()=> XYZ)) ?? 
-                //     STAT === "Crepes").  //compare to station.names
+               //take all Items from Orderitemsraw where their ID is the same as from Order
+                filter((OrderItem: any) => OrderItem.order === Order.id). 
                 filter((OrderItem2: any) => newValues.allStationnames_raw?.
                     find((Item4: any)=> Item4.id === newValues.menu_items_raw?.
                     find((menitem: any)=> menitem.id === temp3.
@@ -107,10 +97,6 @@ const addNewOrders = debounce(async (newValues: any, oldValues: any) => {
           }};
         } else{return {}}}
       ));
-      // const temp3 = newValues.menu_items_raw?.map((Item: any)=> Item.id)
-      // console.log(temp3.find((menitem)=> menitem.id === environment.OrderItems_raw.menu_item))  //menuitemid
-      // console.log(environment.menu_items_raw?.find((menitem)=> menitem.id === temp3.find(()=> temp3.id === environment.OrderItems_raw.menu_item)))
-      // console.log(environment.allStationnames_raw?.find((Item)=> Item.id === environment.menu_items_raw?.find((menitem)=> menitem.id === temp3.find(()=> temp3.id === environment.OrderItems_raw.menu_item))?.category)?.name )
       console.log(newOrders)
       for (let newOrder of newOrders){
         for (let station of allStationnames){
@@ -131,23 +117,24 @@ const addNewOrders = debounce(async (newValues: any, oldValues: any) => {
 watch(environment, addNewOrders, { deep: true });
 
 // give every Menu_item a Station and save it locally to avoid severus PB-requests
-function StationDictMenuitem(){
-  const stationsDict = {}
-  if (Array.isArray(environment.menu_items_raw)&&Array.isArray(environment.allStationnames_raw)&&Array.isArray(environment.OrderItems_raw)){
-  for (let temp_menuitem of environment.menu_items_raw){
-    let temp_category = temp_menuitem.category
-    let temp_id = temp_menuitem.id
-    for (let temp_orderitem of environment.OrderItems_raw){
-      if (temp_orderitem.menu_item == temp_id){
-      for (let temp_station of environment.allStationnames_raw)
-        if (temp_station.id == temp_menuitem.category){
-          let temp_station_name = temp_station.name
-          Object.assign(stationsDict, {[temp_id]: temp_station_name})
-        }
-      }
-    }
-  }}
-}
+//TODO delete this
+// function StationDictMenuitem(){
+//   const stationsDict = {}
+//   if (Array.isArray(environment.menu_items_raw)&&Array.isArray(environment.allStationnames_raw)&&Array.isArray(environment.OrderItems_raw)){
+//   for (let temp_menuitem of environment.menu_items_raw){
+//     let temp_category = temp_menuitem.category
+//     let temp_id = temp_menuitem.id
+//     for (let temp_orderitem of environment.OrderItems_raw){
+//       if (temp_orderitem.menu_item == temp_id){
+//       for (let temp_station of environment.allStationnames_raw)
+//         if (temp_station.id == temp_menuitem.category){
+//           let temp_station_name = temp_station.name
+//           Object.assign(stationsDict, {[temp_id]: temp_station_name})
+//         }
+//       }
+//     }
+//   }}
+// }
 
 
 //* here are All InterFfaces necessary for allOrders

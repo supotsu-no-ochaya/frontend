@@ -2,7 +2,6 @@
 import { type HTMLAttributes } from "vue";
 import logoSrc from "@/assets/logo.png";
 import WaiterNavFooter from "@/components/waiter/WaiterNavFooter.vue";
-import { authService } from "@/services/user/authService";
 import { useRouter } from "vue-router";
 import { LucideLogOut } from "lucide-vue-next";
 import AlertDialog from "@/components/ui/alert-dialog/AlertDialog.vue";
@@ -37,9 +36,7 @@ const props = defineProps<{
 
       <AlertDialog>
         <AlertDialogTrigger>
-          <!-- <button> </button>async ()=>{authService.logout; await router.push('/auth/login')}"> -->
               <LucideLogOut class="size-10" />
-          <!-- </button> -->
         </AlertDialogTrigger>
 
         <AlertDialogContent>

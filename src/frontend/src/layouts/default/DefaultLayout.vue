@@ -38,17 +38,6 @@ const props = defineProps<{
 
 </script>
 
-const footers = {
-  "waiter-nav": WaiterNavFooter,
-}
-
-const props = defineProps<{
-  class?: HTMLAttributes['class']
-  footer?: keyof typeof footers;
-}>();
-
-</script>
-
 <template>
   <div class="min-h-screen grid grid-rows-[auto,1fr,auto]">
     <header class="flex items-center p-2 gap-x-2 bg-gradient-to-b from-primary via-primary to-transparent">

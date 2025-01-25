@@ -10,6 +10,7 @@ export type MenuItem<T extends BomTemplate> = NamedEntity & {
    * Relation to `station`
    */
   station: string;
+  icon: string;
 
   expand?: {
     station?: Station;

@@ -62,7 +62,9 @@ watch(()=>environment.allStationnames_raw, (newStationnames)=>{
   if (Array.isArray(environment.allStationnames_raw)) {
     // Zugriff auf die Daten, sobald sie geladen sind
     for (let station of environment.allStationnames_raw){
-      allStationnames.push(station.name)
+      if (!["Mochi", "Onigiri"].includes(station.name)){
+        allStationnames.push(station.name)
+      }
     }
   }
 });

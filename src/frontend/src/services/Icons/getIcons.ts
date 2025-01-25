@@ -1,3 +1,5 @@
+import type { MenuCateg } from "@/interfaces/menu/MenuCateg";
+import type { MenuItem } from "@/interfaces/menu/MenuItem";
 import PocketBase from "pocketbase";
 
 // TODO delete
@@ -32,11 +34,8 @@ const pb = new PocketBase(getBaseURL());
  * @param {string} [fileName] - (Optional) Der Name der Datei, falls mehrere Dateien existieren.
  * @returns {string} - Die URL der SVG-Datei.
  */
-export const getIconURL = (collection, recordId, fileName) => {
-  if (!collection || !recordId) {
-    throw new Error("Collection und Record-ID sind erforderlich");
-  }
+export const getIconURL = (record: MenuCateg|MenuItem<T>) => {
   console.log(getBaseURL())
   // Generiere die URL mit oder ohne Dateinamen
-  return pb.files.getURL({ id: recordId, collectionId: collection }, fileName || "");
+  return pb.files.getURL(record, record.icon)
 };

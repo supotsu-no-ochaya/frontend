@@ -10,8 +10,6 @@ import { allStationnames, allOrders, type Order, type AllOrders, trashcan } from
 import type { WatchHandle } from "vue";
 import { orderService } from '@/services/order/orderService';
 import { OrderStatus } from '@/interfaces/order/Order';
-import { orderItemService } from '@/services/order/orderItemService';
-
 
 
 //* MUTABLE
@@ -69,7 +67,7 @@ watch(
               //rmve x+1 el of trashcan
               const removedOrderId = trashcan[stationName].pop
               const removedOrderIndex = stationOrders.findIndex(
-                (order) => order.id === removedOrderId
+                (order: any) => order.id === removedOrderId
               );
               if (removedOrderIndex !== -1) {
                 //rmve completed order from allOrders

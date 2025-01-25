@@ -18,6 +18,7 @@ const mainCategories = computedAsync(() => menuCategService.getAllMainCategories
   <DefaultLayout footer="waiter-nav">
     <WaiterControlHeader label="Essen Kategorien" icon="cutlery" />
     <div class="flex flex-col flex-1 gap-2 p-2">
+      <div> Tisch: {{ tableId }}, Person {{ personId }}</div>
       <template v-for="mainCategory in mainCategories">
         <router-link class="group" :to="{ name: '/waiter/table/[tableId]/person/[personId]/order/[categoryIds]+/', params: { tableId, personId, categoryIds: [mainCategory.id] } }">
           <Button class="w-full flex gap-2 group-even:flex-row-reverse">

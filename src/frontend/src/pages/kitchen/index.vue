@@ -19,6 +19,7 @@ const maxActiveStations = 2;  //number of displayed stations at a time
 const trashlength = 4  //max length of trashcan
 // MUTABLE //
 
+
 const activeFoodStations = reactive<string[]>([]);
 
 const manualWatchers: WatchHandle[] = [];
@@ -128,14 +129,14 @@ const changeAbholbereit = (activeTab: string, orderIndex: number, itemIndex: num
       <div v-for="(activeStation, activeStationIndex) in activeFoodStations"
         class="w-1/2 h-full border-gray-500 px-[8vw]"
         :class="activeStationIndex !== 0 ? 'border-l' : ''">
-        <h2 class="text-xl italic mb-4">{{ activeStation }}</h2>
+        <h2 class="text-xl italic mb-4 text-center">{{ activeStation }}</h2>
         <Table v-if="allOrders[activeStation].length">
           <TableBody>
             <TableRow class="text-base whitespace-nowrap">
-              <TableCell v-for="list in ['Tisch' , 'Kellner', 'Eingegangen um']"
+              <TableCell v-for="list_entry in ['Tisch' , 'Kellner', 'Eingegangen um']"
                 class="indent-[-4rem] text-center w-1/3"
-                :class="list === 'Eingegangen um' ? 'text-center indent-0' : ''">
-                {{ list }}
+                :class="list_entry === 'Eingegangen um' ? 'text-center indent-0' : ''">
+                {{ list_entry }}
               </TableCell>
             </TableRow>
           </TableBody>

@@ -49,13 +49,12 @@ const props = defineProps<{
 
       <AlertDialog>
         <AlertDialogTrigger>
-              <LucideLogOut class="size-10" />
+              <LucideLogOut class="size-8" />
         </AlertDialogTrigger>
 
         <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle> Möchten Sie sich ausloggen? </AlertDialogTitle>
-
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Nein</AlertDialogCancel>

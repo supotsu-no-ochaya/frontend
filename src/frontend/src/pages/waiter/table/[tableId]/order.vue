@@ -82,7 +82,7 @@ async function handleOrderSend(person:string, table: string){
 
 <template>
   <DefaultLayout footer="waiter-nav">
-    <WaiterControlHeader :label="'Bestellung: '+tableId" icon="bill" />
+    <WaiterControlHeader :label="'Tisch: '+tableId" icon="bill" />
     <!-- Scrollable Content Section -->
     <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-22rem)] w-full">
       <Accordion type="multiple" class="w-4/5 mx-auto">

@@ -26,16 +26,7 @@ const getBaseURL = () => {
 // Initialisiere den PocketBase-Client mit dynamischer Base-URL
 const pb = new PocketBase(getBaseURL());
 
-
-/**
- * Funktion: Generiere die URL für ein gespeichertes SVG in PocketBase
- * @param {string} collection - Die Collection, in der der Datensatz liegt.
- * @param {string} recordId - Die ID des Datensatzes, der das SVG enthält.
- * @param {string} [fileName] - (Optional) Der Name der Datei, falls mehrere Dateien existieren.
- * @returns {string} - Die URL der SVG-Datei.
- */
 export const getIconURL = (record: MenuCateg|MenuItem<T>) => {
-  console.log(getBaseURL())
   // Generiere die URL mit oder ohne Dateinamen
   return pb.files.getURL(record, record.icon)
 };

@@ -66,7 +66,7 @@ const clearCart = () => {
     </div>
     <div class="grid grid-cols-2 p-2 gap-2">
       <template v-for="menuItem in menuItems">
-        <div class="bg-primary rounded-xl mt-5">
+        <div class="bg-primary rounded-xl mt-5 flex-col flex">
          <img class="mx-auto px-6 py-2 w-3/5 bg-background rounded-xl -mt-5" :src="getIconURL(menuItem)" :alt="menuItem.name" />
           <div class="flex justify-evenly px-1 py-2">
             <Button size="icon" class="bg-background" @click="subFromCart(menuItem,tableId, personId)">
@@ -81,7 +81,7 @@ const clearCart = () => {
               <LucidePlus />
             </Button>
           </div>
-          <div class="truncate text-xl px-1">
+          <div class="text-xl grow px-1">
             {{ menuItem.name }}
           </div>
           <div class="text-sm px-1">

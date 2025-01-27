@@ -11,7 +11,7 @@ export const useCartStore = defineStore('cart', () => {
       existing.notes.push("")
       existing.isOpen.push(false)
     } else {
-      cart.value.push({ ...product, quantity: 1, table, person, notes: [""], isOpen: [] });
+      cart.value.push({ ...product, quantity: 1, table, person, notes: [""], isOpen: [], isSend: false, orderId: [] });
     }
   };
 
@@ -26,12 +26,14 @@ export const useCartStore = defineStore('cart', () => {
         existing.isOpen.push(false)
       }
     } else {
-      cart.value.push({ ...product, quantity: 0, table, person, notes: [], isOpen: [] });
+      cart.value.push({ ...product, quantity: 0, table, person, notes: [], isOpen: [], isSend: false, orderId: [] });
     }
   };
 
   const removeFromCart = (product,table, person) => {
+    console.log("Remove from cart: ", cart.value.filter(item => (item.id === product.id && item.table === table && item.person === person)));
     cart.value = cart.value.filter(item => !(item.id === product.id && item.table === table && item.person === person));
+    console.log(cart.value)
   };
 
   const clearCart = () => {

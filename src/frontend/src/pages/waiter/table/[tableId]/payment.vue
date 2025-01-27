@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from "vue-router";
-import { DefaultLayout } from "@/layouts/default";
-import { computedAsync } from "@vueuse/core";
-import { reactive, ref, computed } from 'vue';
+import {useRoute, useRouter} from "vue-router";
+import {DefaultLayout} from "@/layouts/default";
+import {computedAsync} from "@vueuse/core";
+import {computed, reactive} from 'vue';
 
-import { orderService } from "@/services/order/orderService.ts";
-import { orderItemService } from "@/services/order/orderItemService.ts";
-import { menuItemService } from "@/services/menu/menuItemService.ts";
-import { paymentService} from "@/services/payment/paymentService.ts";
-import { OrderStatus } from "@/interfaces/order/Order";
+import {orderService} from "@/services/order/orderService.ts";
+import {orderItemService} from "@/services/order/orderItemService.ts";
+import {menuItemService} from "@/services/menu/menuItemService.ts";
+import {paymentService} from "@/services/payment/paymentService.ts";
+import {OrderStatus} from "@/interfaces/order/Order";
 
-import { Table, TableCell, TableBody, TableRow} from '@/components/ui/table';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Checkbox } from '@/components/ui/checkbox';
+import {Table, TableBody, TableCell, TableRow} from '@/components/ui/table';
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion';
+import {Checkbox} from '@/components/ui/checkbox';
 import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
+import {OrderItemStatus} from "@/interfaces/order/OrderItem.ts";
 
 const router = useRouter();
 const route = useRoute("/waiter/table/[tableId]/payment");
@@ -24,7 +25,7 @@ let orders = reactive(computedAsync(() =>
   orderService.getAll().then((orders) =>
     orders
       .filter(order => order.table === parseInt(tableId.value))
-      .filter(order => order.status === "Geliefert")
+      .filter(order => order.status === OrderStatus.Geliefert) // Comment this line to show partially delivered orders
       .map((order) => ({
         ...order,              // Spread existing properties
         total: 0,        // Add the new property
@@ -37,7 +38,7 @@ let orderItems = reactive(computedAsync(() =>
   Promise.all([orderItemService.getAll(), orders.value]).then(([orderItems, currentOrders]) =>
     orderItems
       .filter(item => currentOrders.some(order => order.id === item.order)) // Filter by matching order ID
-      .filter(item => item.status === "Geliefert") // Filter by Status
+      .filter(item => item.status === OrderItemStatus.Geliefert) // Filter by Status
       .map((item) => ({
         ...item, // Spread existing properties
         isChecked: false, // Add the new property

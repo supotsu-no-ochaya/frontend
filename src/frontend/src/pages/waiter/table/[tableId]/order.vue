@@ -3,6 +3,7 @@ import { useRoute, useRouter } from "vue-router";
 import { DefaultLayout } from "@/layouts/default";
 import { useCartStore } from "@/components/cart.js";
 import { Table, TableCell, TableBody, TableRow} from '@/components/ui/table';
+import { Tabs, TabsContent, TabsTrigger, TabsList} from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 import { reactive, ref, computed } from 'vue';
@@ -74,9 +75,7 @@ async function handleOrderSend(person:string, table: string) {
 
       orderItem.isSend = true
 
-      console.log("station",orderItem.station)
       if (orderItem.station !== "") {
-        console.log(orderItem,orderItem.id,table,person)
         cartStore.removeFromCart(orderItem, table, person);
       }
     }
@@ -84,7 +83,6 @@ async function handleOrderSend(person:string, table: string) {
 }
 async function handleOrderGrabed(person:string, table:string){
   for (const orderItem of (cartStore.cart.filter((item: any) => item.person === person && item.table === table && item.isSend === true && item.station === ""))){
-    console.log(orderItem);
     for (let i = 0; i < orderItem.quantity; i++) {
       await orderItemService.updateOrderItemToStatus(orderItem.orderId[i], OrderItemStatus.Geliefert)
     }
@@ -92,13 +90,12 @@ async function handleOrderGrabed(person:string, table:string){
   }
 }
 
+
 </script>
 
 <template>
   <DefaultLayout footer="waiter-nav">
     <WaiterControlHeader :label="'Tisch: '+tableId" icon="bill" />
-    <!-- Scrollable Content Section -->
-    <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-14rem)] w-full">
       <Tabs>
         <TabsList class="flex justify-center w-full">
           <TabsTrigger value="order" class="w-1/2">
@@ -109,97 +106,101 @@ async function handleOrderGrabed(person:string, table:string){
           </TabsTrigger>
         </TabsList>
         <TabsContent value="order">
-          <Accordion type="multiple" class="w-4/5 mx-auto">
-            <AccordionItem v-for="person in persons" :key="person" :value="person">
-              <AccordionTrigger>Person: {{person}}
-                <Button @click="handleOrderSend(person,tableId)" @click.stop> Send Order </Button>
-              </AccordionTrigger>
-              <AccordionContent>
-                <Table>
-                  <TableBody as-child>
-                    <template v-for="orderItem in cartStore.cart.filter((item: any) => item.person === person && item.table === tableId)">
-                      <template v-if="!orderItem.isSend" v-for="index in orderItem.quantity">
-                        <Collapsible as-child v-model:open="orderItem.isOpen[parseInt(index-1)]">
-                          <CollapsibleTrigger as-child @click="()=>{console.log(orderItem); if (orderItem.notes[parseInt(index-1)]!==''){orderItem.isOpen[parseInt(index-1)]=true}}">
-                            <TableRow as-child>
-                              <TableCell class="" as-child>
-                                {{orderItem.name}}
-                              </TableCell>
-                              <TableCell class="max-w-min">
-                                {{((orderItem.price)/100).toFixed(2)}}€
-                              </TableCell>
-                            <TableCell>
-                            <LucideScrollText class="size-4 max-w-min"/>
-                          </TableCell>
-                        </TableRow>
-                          </CollapsibleTrigger >
-                          <CollapsibleContent><Table>
-                          <TableBody>
-                            <TableRowclass="w-full">
-                              <TableCell class="flex flex-wrap">
-                                <input id="input"
-                                       v-model="orderItem.notes[parseInt(index-1)]"
-                                       type="text" maxlength="300" rows="1"
-                                       class=" w-full rounded-md border text-ellipsis overflow-hidden ">
-                                </input>
-                              </TableCell>
-                            </TableRow></TableBody>
-                      </Table>
-                          </CollapsibleContent>
-                        </Collapsible>
+          <!-- Scrollable Content Section -->
+          <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-14rem)] w-full">
+            <Accordion type="multiple" class="w-4/5 mx-auto">
+              <AccordionItem v-for="person in persons" :key="person" :value="person">
+                <AccordionTrigger>Person: {{person}}
+                  <Button @click="handleOrderSend(person,tableId)" @click.stop> Send Order </Button>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <Table>
+                    <TableBody as-child>
+                      <template v-for="orderItem in cartStore.cart.filter((item: any) => item.person === person && item.table === tableId)">
+                        <template v-if="!orderItem.isSend" v-for="index in orderItem.quantity">
+                          <Collapsible as-child v-model:open="orderItem.isOpen[parseInt(index-1)]">
+                            <CollapsibleTrigger as-child @click="()=>{console.log(orderItem); if (orderItem.notes[parseInt(index-1)]!==''){orderItem.isOpen[parseInt(index-1)]=true}}">
+                              <TableRow as-child>
+                                <TableCell class="" as-child>
+                                  {{orderItem.name}}
+                                </TableCell>
+                                <TableCell class="max-w-min">
+                                  {{((orderItem.price)/100).toFixed(2)}}€
+                                </TableCell>
+                              <TableCell>
+                              <LucideScrollText class="size-4 max-w-min"/>
+                            </TableCell>
+                          </TableRow>
+                            </CollapsibleTrigger >
+                            <CollapsibleContent><Table>
+                            <TableBody>
+                              <TableRow class="w-full">
+                                <TableCell class="flex flex-wrap">
+                                  <input id="input"
+                                         v-model="orderItem.notes[parseInt(index-1)]"
+                                         type="text" maxlength="300" rows="1"
+                                         class=" w-full rounded-md border text-ellipsis overflow-hidden ">
+                                  </input>
+                                </TableCell>
+                              </TableRow>
+                            </TableBody>
+                        </Table>
+                            </CollapsibleContent>
+                          </Collapsible>
+                        </template>
                       </template>
-                    </template>
-                  </TableBody>
-                </Table>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+                    </TableBody>
+                  </Table>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
         </TabsContent>
         <!-- Visual Help --->
         <TabsContent value="pickup">
-          <Accordion type="multiple" class="w-4/5 mx-auto">
-            <AccordionItem v-for="person in persons" :key="person" :value="person">
-              <AccordionTrigger>Person: {{person}}
-                <Button @click="handleOrderGrabed(person,tableId)" @click.stop> Geliefert </Button>
-              </AccordionTrigger>
-              <AccordionContent>
-                <Table>
-                  <TableBody as-child>
-                    <template v-for="orderItem in cartStore.cart.filter((item: any) => item.person === person && item.table === tableId)">
-                      <template v-if="orderItem.isSend && orderItem.station ===''" v-for="index in orderItem.quantity">
-                        <Collapsible as-child v-model:open="orderItem.isOpen[parseInt(index-1)]">
-                          <CollapsibleTrigger as-child @click="()=>{console.log(orderItem); if (orderItem.notes[parseInt(index-1)]!==''){orderItem.isOpen[parseInt(index-1)]=true}}">
-                            <TableRow as-child>
-                              <TableCell class="w-3/5" as-child>
-                                {{orderItem.name}}
-                              </TableCell>
-                              <TableCell class="w-2/5">
-                                {{((orderItem.price)/100).toFixed(2)}}€
-                              </TableCell>
-                            </TableRow>
-                          </CollapsibleTrigger >
-                          <CollapsibleContent>
-                            <TableRow>
-                              <TableCell colspan="2">
-                                <input id="input"
-                                       v-model="orderItem.notes[parseInt(index-1)]"
-                                       type="text" collspan="2"
-                                       class=" block w-full rounded-md border">
-                                <!-- :placeholder="Notiz">  -->
-                                </input>
-                              </TableCell>
-                            </TableRow>
-                          </CollapsibleContent>
-                        </Collapsible>
+          <!-- Scrollable Content Section -->
+          <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-14rem)] w-full">
+            <Accordion type="multiple" class="w-4/5 mx-auto">
+              <AccordionItem v-for="person in persons" :key="person" :value="person">
+                <AccordionTrigger>Person: {{person}}
+                  <Button @click="handleOrderGrabed(person,tableId)" @click.stop> Geliefert </Button>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <Table>
+                    <TableBody as-child>
+                      <template v-for="orderItem in cartStore.cart.filter((item: any) => item.person === person && item.table === tableId)">
+                        <template v-if="orderItem.isSend && orderItem.station ===''" v-for="index in orderItem.quantity">
+                          <Collapsible as-child v-model:open="orderItem.isOpen[parseInt(index-1)]">
+                            <CollapsibleTrigger as-child @click="()=>{console.log(orderItem); if (orderItem.notes[parseInt(index-1)]!==''){orderItem.isOpen[parseInt(index-1)]=true}}">
+                              <TableRow as-child>
+                                <TableCell class="w-3/5" as-child>
+                                  {{orderItem.name}}
+                                </TableCell>
+                                <TableCell class="w-2/5">
+                                  {{((orderItem.price)/100).toFixed(2)}}€
+                                </TableCell>
+                              </TableRow>
+                            </CollapsibleTrigger >
+                            <CollapsibleContent>
+                              <TableRow>
+                                <TableCell colspan="2" class=" block min-w-max w-full rounded-md border mr-1 bg-secondary">
+                                  {{orderItem.notes[parseInt(index-1)]}}
+                                  <div>  <!-- FIX WRAPPING TEXT -->
+
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            </CollapsibleContent>
+                          </Collapsible>
+                        </template>
                       </template>
-                    </template>
-                  </TableBody>
-                </Table>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+                    </TableBody>
+                  </Table>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
         </TabsContent>
       </Tabs>
-    </div>
   </DefaultLayout>
 </template>

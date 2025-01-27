@@ -2,6 +2,7 @@
 import { useRoute, useRouter } from "vue-router";
 import { DefaultLayout } from "@/layouts/default";
 import { useCartStore } from "@/components/cart.js";
+import { useTableStore} from "@/components/TableInfo";
 import { Table, TableCell, TableBody, TableRow} from '@/components/ui/table';
 import { Tabs, TabsContent, TabsTrigger, TabsList} from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -24,6 +25,7 @@ const route = useRoute("/waiter/table/[tableId]/order");
 const tableId = computed(() => route.params.tableId);
 
 const cartStore = reactive(useCartStore());
+const tableStore = reactive(useTableStore());
 
 const addToCart = (product: string, table: string, person: string) => {
   cartStore.addToCart(product,table, person);
@@ -71,6 +73,8 @@ async function handleOrderSend(person:string, table: string) {
           notes: orderItem.notes[i]
         })
         orderItem.orderId.push(response.id)
+
+        tableStore.table.timers[parseInt(table)] = new Date().getTime()
       }
 
       orderItem.isSend = true

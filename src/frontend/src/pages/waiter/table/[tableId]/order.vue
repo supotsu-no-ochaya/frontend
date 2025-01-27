@@ -23,6 +23,7 @@ import Collapsible from "@/components/ui/collapsible/Collapsible.vue";
 import CollapsibleContent from "@/components/ui/collapsible/CollapsibleContent.vue";
 import CollapsibleTrigger from "@/components/ui/collapsible/CollapsibleTrigger.vue";
 import { OrderItemStatus } from "@/interfaces/order/OrderItem";
+import { LucideScrollText } from "lucide-vue-next";
 
 const addToCart = (product: string, table: string, person: string) => {
   cartStore.addToCart(product,table, person);
@@ -98,25 +99,31 @@ async function handleOrderSend(person:string, table: string){
                     <Collapsible as-child v-model:open="orderItem.isOpen[parseInt(index-1)]">
                       <CollapsibleTrigger as-child @click="()=>{console.log(orderItem); if (orderItem.notes[parseInt(index-1)]!==''){orderItem.isOpen[parseInt(index-1)]=true}}">
                         <TableRow as-child>
-                          <TableCell class="w-3/5" as-child>
+                          <TableCell class="" as-child>
                               {{orderItem.name}}
                           </TableCell>
-                          <TableCell class="w-2/5">
+                          <TableCell class="max-w-min">
                             {{((orderItem.price)/100).toFixed(2)}}€
+                          </TableCell>
+                          <TableCell>
+                            <LucideScrollText class="size-4 max-w-min"/>
                           </TableCell>
                         </TableRow>
                       </CollapsibleTrigger >
                       <CollapsibleContent>
-                        <TableRow>
-                          <TableCell colspan="2">
-                            <input id="input"
-                              v-model="orderItem.notes[parseInt(index-1)]"
-                              type="text" collspan="2"
-                              class=" block w-full rounded-md border">
-                              <!-- :placeholder="Notiz">  -->
-                            </input>       
-                          </TableCell>
-                        </TableRow>
+                        <Table>
+                          <TableBody>
+                            <TableRow class="w-full">
+                              <TableCell class="flex flex-wrap">
+                                <input id="input"
+                                v-model="orderItem.notes[parseInt(index-1)]"
+                                type="text"  maxlength="300" rows="1"
+                                class="w-full rounded-md border text-ellipsis overflow-hidden ">
+                              </input>       
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
                       </CollapsibleContent>
                     </Collapsible>     
                   </template>

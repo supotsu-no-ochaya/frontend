@@ -20,7 +20,7 @@ export const useCartStore = defineStore('cart', () => {
     if (existing) {
       if (cart.value.find(item => item.id === product.id).quantity > 0){
         existing.quantity -= 1;
-        console.log(existing.notes)
+        console.log(existing.notes) //TODO delete
         existing.notes.pop()
         console.log(existing.notes)
         existing.isOpen.push(false)

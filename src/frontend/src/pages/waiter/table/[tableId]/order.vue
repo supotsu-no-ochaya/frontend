@@ -48,7 +48,7 @@ for (let orderItem of cartStore.cart){
   }
 }
 
-const isOpen = ref(false)
+const isOpen = ref(false) //TODO delete
 
 async function handleOrderSend(person:string, table: string) {
   if (cartStore.cart.filter((item: any) => item.person === person && item.table === table).length > 0) {
@@ -90,7 +90,7 @@ async function handleOrderGrabed(person:string, table:string){
   }
 }
 
-
+// cartStore.clearCart()
 </script>
 
 <template>
@@ -119,7 +119,7 @@ async function handleOrderGrabed(person:string, table:string){
                       <template v-for="orderItem in cartStore.cart.filter((item: any) => item.person === person && item.table === tableId)">
                         <template v-if="!orderItem.isSend" v-for="index in orderItem.quantity">
                           <Collapsible as-child v-model:open="orderItem.isOpen[parseInt(index-1)]">
-                            <CollapsibleTrigger as-child @click="()=>{console.log(orderItem); if (orderItem.notes[parseInt(index-1)]!==''){orderItem.isOpen[parseInt(index-1)]=true}}">
+                            <CollapsibleTrigger as-child @click="()=>{if (orderItem.notes[parseInt(index-1)]!==''){orderItem.isOpen[parseInt(index-1)]=true}}">
                               <TableRow as-child>
                                 <TableCell class="" as-child>
                                   {{orderItem.name}}
@@ -132,19 +132,20 @@ async function handleOrderGrabed(person:string, table:string){
                             </TableCell>
                           </TableRow>
                             </CollapsibleTrigger >
-                            <CollapsibleContent><Table>
-                            <TableBody>
-                              <TableRow class="w-full">
-                                <TableCell class="flex flex-wrap">
-                                  <input id="input"
-                                         v-model="orderItem.notes[parseInt(index-1)]"
-                                         type="text" maxlength="300" rows="1"
-                                         class=" w-full rounded-md border text-ellipsis overflow-hidden ">
-                                  </input>
-                                </TableCell>
-                              </TableRow>
-                            </TableBody>
-                        </Table>
+                            <CollapsibleContent>
+                              <Table>
+                                <TableBody>
+                                  <TableRow class="w-full">
+                                    <TableCell class="flex">
+                                      <input id="input"
+                                            v-model="orderItem.notes[parseInt(index-1)]"
+                                            type="text" maxlength="300" rows="1"
+                                            class="w-full rounded-md border text-ellipsis overflow-hidden">
+                                      </input>
+                                    </TableCell>
+                                  </TableRow>
+                                </TableBody>
+                              </Table>
                             </CollapsibleContent>
                           </Collapsible>
                         </template>
@@ -171,7 +172,7 @@ async function handleOrderGrabed(person:string, table:string){
                       <template v-for="orderItem in cartStore.cart.filter((item: any) => item.person === person && item.table === tableId)">
                         <template v-if="orderItem.isSend && orderItem.station ===''" v-for="index in orderItem.quantity">
                           <Collapsible as-child v-model:open="orderItem.isOpen[parseInt(index-1)]">
-                            <CollapsibleTrigger as-child @click="()=>{console.log(orderItem); if (orderItem.notes[parseInt(index-1)]!==''){orderItem.isOpen[parseInt(index-1)]=true}}">
+                            <CollapsibleTrigger as-child @click="()=>{if (orderItem.notes[parseInt(index-1)]!==''){orderItem.isOpen[parseInt(index-1)]=true}}">
                               <TableRow as-child>
                                 <TableCell class="w-3/5" as-child>
                                   {{orderItem.name}}
@@ -182,14 +183,13 @@ async function handleOrderGrabed(person:string, table:string){
                               </TableRow>
                             </CollapsibleTrigger >
                             <CollapsibleContent>
-                              <TableRow>
-                                <TableCell colspan="2" class=" block min-w-max w-full rounded-md border mr-1 bg-secondary">
-                                  {{orderItem.notes[parseInt(index-1)]}}
-                                  <div>  <!-- FIX WRAPPING TEXT -->
-
-                                  </div>
-                                </TableCell>
-                              </TableRow>
+                              <Table>
+                                <TableRow v-if="orderItem.notes[parseInt(index-1)]" class="">
+                                  <TableCell colspan="2" class="block w-full rounded-md border mr-1 bg-secondary">
+                                    {{orderItem.notes[parseInt(index-1)]}}
+                                  </TableCell>
+                                </TableRow>
+                              </Table>
                             </CollapsibleContent>
                           </Collapsible>
                         </template>

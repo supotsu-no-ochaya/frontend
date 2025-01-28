@@ -64,7 +64,7 @@ async function handleOrderSend(person:string, table: string) {
     let tableIdInt = parseInt(tableId.value)
 
     const waiter = authService.getCurrentUser()
-    const order = await orderService.create({table: tableIdInt, waiter: waiter.id, status: OrderStatus.Aufgegeben})
+    const order = await orderService.create({table: tableIdInt, waiter: waiter.id, status: OrderStatus.Aufgegeben, person: person})
 
 
     for (let orderItem of (cartStore.cart.filter((item: any) => item.person === person && item.table === table))) {
@@ -184,15 +184,15 @@ async function handleOrderGrabed(person:string, table:string){
                           <Collapsible as-child v-model:open="orderItem.isOpen[parseInt(index-1)]">
                             <CollapsibleTrigger as-child @click="()=>{if (orderItem.notes[parseInt(index-1)]!==''){orderItem.isOpen[parseInt(index-1)]=true}}">
                               <TableRow as-child>
-                                <TableCell class="w-3/5" as-child>
+                                <TableCell class="w-max-min" as-child>
                                   {{orderItem.name}}
                                 </TableCell>
-                                <TableCell class="w-2/5">
+                                <TableCell class="w-max-min">
                                   {{((orderItem.price)/100).toFixed(2)}}€
                                 </TableCell>
                               </TableRow>
                             </CollapsibleTrigger >
-                            <CollapsibleContent>
+                            <CollapsibleContent>  //TODO delete collabsible since it´s unused in LIEFERN
                               <Table>
                                 <TableRow v-if="orderItem.notes[parseInt(index-1)]" class="">
                                   <TableCell colspan="2" class="block w-full rounded-md border mr-1 bg-secondary">

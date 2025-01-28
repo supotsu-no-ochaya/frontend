@@ -159,21 +159,28 @@ function updateOrderTotal(order){
           <AccordionContent>
             <Table>
               <TableBody>
-                <TableRow
-                v-for="orderItem in orderItems">
-                  <TableCell class="w-2/5" v-if="orderItem.order == order.id" >
+                <template 
+                  v-for="orderItem in orderItems">
+                  <TableRow>
+                  <TableCell class="w-max-min" v-if="orderItem.order == order.id" >
                     <div>{{menuItems.find(menuItem => menuItem.id === orderItem.menu_item).name}}</div>
-                  </TableCell>
-                  <TableCell class="w-2/5" v-if="orderItem.order == order.id" >
-                    <div>{{ orderItem.price/100 }}€</div>
-                  </TableCell>
-                  <TableCell class="w-1/5" v-if="orderItem.order == order.id">
-                    <Checkbox
-                      :checked="orderItem.isChecked"
-                      @update:checked="(checked) => handleItemCheckboxChange(order, orderItem, checked)"
-                    />
-                  </TableCell>
-                </TableRow>
+                    </TableCell>
+                    <TableCell class="w-max-min" v-if="orderItem.order == order.id" >
+                      <div>{{ orderItem.price/100 }}€</div>
+                    </TableCell>
+                    <TableCell class="w-max-min" v-if="orderItem.order == order.id">
+                      <Checkbox
+                        :checked="orderItem.isChecked"
+                        @update:checked="(checked) => handleItemCheckboxChange(order, orderItem, checked)"
+                        />
+                    </TableCell>
+                  </TableRow>
+                  <TableRow v-if="orderItem.notes">
+                    <TableCell colspan="3" class="block w-full rounded-md border mr-1 bg-secondary" v-if="orderItem.order == order.id">
+                      {{ orderItem.notes }}
+                    </TableCell>
+                  </TableRow>
+                </template>
               </TableBody>
             </Table>
             <div class="flex items-center justify-center font-bold mt-2" :id="'order-' + order.id">{{ order.id }}: 0.00€</div>

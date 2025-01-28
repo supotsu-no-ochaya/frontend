@@ -10,6 +10,8 @@ import { allStationnames, allOrders, type Order, type AllOrders, trashcan } from
 import type { WatchHandle } from "vue";
 import { orderService } from '@/services/order/orderService';
 import { OrderStatus } from '@/interfaces/order/Order';
+import { LucideTrash2 } from 'lucide-vue-next';
+import {AlertDialog, AlertDialogTrigger,AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogFooter, AlertDialogAction, AlertDialogCancel} from '@/components/ui/alert-dialog/';
 
 
 //* MUTABLE
@@ -88,6 +90,13 @@ const changeState = (activeStation: string, orderIndex: number) => {
 const changeAbholbereit = (activeTab: string, orderIndex: number, itemIndex: number) => {
     allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked = !allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked;
 }
+
+function removeOrder(stationName: string, orderId: string){
+  let index = allOrders[stationName].findIndex(item => item.id == orderId)
+  allOrders[stationName].splice(index, 1)
+}
+
+// console.log(orderService.delete("12g2ac701w63mxe"))
 </script>
 
 <template>
@@ -153,6 +162,20 @@ const changeAbholbereit = (activeTab: string, orderIndex: number, itemIndex: num
                   <TableHead v-for="entry in Array.of<keyof Order>('table' ,'waiter', 'time')" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry === 'time' ? 'indent-0 text-center': ''">
                     {{ order[entry] }}
                   </TableHead>
+                  <AlertDialog>
+                    <AlertDialogTrigger class="fixed ml-2" v-if="order.state">
+                          <LucideTrash2/> 
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle> Möchten Sie wirklich diese Order löschen?</AlertDialogTitle>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter class="justify-self-center">
+                          <AlertDialogCancel>Nein</AlertDialogCancel>
+                          <AlertDialogAction @click="()=>{console.log(order.id); removeOrder(activeStation, order.id)}">Ja</AlertDialogAction> <!--TODO replace console.log with orderService.delete-->
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </TableRow>
               </TableHeader>
               <TableBody class="text-left">

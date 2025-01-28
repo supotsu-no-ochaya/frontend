@@ -99,8 +99,9 @@ async function handleOrderGrabed(person:string, table:string){
   }
 }
 
+// delete them later or add a button
 // cartStore.clearCart()
-// noCartStore.clearCart()
+// lockedStore.clearCart()
 </script>
 
 <template>

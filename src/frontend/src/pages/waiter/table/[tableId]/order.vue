@@ -19,6 +19,7 @@ import CollapsibleContent from "@/components/ui/collapsible/CollapsibleContent.v
 import CollapsibleTrigger from "@/components/ui/collapsible/CollapsibleTrigger.vue";
 import { OrderItemStatus } from "@/interfaces/order/OrderItem";
 import { LucideScrollText } from "lucide-vue-next";
+import { lockedStore } from "@/components/cart.js";
 
 const router = useRouter();
 const route = useRoute("/waiter/table/[tableId]/order");
@@ -119,10 +120,10 @@ function clearCarts(){
     <WaiterControlHeader :label="'Tisch: '+tableId" icon="bill" />
       <Tabs>
         <TabsList class="flex justify-center w-full bg-gradient-to-b from-background">
-          <TabsTrigger value="order" class="w-1/2 bg-gradient-to-b from-background">
+          <TabsTrigger value="order" class="w-1/2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             Bestellung
           </TabsTrigger>
-          <TabsTrigger value="pickup" class="w-1/2 bg-gradient-to-b from-background">
+          <TabsTrigger value="pickup" class="w-1/2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             Liefern
           </TabsTrigger>
         </TabsList>

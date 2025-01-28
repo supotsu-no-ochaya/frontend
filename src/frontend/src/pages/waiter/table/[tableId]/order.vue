@@ -118,11 +118,11 @@ function clearCarts(){
   <DefaultLayout footer="waiter-nav">
     <WaiterControlHeader :label="'Tisch: '+tableId" icon="bill" />
       <Tabs>
-        <TabsList class="flex justify-center w-full">
-          <TabsTrigger value="order" class="w-1/2">
+        <TabsList class="flex justify-center w-full bg-gradient-to-b from-background">
+          <TabsTrigger value="order" class="w-1/2 bg-gradient-to-b from-background">
             Bestellung
           </TabsTrigger>
-          <TabsTrigger value="pickup" class="w-1/2">
+          <TabsTrigger value="pickup" class="w-1/2 bg-gradient-to-b from-background">
             Liefern
           </TabsTrigger>
         </TabsList>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
 import { DefaultLayout } from "@/layouts/default";
-import { useCartStore, lockedCart, lockedStore } from "@/components/cart.js";
+import { useCartStore, lockedStore } from "@/components/cart.js";
 import { Table, TableCell, TableBody, TableRow} from '@/components/ui/table';
 import { Tabs, TabsContent, TabsTrigger, TabsList} from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';

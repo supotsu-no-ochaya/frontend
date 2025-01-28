@@ -9,6 +9,7 @@ import {orderItemService} from "@/services/order/orderItemService.ts";
 import {menuItemService} from "@/services/menu/menuItemService.ts";
 import {paymentService} from "@/services/payment/paymentService.ts";
 import {OrderStatus} from "@/interfaces/order/Order";
+import { lockedStore } from "@/components/cart.js";
 
 import {Table, TableBody, TableCell, TableRow} from '@/components/ui/table';
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion';
@@ -73,8 +74,15 @@ const handleRabattCheckboxClick = (checked: boolean) =>  {
   updateTotalSum();
 }
 
-const handleBezahlenButtonClick = async () =>{
+const handleLockedPersons = ()=>{
+  let persons = lockedStore.noCart.filter(item=> item.table == tableId.value).map(item=> item.person)
+  for (let person of persons){
+    lockedStore.openPerson(tableId.value, person)
+  } //TODO only opens persons, where there is no order
+}
 
+const handleBezahlenButtonClick = async () =>{
+  handleLockedPersons() //Opens all Persons for now
   let  _orderItems: string[] = []
   let _discount: number = 0;
   let _total_amount = 0;
@@ -140,6 +148,7 @@ function updateOrderTotal(order){
     <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-22rem)] w-full">
       <Accordion type="multiple" class="w-4/5 mx-auto">
         <AccordionItem v-for="order in orders" :key="order.id" :value="order.status">
+          //TODO Change to Person an Table
           <AccordionTrigger>Bestellung: {{order.id}}
             <Checkbox
               :v-model="order.isChecked"

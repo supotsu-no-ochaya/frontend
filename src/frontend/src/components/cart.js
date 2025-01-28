@@ -20,8 +20,11 @@ export const lockedCart = defineStore('noCart', () => {
   };
 
   const openPerson = (table, person) =>{
-    const existing = noCart.value.find(item => item.person === person && item.table === table);
-    existing = []
+    let index = noCart.value.findIndex(item => item.person === person && item.table === table);
+    // console.login
+    if (index !== -1) {
+      noCart.value.splice(index, 1);
+    }
   };
 
   const clearCart = () => {

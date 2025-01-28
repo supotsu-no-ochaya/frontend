@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
 import { DefaultLayout } from "@/layouts/default";
-import { useCartStore } from "@/components/cart.js";
+import { useCartStore, lockedCart, lockedStore } from "@/components/cart.js";
 import { Table, TableCell, TableBody, TableRow} from '@/components/ui/table';
 import { Tabs, TabsContent, TabsTrigger, TabsList} from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -24,6 +24,13 @@ const route = useRoute("/waiter/table/[tableId]/order");
 const tableId = computed(() => route.params.tableId);
 
 const cartStore = reactive(useCartStore());
+
+// const lockedStore = reactive(lockedCart())
+
+//TODO delete later
+const lockPerson = (table: string, person:string)=> {
+  lockedStore.lockPerson(table, person)
+}
 
 const addToCart = (product: string, table: string, person: string) => {
   cartStore.addToCart(product,table, person);
@@ -51,6 +58,8 @@ for (let orderItem of cartStore.cart){
 const isOpen = ref(false) //TODO delete
 
 async function handleOrderSend(person:string, table: string) {
+  lockedStore.lockPerson(table, person)
+  console.log(lockedStore.value)
   if (cartStore.cart.filter((item: any) => item.person === person && item.table === table).length > 0) {
     let tableIdInt = parseInt(tableId.value)
 
@@ -91,6 +100,7 @@ async function handleOrderGrabed(person:string, table:string){
 }
 
 // cartStore.clearCart()
+// noCartStore.clearCart()
 </script>
 
 <template>
@@ -111,7 +121,7 @@ async function handleOrderGrabed(person:string, table:string){
             <Accordion type="multiple" class="w-4/5 mx-auto">
               <AccordionItem v-for="person in persons" :key="person" :value="person">
                 <AccordionTrigger>Person: {{person}}
-                  <Button @click="handleOrderSend(person,tableId)" @click.stop> Send Order </Button>
+                  <Button @click="()=>{handleOrderSend(person,tableId)}" @click.stop> Send Order </Button>
                 </AccordionTrigger>
                 <AccordionContent>
                   <Table>

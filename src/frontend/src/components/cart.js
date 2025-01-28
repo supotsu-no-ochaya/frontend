@@ -1,5 +1,38 @@
 import { defineStore } from 'pinia';
 import { useLocalStorage } from '@vueuse/core';
+import { reactive } from 'vue';
+
+export const lockedCart = defineStore('noCart', () => {
+  const noCart = useLocalStorage('noCart', []);
+
+  const lockPerson = (table, person) =>{
+    console.log("init", person, table);
+
+    const existing = noCart.value.find(item => item.person === person && item.table === table);
+    if (existing) {
+      console.log("xxxxxxxxxxx", noCart); //TODO delete later
+      existing.locked = true
+    } else {
+      console.log("init:", person, table);
+      console.log("added smth", noCart.value);
+      noCart.value.push({person: person , table: table, locked: true});
+    }
+  };
+
+  const openPerson = (table, person) =>{
+    const existing = noCart.value.find(item => item.person === person && item.table === table);
+    existing = []
+  };
+
+  const clearCart = () => {
+    noCart.value = [];
+  };
+
+  return {noCart, lockPerson, openPerson, clearCart}
+});
+
+export const lockedStore = reactive(lockedCart())
+
 
 export const useCartStore = defineStore('cart', () => {
   const cart = useLocalStorage('cart', []); // Reactive localStorage-backed cart
@@ -31,7 +64,7 @@ export const useCartStore = defineStore('cart', () => {
   };
 
   const removeFromCart = (product,table, person) => {
-    console.log("Remove from cart: ", cart.value.filter(item => (item.id === product.id && item.table === table && item.person === person)));
+    console.log("Remove from cart: ", cart.value.filter(item => (item.id === product.id && item.table === table && item.person === person))); //TODO delete
     cart.value = cart.value.filter(item => !(item.id === product.id && item.table === table && item.person === person));
     console.log(cart.value)
   };

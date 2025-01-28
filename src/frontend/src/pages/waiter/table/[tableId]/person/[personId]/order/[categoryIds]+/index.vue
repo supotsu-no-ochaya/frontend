@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { DefaultLayout } from "@/layouts/default";
 import { Button } from "@/components/ui/button";
 import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
@@ -9,13 +9,16 @@ import { menuCategService } from "@/services/menu/menuCategService.ts";
 import { menuItemService } from "@/services/menu/menuItemService.ts";
 import { LucideMinus, LucidePlus } from "lucide-vue-next";
 
-import { useCartStore } from "@/components/cart.js";
+import { useCartStore, lockedStore } from "@/components/cart.js";
 import { getIconURL } from "@/services/Icons/getIcons";
+import Swal from 'sweetalert2';
 
 const route = useRoute("/waiter/table/[tableId]/person/[personId]/order/[categoryIds]+/");
 const tableId = computed(() => route.params.tableId);
 const personId = computed(() => route.params.personId);
 const categoryIds = computed(() => route.params.categoryIds);
+const tableIdVal = tableId.value
+const personIdVal = personId.value
 
 const category = computedAsync(async () => {
   return await menuCategService.getById(categoryIds.value[categoryIds.value.length - 1]);
@@ -45,6 +48,26 @@ const clearCart = () => {
   cartStore.clearCart();
 }
 
+onMounted(() => {
+  if ((lockedStore.noCart.filter(item=> item.table == tableId.value && item.person == personId.value).map(item => item.locked))[0]==true){
+    console.log("locked") //ToDo as popup "pay first"
+    showMessage()
+    router.push("/waiter/tables")
+    // router.push("/waiter/table/:tableIdVal") //TODO table ID übernehmen
+  }
+})
+
+function showMessage() {
+  Swal.fire({
+    // title: 'Hallo!',
+    text: `Person ${personIdVal} von Tisch ${tableIdVal} muss zuerst bezahlen.`,
+    // icon: 'info',
+    width: '80vw',
+    position: 'bottom',
+    timer: 2100, // Popup schließt sich automatisch nach 2 Sekunden
+    showConfirmButton: false,
+  });
+}
 </script>
 
 <template>

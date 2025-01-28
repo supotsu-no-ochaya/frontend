@@ -13,12 +13,10 @@ const tableStore = useTableStore();
 
 const addPerson = (table) => {
   tableStore.addPerson(table);
-  
 };
 
 const removePerson = (table) => {
   tableStore.removePerson(table);
-  
 };
 
 

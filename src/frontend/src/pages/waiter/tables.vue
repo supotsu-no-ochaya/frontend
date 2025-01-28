@@ -1,9 +1,36 @@
 <script setup lang="ts">
 import { DefaultLayout } from "@/layouts/default";
-import { ref } from "vue";
+import { reactive, ref, onMounted, onBeforeUnmount } from "vue";
+import { useTableStore } from "@/components/TableInfo";
 import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 
+const tableStore = reactive(useTableStore());
 const nTables = ref(12);
+
+// Initialize timers if they don't exist
+if (tableStore.table.timers.length === 0) {
+  for (let i = 0; i < nTables.value; i++) {
+    tableStore.table.timers.push(null);
+  }
+}
+
+// Set an interval to update the timers
+const updateTimers = () => {
+  setInterval(() => {
+    // Trigger a reactivity update by changing any reactive data, such as a dummy value
+    tableStore.table.timers = [...tableStore.table.timers];
+  }, 1000); // Update every second
+};
+
+// Start the interval on component mount
+onMounted(() => {
+  updateTimers();
+});
+
+// Clear the interval before the component is destroyed
+onBeforeUnmount(() => {
+  clearInterval(updateTimers); // Clear interval when component is unmounted
+});
 </script>
 
 <template>
@@ -14,6 +41,9 @@ const nTables = ref(12);
         <router-link class="mx-auto" :to="{ name: '/waiter/table/[tableId]/', params: { tableId } }">
           <div class="grid place-content-center size-20 bg-primary rounded-full">
             {{ tableId }}
+          </div>
+          <div v-if="tableStore.table.timers[tableId] !== null" class="text-xs">
+            Timer: {{(((new Date()).getTime()-tableStore.table.timers[tableId])/(60*1000)).toFixed(1)}} Minuten
           </div>
         </router-link>
       </template>

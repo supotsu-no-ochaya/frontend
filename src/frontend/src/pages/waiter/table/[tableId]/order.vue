@@ -99,11 +99,15 @@ async function handleOrderGrabed(person:string, table:string){
   }
 }
 
-console.log(cartStore.cart)
+
+
+console.log("our cart", cartStore.cart)
 
 // delete them later or add a button
-// cartStore.clearCart()
-// lockedStore.clearCart()
+function clearCarts(){
+  cartStore.clearCart()
+  lockedStore.clearCart()
+}
 </script>
 
 <template>
@@ -219,5 +223,9 @@ console.log(cartStore.cart)
           </div>
         </TabsContent>
       </Tabs>
+      <!-- for dev puposes TODO delete -->
+      <button class="fixed bottom-24 bg-primary rounded right-4 border " @click="clearCarts">
+        Clear Carts
+      </button>
   </DefaultLayout>
 </template>

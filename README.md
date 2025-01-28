@@ -255,7 +255,70 @@ Durch die Verwendung von **Selectable Templates** können wir flexible und anpas
     - Das Produkt wird nun in der App als nicht verfügbar angezeigt und kann nicht mehr bestellt werden.
 
 
+**Rollen und Rechte**
 
+| Collection             | Rolle         | View / List | Create | Update | Delete |
+|------------------------|--------------|-------------|--------|--------|--------|
+| **users**             | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Ja          | Ja     | Ja     | Ja     |
+|                        | Küchenchef    | Ja          | Ja     | Ja     | Ja     |
+|                        | Küche         | Ja          | Ja     | Ja     | Ja     |
+| **admin_settings**     | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Nein        | Nein   | Nein   | Nein   |
+|                        | Küchenchef    | Ja          | Ja     | Ja     | Ja     |
+|                        | Küche         | Nein        | Nein   | Nein   | Nein   |
+| **event**              | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Nein        | Nein   | Nein   | Nein   |
+|                        | Küchenchef    | Nein        | Nein   | Nein   | Nein   |
+|                        | Küche         | Nein        | Nein   | Nein   | Nein   |
+| **menu_categ**         | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Ja          | Nein   | Nein   | Nein   |
+|                        | Küchenchef    | Ja          | Ja     | Ja     | Ja     |
+|                        | Küche         | Ja          | Nein   | Nein   | Nein   |
+| **menu_item**          | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Ja          | Nein   | Nein   | Nein   |
+|                        | Küchenchef    | Ja          | Ja     | Ja     | Ja     |
+|                        | Küche         | Ja          | Nein   | Nein   | Nein   |
+| **order**              | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Ja          | Ja     | Ja     | Nein   |
+|                        | Küchenchef    | Ja          | Ja     | Ja     | Ja     |
+|                        | Küche         | Ja          | Nein   | Ja     | Nein   |
+| **order_item**         | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Ja          | Ja     | Ja     | Nein   |
+|                        | Küchenchef    | Ja          | Ja     | Ja     | Ja     |
+|                        | Küche         | Ja          | Nein   | Ja     | Nein   |
+| **payment**            | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Ja          | Ja     | Ja     | Ja     |
+|                        | Küchenchef    | Ja          | Ja     | Ja     | Ja     |
+|                        | Küche         | Nein        | Nein   | Nein   | Nein   |
+| **payment_option**     | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Ja          | Nein   | Nein   | Nein   |
+|                        | Küchenchef    | Ja          | Nein   | Nein   | Nein   |
+|                        | Küche         | Nein        | Nein   | Nein   | Nein   |
+| **product**            | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Ja          | Nein   | Nein   | Nein   |
+|                        | Küchenchef    | Ja          | Ja     | Ja     | Ja     |
+|                        | Küche         | Ja          | Nein   | Nein   | Nein   |
+| **product_attribute**  | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Ja          | Nein   | Nein   | Nein   |
+|                        | Küchenchef    | Ja          | Ja     | Ja     | Ja     |
+|                        | Küche         | Ja          | Nein   | Nein   | Nein   |
+| **product_type**       | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Ja          | Nein   | Nein   | Nein   |
+|                        | Küchenchef    | Ja          | Ja     | Ja     | Ja     |
+|                        | Küche         | Ja          | Nein   | Nein   | Nein   |
+| **station**            | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Ja          | Nein   | Nein   | Nein   |
+|                        | Küchenchef    | Ja          | Ja     | Ja     | Ja     |
+|                        | Küche         | Ja          | Nein   | Nein   | Nein   |
+| **user_role**          | **Admin**     | Ja          | Ja     | Ja     | Ja     |
+|                        | Kellner       | Nein        | Nein   | Nein   | Nein   |
+|                        | Küchenchef    | Ja          | Nein   | Nein   | Nein   |
+|                        | Küche         | Nein        | Nein   | Nein   | Nein   |
+
+
+
+TODO:
 - Anleitung DB start/einrichten/hinzufügen
 - Backend docker build
 - Anleitung für Manager (Rechte User, Menü erstellen/änder, Sperren der Produkte, Event starten/downloaden/einrichten)

@@ -6,7 +6,13 @@ import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 
 const tableStore = reactive(useTableStore());
 const nTables = ref(12);
+if (tableStore.table.timers === undefined) {
+  tableStore.table.timers = []
+}
 
+if (tableStore.table.persons === undefined) {
+  tableStore.table.persons = []
+}
 // Initialize timers if they don't exist
 if (tableStore.table.timers.length === 0) {
   for (let i = 0; i < nTables.value; i++) {

@@ -74,7 +74,11 @@ function showMessage() {
   <DefaultLayout footer="waiter-nav" v-if="category">
     <WaiterControlHeader :label="category.name" icon="cutlery" />
     <div class="flex flex-col flex-1 gap-2 p-2">
-      <div> Tisch: {{ tableId }}, Person {{ personId }}</div>
+      <div class="flex justify-end items-center">
+        <div class="w-20 h-20 bg-primary rounded-full"> <!--vertikal zentrieren-->
+          <div class="text-l mb-4 text-center flex justify-center">Tisch: {{ tableId }} Person {{ personId }}</div>
+        </div> 
+      </div>
       <template v-if="subCategories !== null" v-for="subCategory in subCategories">
         <router-link class="group" :to="{ name: '/waiter/table/[tableId]/person/[personId]/order/[categoryIds]+/', params: { tableId, personId, categoryIds: [...categoryIds, subCategory.id] } }">
           <Button class="w-full flex gap-2 group-even:flex-row-reverse" >

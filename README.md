@@ -116,7 +116,145 @@ hhtps://localhost:5173/#/kitchen/
 ```
 ### Bedienung der Datenbank
 
-TODO:
+**Datenbankverwaltung für Manager**  
+Aktuell können Manager alle administrativen Aufgaben direkt über die PocketBase Admin UI durchführen. Diese Anleitung führt durch die notwendigen Schritte, um Benutzerrechte zu verwalten, Menüpunkte zu erstellen oder zu ändern, sowie Produkte zu sperren.
+
+**Zugriff auf die PocketBase Admin UI**
+1. Öffnen Sie Ihren Browser und navigieren Sie zur PocketBase Admin UI unter [https://localhost:8090/_/](https://localhost:8090/_/)  
+   *Hinweis: Stellen Sie sicher, dass Docker und PocketBase korrekt gestartet sind.*
+2. **Anmeldung:**  
+   Melden Sie sich mit den Administratorzugangsdaten an:
+    - **E-Mail:** ``admin@admin.admin``
+    - **Passwort:** ``1234567890``
+
+**Verwaltung von Benutzerrechten und Anlage von neuen Nutzern**
+1. **Benutzerübersicht:**
+    - Navigieren Sie zur Sammlung ``users``.
+    - Hier sehen Sie alle registrierten Benutzer der App.
+2. **Anlage eines neuen Benutzers:**
+    - Klicken Sie auf ``+ New record``.
+    - Tragen Sie die notwendigen Daten ein:
+        - ``email``: E-Mail-Adresse des Benutzers (optional)
+        - ``username``: Benutzername
+        - ``password``: Passwort des Benutzers
+        - ``role``: Rolle des Benutzers (``Kueche``, ``Kellner``, ``Kuechenchef``)
+3. **Benutzerrollen zuweisen:**
+    - Öffnen Sie einen Benutzer, den Sie bearbeiten möchten.
+    - Suchen Sie das Feld ``role`` und wählen Sie die entsprechende Rolle aus der Dropdown-Liste aus (``Kueche``, ``Kellner``, ``Kuechenchef``).
+
+**Erstellung und Änderung von Menüpunkten**
+1. **Menükategorien verwalten:**
+    - Navigieren Sie zur Sammlung ``menu_categ``.
+    - Hier können Sie neue Kategorien hinzufügen oder bestehende bearbeiten.
+    - **Neue Kategorie hinzufügen:**
+        - Klicken Sie auf ``+ New record``.
+        - Tragen Sie die notwendigen Daten ein:
+            - **Name:** Geben Sie den Namen der Kategorie ein (z.B. ``Getränke``, ``Snacks``).
+            - **Parent Category:** Optional, falls die Kategorie untergeordnet sein soll.
+            - **Icon:** Optional, laden Sie ein Icon hoch.
+            - Speichern Sie die Kategorie.
+
+2. **Menüpunkte erstellen/ändern:**
+    - Navigieren Sie zur Sammlung ``menu_item``.
+    - **Neuen Menüpunkt hinzufügen:**
+        - Klicken Sie auf ``+ New record``.
+        - **Name:** Geben Sie den Namen des Menüpunktes ein (z.B. ``Kaffee mit Milch``).
+        - **Preis:** Setzen Sie den Preis. (Der Preis wird in Cent angegeben, also 1€ = 100)
+        - **BOM Template:** Fügen Sie eine JSON-Struktur hinzu, die die Bestandteile des Menüpunkts beschreibt.
+        - **Kategorie:** Wählen Sie die entsprechende Kategorie aus.
+        - **Icon:** Optional, laden Sie ein Icon hoch.
+        - Speichern Sie den Menüpunkt.
+    - **Menüpunkt bearbeiten:**
+        - Wählen Sie einen bestehenden Menüpunkt aus.
+        - Nehmen Sie die gewünschten Änderungen vor und speichern Sie.
+
+#### BOM Templates
+
+Die **BOM Templates** (Bill of Materials) spielen eine zentrale Rolle bei der Verwaltung der Menüpunkte/ Items auf der Speisekarte. Ein Menüpunkt kann entweder einem einzelnen Produkt entsprechen oder ein komplexes Menü mit auswählbaren Optionen sein. Hierbei unterscheiden wir hauptsächlich zwischen **Fixed Templates** und **Selectable Templates**.
+
+**Fixed Template**
+
+In den meisten Fällen entspricht ein Menüpunkt direkt einem oder mehreren Produkten. Dies wird durch ein **Fixed Template** realisiert, bei dem ein Menüpunkt ein festes Produkt enthält, das nicht verändert werden kann.
+Dieses Template kommt auch bei den meisten Menüpunkten zum Einsatz. Eine Cola oder ein Stück Kuchen entsprechen einem einzelnen Produkt und kann daher durch ein **Fixed Template** definiert werden.
+
+**Beispiel:**
+```json
+{
+  "type": "Fixed",
+  "products": [
+    "1535ycesdh5o51m"
+  ]
+}
+```
+
+#### Selectable Template
+
+Für komplexere Menüs, bei denen der Kunde aus verschiedenen Optionen wählen kann, verwenden wir **Selectable Templates**. Diese Templates ermöglichen es, entweder aus einer Liste von Produkt-IDs oder aus verschiedenen Typen (Types) auszuwählen.
+
+**Beispiel für ein Selectable Template (Product Selection):**
+```json
+{
+  "type": "Selection",
+  "selection_specification": "ProductSelection",
+  "options": [
+    {
+      "min_select": 1,
+      "max_select": 2,
+      "selection_specification": "ProductSelection",
+      "products": [
+        "bn6pmb6r44w50m9",
+        "another_product_id"
+      ]
+    }
+  ]
+}
+```
+
+**Beispiel für ein Selectable Template (Type Selection):**
+```json
+{
+  "type": "Selection",
+  "selection_specification": "TypeSelection",
+  "category_id": "some_category_id",
+  "options": [
+    {
+      "min_select": 1,
+      "max_select": 1,
+      "selection_specification": "TypeSelection",
+      "category_id": "another_category_id"
+    }
+  ]
+}
+```
+
+**Erklärung:**
+
+- **type:** Gibt den Typ des BOM an (`Fixed` oder `Selection`).
+- **selection_specification:** Bestimmt die Spezifikation der Auswahl (`ProductSelection` oder `TypeSelection`).
+- **category_id:** Bei `TypeSelection` gibt dies die ID der Kategorie an, aus der Produkte ausgewählt werden können.
+- **options:** Definiert die Auswahloptionen mit Mindest- und Höchstanzahl der auswählbaren Elemente.
+
+**Zusammenspiel der BOM Templates:**
+
+- **Einzelne Produkte als Menüpunkte:** In den meisten Fällen entspricht ein Menüpunkt einem einzelnen Produkt, wie beispielsweise `Cola`. Dies wird durch ein **Fixed Template** erreicht, bei dem nur die Produkt-ID im BOM enthalten ist.
+
+- **Komplexe Menüs mit Auswahlmöglichkeiten:** Für Menüs wie `Kaffee mit Milch` oder eine `Mochi Box`, bei denen der Kunde aus verschiedenen Optionen wählen kann, verwenden wir **Selectable Templates**. Diese ermöglichen es dem Kunden, aus einer festgelegten Anzahl von Produkten oder Typen auszuwählen, um das Menü individuell anzupassen.
+
+Durch die Verwendung von **Selectable Templates** können wir flexible und anpassbare Menüs erstellen, die den Kunden ermöglichen, ihre Bestellungen nach ihren persönlichen Vorlieben zu gestalten. Dies verbessert die Benutzererfahrung und bietet eine größere Vielfalt an Bestellmöglichkeiten.
+
+---
+
+**Sperren von Produkten**
+1. **Produkte verwalten:**
+    - Navigieren Sie zur Sammlung ``product``.
+    - Hier sehen Sie alle verfügbaren Produkte.
+2. **Produkt sperren:**
+    - Öffnen Sie das Produkt, das Sie sperren möchten.
+    - Setzen Sie das Feld ``is_available`` auf ``false``.
+    - Speichern Sie die Änderungen.
+    - Das Produkt wird nun in der App als nicht verfügbar angezeigt und kann nicht mehr bestellt werden.
+
+
 
 - Anleitung DB start/einrichten/hinzufügen
 - Backend docker build

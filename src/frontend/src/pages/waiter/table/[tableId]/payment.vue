@@ -47,6 +47,8 @@ let orderItems = reactive(computedAsync(() =>
   )
 ));
 
+
+
 let menuItems = computedAsync(() => menuItemService.getAll());
 
 // Method to handle checkbox changes and update the total dynamically
@@ -148,7 +150,7 @@ function updateOrderTotal(order){
     <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-22rem)] w-full">
       <Accordion type="multiple" class="w-4/5 mx-auto">
         <AccordionItem v-for="order in orders" :key="order.id" :value="order.status">
-          //TODO Change to Person an Table
+          <!--TODO delete collabsible since it´s unused in LIEFERN-->
           <AccordionTrigger>Bestellung: {{order.id}}
             <Checkbox
               :v-model="order.isChecked"

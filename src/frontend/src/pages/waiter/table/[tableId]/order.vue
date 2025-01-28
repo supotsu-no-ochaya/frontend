@@ -99,6 +99,8 @@ async function handleOrderGrabed(person:string, table:string){
   }
 }
 
+console.log(cartStore.cart)
+
 // delete them later or add a button
 // cartStore.clearCart()
 // lockedStore.clearCart()
@@ -121,7 +123,7 @@ async function handleOrderGrabed(person:string, table:string){
           <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-14rem)] w-full">
             <Accordion type="multiple" class="w-4/5 mx-auto">
               <template  v-for="person in persons" :key="person" :value="person">
-                <AccordionItem v-if="cartStore.cart.find(item=> item.person == person && !item.isSend)">
+                <AccordionItem v-if="cartStore.cart.find(item=> item.person == person && !item.isSend && item.table == tableId)">
                   <AccordionTrigger>Person: {{person}}
                     <Button @click="()=>{handleOrderSend(person,tableId)}" @click.stop> Send Order </Button>
                   </AccordionTrigger>
@@ -176,7 +178,7 @@ async function handleOrderGrabed(person:string, table:string){
           <div class="relative mt-4 px-8 overflow-y-auto max-h-[calc(100vh-14rem)] w-full">
             <Accordion type="multiple" class="w-4/5 mx-auto">
               <template  v-for="person in persons" :key="person" :value="person">
-                <AccordionItem v-if="cartStore.cart.find(item=> item.person == person && item.isSend)">
+                <AccordionItem v-if="cartStore.cart.find(item=> item.person == person && item.isSend && item.table == tableId)">
                   <AccordionTrigger>Person: {{person}}
                     <Button @click="handleOrderGrabed(person,tableId)" @click.stop> Geliefert </Button>
                   </AccordionTrigger>

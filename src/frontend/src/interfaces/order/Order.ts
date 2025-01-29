@@ -11,6 +11,7 @@ export enum OrderStatus {
 }
 
 export type Order = BaseEntity & {
+  person: number;
   table: number;
   /**
    * Relation to `users` => store user ID

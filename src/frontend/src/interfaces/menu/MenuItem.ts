@@ -5,12 +5,13 @@ import type {MenuCateg} from "@/interfaces/menu/MenuCateg.ts";
 export type MenuItem<T extends BomTemplate> = NamedEntity & {
   disabled: boolean;
   price: number;
-  bom_template: T;
+  bom_template?: T;
   category: string;
   /**
    * Relation to `station`
    */
   station: string;
+  icon?: string;
 
   expand?: {
     station?: Station;

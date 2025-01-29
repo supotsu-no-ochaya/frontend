@@ -21,7 +21,14 @@ export class CrudService<T> {
   async update(id: string, data: Partial<T>): Promise<T> {
     return this.pb.collection(this.collectionName).update(id, data);
   }
+  
   async delete(id: string): Promise<boolean> {
+    // try {
+    //   await this.pb.collection(this.collectionName).delete(id);
+    //   return true;
+    // } catch (error) {
+    //   console.error("Your Error at deleting:", error)
+    // }
     return this.pb.collection(this.collectionName).delete(id);
   }
   async exists(id: string): Promise<boolean> {

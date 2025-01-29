@@ -8,9 +8,11 @@ import { userService } from "@/services/user/userService";
 import { debounce } from "lodash";
 //TODO debounce von vue.use
 import { OrderStatus } from "@/interfaces/order/Order";
+import { stationService } from "@/services/misc/stationService";
 
 const environment = reactive({
   allStationnames_raw: computedAsync(() => menuCategService.getStationsCategories()),
+  stations_name_list: computedAsync(() => stationService.getAll()),    // ["Mochi", "Onigiri"]   //TODO hardcoded: insert non visible Stationen -> later insert visible Stationen
   OrderItems_raw: computedAsync(() => orderItemService.getAll()),
   Orders_raw: computedAsync(() => orderService.getAll()),
   menu_items_raw: computedAsync(() => menuItemService.getAll()),
@@ -39,30 +41,36 @@ async function addFetchedIDs(){
 
 setTimeout(() => {
   addFetchedIDs();
-}, 12_000);
-
-
-// syncs new data every 20 sec
-setInterval(async () => {
-  let temp_1 = await fetchChanges(await menuCategService.getStationsCategories())
-  let temp_2 = await fetchChanges(await orderItemService.getAll())
-  let temp_3 = await fetchChanges(await orderService.getAll())
-  let temp_4 = await fetchChanges(await menuItemService.getAll())
-  let temp_5 = await fetchChanges(await userService.getAll())
-
-  if (temp_1.length){environment.allStationnames_raw = temp_1}
-  if (temp_2.length){environment.OrderItems_raw = temp_2}
-  if (temp_3.length){environment.Orders_raw = temp_3}
-  if (temp_4.length){environment.menu_items_raw = temp_4}
-  if (temp_5.length){environment.users_raw = temp_5}
-}, 20_000);
+  setInterval(async () => {
+    let temp_1 = await fetchChanges(await menuCategService.getStationsCategories())
+    let temp_2 = await fetchChanges(await orderItemService.getAll())
+    let temp_3 = await fetchChanges(await orderService.getAll())
+    let temp_4 = await fetchChanges(await menuItemService.getAll())
+    let temp_5 = await fetchChanges(await userService.getAll())
+    
+    if (temp_1.length){environment.allStationnames_raw = temp_1}
+    if (temp_2.length){environment.OrderItems_raw = temp_2}
+    if (temp_3.length){environment.Orders_raw = temp_3}
+    if (temp_4.length){environment.menu_items_raw = temp_4}
+    if (temp_5.length){environment.users_raw = temp_5}
+    // syncs new data every 3 sec
+  }, 3_000);
+  // syncs new datafirst after 5 sec
+}, 5_000);
 
 // adds all stations
-watch(()=>environment.allStationnames_raw, (newStationnames)=>{
+watch(()=>(environment.allStationnames_raw, environment.stations_name_list), ()=>{
   if (Array.isArray(environment.allStationnames_raw)) {
-    // Zugriff auf die Daten, sobald sie geladen sind
-    for (let station of environment.allStationnames_raw){
-      allStationnames.push(station.name)
+    if (Array.isArray(environment.stations_name_list)) {
+      // Zugriff auf die Daten, sobald sie geladen sind
+      for (let station of environment.allStationnames_raw){
+        console.log(environment.allStationnames_raw, environment.stations_name_list)
+        for (let stationname of environment.stations_name_list){
+          if (stationname.name.includes(station.name)){
+            allStationnames.push(stationname.name)
+          }
+        }
+      }
     }
   }
 });
@@ -287,6 +295,8 @@ watch(allStationnames, (newStationnames) => {
   });
 }, { deep: true, immediate: true });
 
+
+//TODO delete this if unused
 function addStation(Stationname: string){
   if (!allOrders[Stationname]) {
     allOrders[Stationname] = []

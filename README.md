@@ -12,7 +12,7 @@
 ### [Frontend](https://github.com/supotsu-no-ochaya/frontend)
 
 - **Framework:** [Vue.js](https://vuejs.org/)
-- **Styling:** [TailwindCSS](https://tailwindcss.com/)
+- **Styling:** [TailwindCSS](https://tailwindcss.com/) (Version v3.X)
 - **Komponentenbibliothek:** [Shadcn/UI](https://ui.shadcn.dev/)
 - **Programmiersprache:** TypeScript
 
@@ -325,7 +325,5 @@ Für die Entwicklung oder das lokale Bauen des Docker-Images siehe die [Contribu
 Zum Starten des Docker-Images, sowohl mit als auch ohne Testdaten, siehe die Anleitung [Run the Backend](https://github.com/supotsu-no-ochaya/backend/blob/main/README.md#run-the-backend).
 
 TODO:
-- Anleitung DB start/einrichten/hinzufügen
-- Backend docker build
-- Anleitung für Manager (Rechte User, Menü erstellen/änder, Sperren der Produkte, Event starten/downloaden/einrichten)
+- Username und password
 

@@ -316,7 +316,13 @@ Durch die Verwendung von **Selectable Templates** können wir flexible und anpas
 |                        | Küchenchef    | Ja          | Nein   | Nein   | Nein   |
 |                        | Küche         | Nein        | Nein   | Nein   | Nein   |
 
-
+**Bauen/Entwickeln/Nutzen der Docker-Images**
+<br>
+Zum Bauen des Release-Docker-Images siehe die [Release-Anleitung](https://github.com/supotsu-no-ochaya/backend/blob/main/README.md#release).
+<br>
+Für die Entwicklung oder das lokale Bauen des Docker-Images siehe die [Contribute-Anleitung](https://github.com/supotsu-no-ochaya/backend/blob/main/README.md#contribute).
+<br>
+Zum Starten des Docker-Images, sowohl mit als auch ohne Testdaten, siehe die Anleitung [Run the Backend](https://github.com/supotsu-no-ochaya/backend/blob/main/README.md#run-the-backend).
 
 TODO:
 - Anleitung DB start/einrichten/hinzufügen

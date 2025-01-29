@@ -3,6 +3,7 @@ import type {Station} from "@/interfaces/misc/Station.ts";
 import type {MenuCateg} from "@/interfaces/menu/MenuCateg.ts";
 
 export type MenuItem<T extends BomTemplate> = NamedEntity & {
+  disabled: boolean;
   price: number;
   bom_template: T;
   category: string;

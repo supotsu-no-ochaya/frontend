@@ -272,15 +272,17 @@ Durch die Verwendung von **Selectable Templates** können wir flexible und anpas
 
 ---
 
-**Sperren von Produkten**
-1. **Produkte verwalten:**
-    - Navigieren Sie zur Sammlung ``product``.
-    - Hier sehen Sie alle verfügbaren Produkte.
-2. **Produkt sperren:**
-    - Öffnen Sie das Produkt, das Sie sperren möchten.
+**Deaktivieren von Produkten / Menüpunkten**
+
+1. **Produkte / Menu Items verwalten:**
+    - Navigieren Sie zur Sammlung ``product`` / ``menu_item``.
+    - Hier sehen Sie alle verfügbaren Produkte / Menüpunkte.
+
+2. **Produkt / Menu Item sperren:**
+    - Öffnen Sie das Produkt / Menüpunkt, das Sie sperren möchten.
     - Setzen Sie das Feld ``is_available`` auf ``false``.
     - Speichern Sie die Änderungen.
-    - Das Produkt wird nun in der App als nicht verfügbar angezeigt und kann nicht mehr bestellt werden.
+    - Das Produkt / Menüpunkt wird nun in der App als nicht verfügbar angezeigt und kann nicht mehr bestellt werden.
 
 
 **Rollen und Rechte**

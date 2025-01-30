@@ -168,6 +168,34 @@ Aktuell können Manager alle administrativen Aufgaben direkt über die PocketBas
         - Wählen Sie einen bestehenden Menüpunkt aus.
         - Nehmen Sie die gewünschten Änderungen vor und speichern Sie.
 
+#### Produkt-Typen und Menükategorien
+
+Es werden Produkte und Menükategorien über die Tabellen `product_type` und `menu_categ` organisiert.
+
+**Produkt-Typen (`product_type`)** klassifizieren Produkte nach ihren Eigenschaften zur internen Verwaltung und Filterung.
+
+- **Beispiele:** Getränke, Snacks, Desserts
+- **Eigenschaften:**
+   - Keine Hierarchie
+   - Einfache Kategorisierung
+
+**Menükategorien (`menu_categ`)** strukturieren die Speisekarte und können hierarchisch organisiert werden.
+
+- **Beispiele:**
+   - **Vorspeisen**
+   - **Hauptgerichte**
+      - **Vegetarisch**
+      - **Fleisch**
+   - **Getränke**
+- **Eigenschaften:**
+   - **Hierarchie:** Kategorien können Eltern- und Unterkategorien haben
+   - **Strukturierung:** Ermöglicht eine übersichtliche und navigierbare Speisekarte
+
+**Unterschiede:**
+- **Hierarchie:** Nur `menu_categ` unterstützt verschachtelte Kategorien
+- **Verwendung:** `product_type` für die interne Produktklassifizierung (für beispielsweise die BOM Templates), `menu_categ` für die externe Menüdarstellung
+
+
 #### BOM Templates
 
 Die **BOM Templates** (Bill of Materials) spielen eine zentrale Rolle bei der Verwaltung der Menüpunkte/ Items auf der Speisekarte. Ein Menüpunkt kann entweder einem einzelnen Produkt entsprechen oder ein komplexes Menü mit auswählbaren Optionen sein. Hierbei unterscheiden wir hauptsächlich zwischen **Fixed Templates** und **Selectable Templates**.

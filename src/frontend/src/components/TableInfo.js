@@ -4,7 +4,8 @@ import { useLocalStorage } from '@vueuse/core';
 export const useTableStore = defineStore('table', () => {
   const table = useLocalStorage('table', {
     persons: {}, // For counting people by ID
-    timers: {} // To store additional properties or data
+    timers: {}, // To store additional properties or data
+    tableEmpty: {}
   });
 
   const addPerson = (id) => {

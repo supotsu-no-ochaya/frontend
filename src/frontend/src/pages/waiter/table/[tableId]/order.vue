@@ -64,6 +64,8 @@ async function handleOrderSend(person:string, table: string) {
   lockedStore.lockPerson(table, person)
   console.log(lockedStore.value)
   if (cartStore.cart.filter((item: any) => item.person === person && item.table === table).length > 0) {
+    tableStore.table.tableEmpty[table-1] = false;
+    tableStore.table.timers[table-1] = new Date().getTime()
     let tableIdInt = parseInt(tableId.value)
 
     const waiter = authService.getCurrentUser()
@@ -84,7 +86,7 @@ async function handleOrderSend(person:string, table: string) {
         })
         orderItem.orderId.push(response.id)
 
-        tableStore.table.timers[parseInt(table)] = new Date().getTime()
+
       }
 
       orderItem.isSend = true
@@ -160,7 +162,7 @@ function clearCarts(){
                                   <TableBody>
                                     <TableRow class="w-full">
                                       <TableCell class="flex" >
-                                        <input id="input" 
+                                        <input id="input"
                                               v-model="orderItem.notes[parseInt(index-1)]"
                                               type="text" maxlength="300" rows="1"
                                               class="w-full rounded-md border text-ellipsis overflow-hidden">

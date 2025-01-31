@@ -29,15 +29,18 @@
 
 - Bestellungen aufnehmen (Anmerkungen)
 - Bezahlung (Rechnung splitten)
+- Tinkgeld aufgeben
+- Möglichkeit Wartezeit zu tracken
 
 ### Küche
 
-- Gefilterte Anzeige nach Kategorie
+- Gefilterte Anzeige nach Kategorie/Station
 - Ändern des Status (Stornieren) von Bestellungen
 
-### Betreiber
+### Management
 
-- Rechte verwalten (Nutzer, Menü)
+- Rechte verwalten (Nutzer)
+- Anpassen Speisekarte
 - Sperren von Speisen
 
 ## Installation (Windows)

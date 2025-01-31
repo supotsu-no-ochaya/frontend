@@ -7,6 +7,7 @@ export type Payment = BaseEntity & {
    * Relation to `order`
    */
   order_items: string[];
+  person: number;
   total_amount: number;
   tip_amount?: number;
   discount_percent?: number;

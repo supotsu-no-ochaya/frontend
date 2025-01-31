@@ -33,7 +33,7 @@ const footerLinks: FooterLink[] = [
 
 <template>
   <template v-for="link of footerLinks" :key="link">
-    <router-link :to="link.location" :title="link.alt" class="p-2">
+    <router-link :to="link.location" :title="link.alt" class="px-4 py-2">
       <img :src="link.iconSrc" :alt="link.alt" class="size-8" />
     </router-link>
   </template>

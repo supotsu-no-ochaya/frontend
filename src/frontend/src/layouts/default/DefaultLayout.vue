@@ -40,7 +40,7 @@ const props = defineProps<{
 
 <template>
   <div class="min-h-screen grid grid-rows-[auto,1fr,auto]">
-    <header class="flex items-center p-2 gap-x-2 bg-gradient-to-b from-primary via-primary to-transparent">
+    <header class="sticky top-0 z-10 flex items-center p-2 gap-x-2 bg-gradient-to-b from-primary via-primary to-transparent">
       <img :src="logoSrc" alt="logo" class="block rounded-full size-12" />
       <p>
         Supotso no Ochaya
@@ -66,7 +66,7 @@ const props = defineProps<{
     <main :class="props.class">
       <slot />
     </main>
-    <footer class="border-t bg-background sticky bottom-0">
+    <footer class="sticky bottom-0 z-10 border-t bg-background">
       <div v-if="footer" class="flex gap-2 justify-around items-baseline p-2">
         <component :is="footers[footer]" />
       </div>

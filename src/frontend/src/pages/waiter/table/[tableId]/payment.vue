@@ -199,29 +199,36 @@ function updateTotalSum() {
             <Table>
               <TableBody>
                 <template v-for="orderItem in orderItems">
-                  <TableRow>
-                    <TableCell class="w-max-min" v-if="orderItem.order == order.id">
+                  <TableRow v-if="orderItem.order == order.id">
+                    <!-- Name Column -->
+                    <TableCell class="w-2/5">
                       <div>{{ menuItems.find(menuItem => menuItem.id === orderItem.menu_item).name }}</div>
                     </TableCell>
-                    <TableCell class="w-max-min" v-if="orderItem.order == order.id">
-                      <div>{{ orderItem.price / 100 }}€</div>
+
+                    <!-- Price Column (Right-aligned) -->
+                    <TableCell class="w-1/5 text-right pr-4">
+                      <div>{{ (orderItem.price / 100).toFixed(2) }}€</div>
                     </TableCell>
-                    <TableCell class="w-max-min" v-if="orderItem.order == order.id">
+
+                    <!-- Checkbox Column (Centered) -->
+                    <TableCell class="w-1/5 text-center">
                       <Checkbox
                         :checked="orderItem.isChecked"
                         @update:checked="(checked) => handleItemCheckboxChange(order, orderItem, checked)"
                       />
                     </TableCell>
                   </TableRow>
-                  <TableRow v-if="orderItem.notes">
-                    <TableCell colspan="3" class="block w-full rounded-md border mr-1 bg-secondary"
-                               v-if="orderItem.order == order.id">
+
+                  <!-- Notes Row -->
+                  <TableRow v-if="orderItem.notes && orderItem.order == order.id">
+                    <TableCell colspan="3" class="block w-full rounded-md border bg-secondary">
                       {{ orderItem.notes }}
                     </TableCell>
                   </TableRow>
                 </template>
               </TableBody>
             </Table>
+
           </AccordionContent>
         </AccordionItem>
       </Accordion>

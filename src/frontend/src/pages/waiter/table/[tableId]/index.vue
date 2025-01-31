@@ -10,6 +10,7 @@ import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 const route = useRoute("/waiter/table/[tableId]/");
 const tableId = computed(() => route.params.tableId);
 const tableStore = useTableStore();
+const personBezahlt = true; //TODO
 
 const addPerson = (table) => {
   tableStore.addPerson(table);
@@ -37,7 +38,9 @@ if (tableStore.table[tableId.value] === undefined){
               <LucideShirt class="size-full" />
             </div>
             <span class="absolute inset-2 grid place-content-center font-bold">
-              {{ personId }}
+              <div class="":class="personBezahlt ? '' : 'text-red-500'">
+                {{ personId }}
+              </div>
             </span>
           </div>
         </router-link>

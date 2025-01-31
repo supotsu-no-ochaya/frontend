@@ -66,7 +66,7 @@ const props = defineProps<{
     <main :class="props.class">
       <slot />
     </main>
-    <footer class="border-t">
+    <footer class="border-t bg-background sticky bottom-0">
       <div v-if="footer" class="flex gap-2 justify-around items-baseline p-2">
         <component :is="footers[footer]" />
       </div>

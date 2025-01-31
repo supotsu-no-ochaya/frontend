@@ -174,7 +174,7 @@ function updateOrderTotal(order) {
 
   const element = document.getElementById(id);
   if (element !== null)
-    element.textContent = order.id + ': ' + (order.total / 100).toFixed(2) + '€';
+    element.textContent = 'Summe: ' + (order.total / 100).toFixed(2) + '€';
 }
 
 </script>
@@ -187,7 +187,7 @@ function updateOrderTotal(order) {
       <Accordion type="multiple" class="w-4/5 mx-auto">
         <AccordionItem v-for="order in orders" :key="order.id" :value="order.status">
           <!--TODO delete collabsible since it´s unused in LIEFERN-->
-          <AccordionTrigger>Bestellung: {{ order.id }}
+          <AccordionTrigger>Person: {{ order.person }}
             <Checkbox
               :v-model="order.isChecked"
               @update:checked="(checked) => handleOrderCheckboxChange(order, checked)"
@@ -221,8 +221,7 @@ function updateOrderTotal(order) {
                 </template>
               </TableBody>
             </Table>
-            <div class="flex items-center justify-center font-bold mt-2" :id="'order-' + order.id">{{ order.id }}:
-              0.00€</div>
+            <div class="flex items-center justify-center font-bold mt-2" :id="'order-' + order.id"></div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>

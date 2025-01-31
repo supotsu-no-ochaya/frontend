@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
 import { DefaultLayout } from "@/layouts/default";
-import { useCartStore, lockedStore } from "@/components/cart.js";
+import { useCartStore } from "@/components/cart.js";
+import { useTableStore} from "@/components/TableInfo";
 import { Table, TableCell, TableBody, TableRow} from '@/components/ui/table';
 import { Tabs, TabsContent, TabsTrigger, TabsList} from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -18,12 +19,14 @@ import CollapsibleContent from "@/components/ui/collapsible/CollapsibleContent.v
 import CollapsibleTrigger from "@/components/ui/collapsible/CollapsibleTrigger.vue";
 import { OrderItemStatus } from "@/interfaces/order/OrderItem";
 import { LucideScrollText } from "lucide-vue-next";
+import { lockedStore } from "@/components/cart.js";
 
 const router = useRouter();
 const route = useRoute("/waiter/table/[tableId]/order");
 const tableId = computed(() => route.params.tableId);
 
 const cartStore = reactive(useCartStore());
+const tableStore = reactive(useTableStore());
 
 // const lockedStore = reactive(lockedCart())
 
@@ -80,6 +83,8 @@ async function handleOrderSend(person:string, table: string) {
           notes: orderItem.notes[i]
         })
         orderItem.orderId.push(response.id)
+
+        tableStore.table.timers[parseInt(table)] = new Date().getTime()
       }
 
       orderItem.isSend = true
@@ -114,11 +119,11 @@ function clearCarts(){
   <DefaultLayout footer="waiter-nav">
     <WaiterControlHeader :label="'Tisch: '+tableId" icon="bill" />
       <Tabs>
-        <TabsList class="flex justify-center w-full">
-          <TabsTrigger value="order" class="w-1/2">
+        <TabsList class="flex justify-center w-full bg-gradient-to-b from-background">
+          <TabsTrigger value="order" class="w-1/2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             Bestellung
           </TabsTrigger>
-          <TabsTrigger value="pickup" class="w-1/2">
+          <TabsTrigger value="pickup" class="w-1/2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             Liefern
           </TabsTrigger>
         </TabsList>

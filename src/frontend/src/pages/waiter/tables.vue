@@ -69,8 +69,9 @@ onBeforeUnmount(() => {
         <router-link class="mx-auto flex flex-col items-center"
                      :to="{ name: '/waiter/table/[tableId]/', params: { tableId } }">
           <!-- Table Circle -->
-          <div class="w-20 h-20 grid place-content-center size-20 rounded-full"
-               :class="tableStore.table.tableEmpty[tableId-1] ? 'bg-primary': 'bg-orange-500'">
+          <div class="w-20 h-20 grid place-content-center size-20 rounded-full bg-primary">
+            <!--NEEDS FIXING BY CHECKING ALL ORDER STATUSES-->
+            <!--:class="tableStore.table.tableEmpty[tableId-1] ? 'bg-primary': 'bg-orange-500'">-->
             <div>
               {{ tableId }}
             </div>

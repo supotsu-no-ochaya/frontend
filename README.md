@@ -4,7 +4,8 @@
 
 **Supotsu no Ochaya** ist eine entwickelte App für die Verwaltung von Vereinsrestaurants. Sie erleichtert Kellnern die Aufnahme von Bestellungen, ermöglicht der Küche eine klare Übersicht über offene Bestellungen und gibt Administratoren die Kontrolle über Personalmanagement und die Bearbeitung der Speisekarte.
 
-$${\color{red}Die \space entwickelte \space App \space ist \space ausschließlich \space für \space ein \space sicheres \space oder \space geschlossenes \space WLAN \space ausgelegt.}$$
+$${\color{red}Die \space entwickelte \space App \space ist \space ausschließlich \space für \space ein \space sicheres \space oder}$$<br>
+$${\color{red}geschlossenes \space WLAN \space ausgelegt.}$$
 ---
 
 ## Technologie-Stack
@@ -47,7 +48,7 @@ $${\color{red}Die \space entwickelte \space App \space ist \space ausschließlic
 
 ### init
 
-- installieren Sie Docker Desktop https://docs.docker.com/desktop/setup/install/windows-install/
+- installieren Sie Docker Desktop ps://docs.docker.com/desktop/setup/install/windows-install/
 - installieren Sie Node (version 23.6.0) 
   `Powershell`
 
@@ -76,7 +77,7 @@ docker compose up
 - überprüfen Sie ob die Datenbank erreichbar ist mit
 
 ```shell
-https://localhost:8090/_/
+http://localhost:8090/_/
 ```
 
 - **email**: admin@admin.admin
@@ -96,24 +97,24 @@ wenn Sie keine Berechtigung zur Ausführung haben, versuchen Sie
 - öffen Sie das Projekt mit
 
 ```shell
-https://localhost:5173/#/auth/login/
+http://localhost:5173/#/auth/login/
 ```
 ## Bedienungsanleitung
 
 ### Navigation der verschiedenen Ansichten
 - Login 
 ```shell
-https://localhost:5173/#/auth/login/
+http://localhost:5173/#/auth/login/
 ```
 - Testuser liegen bereits unter der Tabelle 'Users' in der Datenbank bereit. Um die verschieden Rollen zu testen, ist es notwendig das Passwort anzupassen. Bitte lesen Sie dazu die nachfolgende Datenbankanleitung. 
 
 - Serviceansicht
 ```shell
-https://localhost:5173/#/waiter/tables/
+http://localhost:5173/#/waiter/tables/
 ```
 - Küchenansicht
 ```shell
-https://localhost:5173/#/kitchen/
+http://localhost:5173/#/kitchen/
 ```
 ### Bedienung der Datenbank
 
@@ -121,7 +122,7 @@ https://localhost:5173/#/kitchen/
 Aktuell können Manager alle administrativen Aufgaben direkt über die PocketBase Admin UI durchführen. Diese Anleitung führt durch die notwendigen Schritte, um Benutzerrechte zu verwalten, Menüpunkte zu erstellen oder zu ändern, sowie Produkte zu sperren.
 
 **Zugriff auf die PocketBase Admin UI**
-1. Öffnen Sie Ihren Browser und navigieren Sie zur PocketBase Admin UI unter [https://localhost:8090/_/](https://localhost:8090/_/)  
+1. Öffnen Sie Ihren Browser und navigieren Sie zur PocketBase Admin UI unter [http://localhost:8090/_/](http://localhost:8090/_/)  
    *Hinweis: Stellen Sie sicher, dass Docker und PocketBase korrekt gestartet sind.*
 2. **Anmeldung:**  
    Melden Sie sich mit den test Administratorzugangsdaten an:

@@ -10,14 +10,15 @@ import { allStationnames, allOrders, type Order, type AllOrders, trashcan } from
 import type { WatchHandle } from "vue";
 import { orderService } from '@/services/order/orderService';
 import { OrderStatus } from '@/interfaces/order/Order';
-import { orderItemService } from '@/services/order/orderItemService';
-
+import { LucideTrash2 } from 'lucide-vue-next';
+import {AlertDialog, AlertDialogTrigger,AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogFooter, AlertDialogAction, AlertDialogCancel} from '@/components/ui/alert-dialog/';
 
 
 //* MUTABLE
 const maxActiveStations = 2;  //number of displayed stations at a time
 const trashlength = 4  //max length of trashcan
 // MUTABLE //
+
 
 const activeFoodStations = reactive<string[]>([]);
 
@@ -68,7 +69,7 @@ watch(
               //rmve x+1 el of trashcan
               const removedOrderId = trashcan[stationName].pop
               const removedOrderIndex = stationOrders.findIndex(
-                (order) => order.id === removedOrderId
+                (order: any) => order.id === removedOrderId
               );
               if (removedOrderIndex !== -1) {
                 //rmve completed order from allOrders
@@ -89,6 +90,13 @@ const changeState = (activeStation: string, orderIndex: number) => {
 const changeAbholbereit = (activeTab: string, orderIndex: number, itemIndex: number) => {
     allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked = !allOrders[activeTab][orderIndex].orderlist[itemIndex].clicked;
 }
+
+function removeOrder(stationName: string, orderId: string){
+  let index = allOrders[stationName].findIndex(item => item.id == orderId)
+  allOrders[stationName].splice(index, 1)
+}
+
+// console.log(orderService.delete("12g2ac701w63mxe"))
 </script>
 
 <template>
@@ -128,14 +136,14 @@ const changeAbholbereit = (activeTab: string, orderIndex: number, itemIndex: num
       <div v-for="(activeStation, activeStationIndex) in activeFoodStations"
         class="w-1/2 h-full border-gray-500 px-[8vw]"
         :class="activeStationIndex !== 0 ? 'border-l' : ''">
-        <h2 class="text-xl italic mb-4">{{ activeStation }}</h2>
+        <h2 class="text-xl italic mb-4 text-center">{{ activeStation }}</h2>
         <Table v-if="allOrders[activeStation].length">
           <TableBody>
             <TableRow class="text-base whitespace-nowrap">
-              <TableCell v-for="list in ['Tisch' , 'Kellner', 'Eingegangen um']"
+              <TableCell v-for="list_entry in ['Tisch' , 'Kellner', 'Eingegangen um']"
                 class="indent-[-4rem] text-center w-1/3"
-                :class="list === 'Eingegangen um' ? 'text-center indent-0' : ''">
-                {{ list }}
+                :class="list_entry === 'Eingegangen um' ? 'text-center indent-0' : ''">
+                {{ list_entry }}
               </TableCell>
             </TableRow>
           </TableBody>
@@ -154,6 +162,20 @@ const changeAbholbereit = (activeTab: string, orderIndex: number, itemIndex: num
                   <TableHead v-for="entry in Array.of<keyof Order>('table' ,'waiter', 'time')" :key=entry class="indent-[-4rem] font-normal w-1/3" :class="entry === 'time' ? 'indent-0 text-center': ''">
                     {{ order[entry] }}
                   </TableHead>
+                  <AlertDialog>
+                    <AlertDialogTrigger class="fixed ml-2" v-if="order.state">
+                          <LucideTrash2/> 
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle> Möchten Sie wirklich diese Order löschen?</AlertDialogTitle>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter class="justify-self-center">
+                          <AlertDialogCancel>Nein</AlertDialogCancel>
+                          <AlertDialogAction @click="()=>{console.log(order.id); removeOrder(activeStation, order.id)}">Ja</AlertDialogAction> <!--TODO replace console.log with orderService.delete-->
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </TableRow>
               </TableHeader>
               <TableBody class="text-left">

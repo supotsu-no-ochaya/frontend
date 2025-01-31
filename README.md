@@ -76,7 +76,7 @@ docker compose up
 - überprüfen Sie ob die Datenbank erreichbar ist mit
 
 ```shell
-hhtps://localhost:8090/_/
+https://localhost:8090/_/
 ```
 
 - **email**: admin@admin.admin

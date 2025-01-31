@@ -144,7 +144,7 @@ const handleAdjustPayment = async () => {
   });
   paymentService.create({ order_items: _orderItems, discount_percent: adjustedDiscountAmount.value, total_amount: adjustedTotalAmount.value, tip_amount: tipValue.value });
   await sleep(1000);
-  await router.push(0)
+  await router.go(0)
 }
 
 // Method to calculate total for a order based on checked items

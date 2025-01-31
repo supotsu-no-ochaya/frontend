@@ -4,7 +4,7 @@
 
 **Supotsu no Ochaya** ist eine entwickelte App für die Verwaltung von Vereinsrestaurants. Sie erleichtert Kellnern die Aufnahme von Bestellungen, ermöglicht der Küche eine klare Übersicht über offene Bestellungen und gibt Administratoren die Kontrolle über Personalmanagement und die Bearbeitung der Speisekarte.
 
-**Die entwickelte App ist ausschließlich für ein sicheres oder geschlossenes WLAN ausgelegt.**
+$${\color{red}Die \space entwickelte \space App \space ist \space ausschließlich \space für \space ein \space sicheres \space oder \space geschlossenes \space WLAN \space ausgelegt.}$$
 ---
 
 ## Technologie-Stack
@@ -29,7 +29,7 @@
 
 - Bestellungen aufnehmen (Anmerkungen)
 - Bezahlung (Rechnung splitten)
-- Tinkgeld aufgeben
+- Trinkgeld aufgeben
 - Möglichkeit Wartezeit zu tracken
 
 ### Küche
@@ -47,15 +47,15 @@
 
 ### init
 
-- install Docker Desktop https://docs.docker.com/desktop/setup/install/windows-install/
-- install Node (version 23.6.0) 
+- installieren Sie Docker Desktop https://docs.docker.com/desktop/setup/install/windows-install/
+- installieren Sie Node (version 23.6.0) 
   `Powershell`
 
 ```shell
 winget install OpenJS.NodeJS.LTS
 ```
 
-or
+oder
 
 `Powershell`
 
@@ -63,7 +63,7 @@ or
 winget install OpenJS.NodeJS
 ```
 
-- git clone repository in dictionary
+- 'git clone repository' in dem dictionary
 
 ### startup
 
@@ -73,7 +73,7 @@ winget install OpenJS.NodeJS
 docker compose up
 ```
 
-- check if database is reachable with
+- überprüfen Sie ob die Datenbank erreichbar ist mit
 
 ```shell
 hhtps://localhost:8090/_/
@@ -86,14 +86,14 @@ hhtps://localhost:8090/_/
 
 ```shell
 cd src/frontend/
-npm i  # only once or after package.lock changes
+npm i  # nur einmal oder nachdem package.lock verändert wurde
 npm run dev
 ```
 
-if you don't have permission to execute try
-"powershell -executionpolicy bypass" in front
+wenn Sie keine Berechtigung zur Ausführung haben, versuchen Sie 
+"powershell -executionpolicy bypass" davor
 
-- open projekt with
+- öffen Sie das Projekt mit
 
 ```shell
 https://localhost:5173/#/auth/login/
@@ -105,9 +105,7 @@ https://localhost:5173/#/auth/login/
 ```shell
 hhtps://localhost:5173/#/auth/login/
 ```
-- Testuser Service: **user:** **password:**
-- Testuser Küche: **user:** **password:**
-- Testuser Manager: **user:** **password:** 
+- Testuser liegen bereits unter der Tabelle 'Users' in der Datenbank bereit. Um die verschieden Rollen zu testen, ist es notwendig das Passwort anzupassen. Bitte lesen Sie dazu die nachfolgende Datenbankanleitung. 
 
 - Serviceansicht
 ```shell
@@ -126,9 +124,10 @@ Aktuell können Manager alle administrativen Aufgaben direkt über die PocketBas
 1. Öffnen Sie Ihren Browser und navigieren Sie zur PocketBase Admin UI unter [https://localhost:8090/_/](https://localhost:8090/_/)  
    *Hinweis: Stellen Sie sicher, dass Docker und PocketBase korrekt gestartet sind.*
 2. **Anmeldung:**  
-   Melden Sie sich mit den Administratorzugangsdaten an:
+   Melden Sie sich mit den test Administratorzugangsdaten an:
     - **E-Mail:** ``admin@admin.admin``
     - **Passwort:** ``1234567890``
+    - Hinweis: Die Anmeldedaten sind vor einem Gebrauch außerhalb eines einfachen Tests, anzupassen. Tun Sie dies indem Sie unter dem Bereich 'System' die Elemente in der Tabelle '_superusers' anpassen.
 
 **Verwaltung von Benutzerrechten und Anlage von neuen Nutzern**
 1. **Benutzerübersicht:**
@@ -356,7 +355,4 @@ Zum Bauen des Release-Docker-Images siehe die [Release-Anleitung](https://github
 Für die Entwicklung oder das lokale Bauen des Docker-Images siehe die [Contribute-Anleitung](https://github.com/supotsu-no-ochaya/backend/blob/main/README.md#contribute).
 <br>
 Zum Starten des Docker-Images, sowohl mit als auch ohne Testdaten, siehe die Anleitung [Run the Backend](https://github.com/supotsu-no-ochaya/backend/blob/main/README.md#run-the-backend).
-
-TODO:
-- Username und password
 

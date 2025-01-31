@@ -31,6 +31,7 @@
 
 ### Service
 
+- Ausgelegt für die Nutzung auf dem Smartphone
 - Bestellungen aufnehmen (Anmerkungen)
 - Bezahlung (Rechnung splitten)
 - Trinkgeld aufgeben
@@ -38,6 +39,7 @@
 
 ### Küche
 
+- Ausgelegt für die Nutzung auf dem Tablet
 - Gefilterte Anzeige nach Kategorie/Station
 - Ändern des Status (Stornieren) von Bestellungen
 

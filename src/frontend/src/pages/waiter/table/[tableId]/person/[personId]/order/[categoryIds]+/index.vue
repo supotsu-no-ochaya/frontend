@@ -76,8 +76,13 @@ function showMessage() {
     <div class="flex flex-col flex-1 gap-2 p-2">
       <div class="flex justify-end items-center">
         <div class="w-20 h-20 bg-primary rounded-full"> <!--vertikal zentrieren-->
-          <div class="text-l mb-4 text-center flex justify-center">Tisch: {{ tableId }} Person {{ personId }}</div>
-        </div> 
+          <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
+            <div class="text-l text-center">
+              <p>Tisch: {{ tableId }}</p>
+              <p>Person {{ personId }}</p>
+            </div>
+          </div>
+        </div>
       </div>
       <template v-if="subCategories !== null" v-for="subCategory in subCategories">
         <router-link class="group" :to="{ name: '/waiter/table/[tableId]/person/[personId]/order/[categoryIds]+/', params: { tableId, personId, categoryIds: [...categoryIds, subCategory.id] } }">
@@ -100,8 +105,8 @@ function showMessage() {
               <LucideMinus />
             </Button>
             <div class="bg-background rounded-xl min-w-8 grid place-content-center">
-              {{ cartStore.cart.find(item => item.id === menuItem.id && item.table === tableId && item.person === personId) ? 
-              cartStore.cart.find(item => item.id === menuItem.id && item.table === tableId && item.person === personId).quantity 
+              {{ cartStore.cart.find(item => item.id === menuItem.id && item.table === tableId && item.person === personId) ?
+              cartStore.cart.find(item => item.id === menuItem.id && item.table === tableId && item.person === personId).quantity
               : 0 }}
             </div>
             <Button size="icon" class="bg-background" @click="addToCart(menuItem,tableId, personId)">

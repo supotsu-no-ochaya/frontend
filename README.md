@@ -5,8 +5,9 @@
 **Supotsu no Ochaya** ist eine entwickelte App für die Verwaltung von Vereinsrestaurants. Sie erleichtert Kellnern die Aufnahme von Bestellungen, ermöglicht der Küche eine klare Übersicht über offene Bestellungen und gibt Administratoren die Kontrolle über Personalmanagement und die Bearbeitung der Speisekarte.
 
 
->[!Caution]
->Die entwickelte App ist auschließlich für ein sicheres oder geschlossenes WLAN ausgelegt. 
+> [!CAUTION]
+> Die entwickelte App ist ausschließlich für ein sicheres oder geschlossenes WLAN ausgelegt.
+
 
 ---
 
@@ -15,8 +16,8 @@
 ### [Frontend](https://github.com/supotsu-no-ochaya/frontend)
 
 - **Framework:** [Vue.js](https://vuejs.org/)
-- **Styling:** [TailwindCSS](https://tailwindcss.com/) (Version v3.X)
-- **Komponentenbibliothek:** [Shadcn/UI](https://ui.shadcn.dev/)
+- **Styling:** [TailwindCSS](https://v3.tailwindcss.com/) (Version v3.X)
+- **Komponentenbibliothek:** [Shadcn/Vue](https://www.shadcn-vue.com/)
 - **Programmiersprache:** TypeScript
 
 ### [Backend](https://github.com/supotsu-no-ochaya/backend)
@@ -89,7 +90,7 @@ http://localhost:8090/_/
 
 ```shell
 cd src/frontend/
-npm i  # nur einmal oder nachdem package.lock verändert wurde
+npm install  # nur einmal oder nachdem package.lock verändert wurde
 npm run dev
 ```
 

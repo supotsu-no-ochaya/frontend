@@ -103,17 +103,17 @@ https://localhost:5173/#/auth/login/
 ### Navigation der verschiedenen Ansichten
 - Login 
 ```shell
-hhtps://localhost:5173/#/auth/login/
+https://localhost:5173/#/auth/login/
 ```
 - Testuser liegen bereits unter der Tabelle 'Users' in der Datenbank bereit. Um die verschieden Rollen zu testen, ist es notwendig das Passwort anzupassen. Bitte lesen Sie dazu die nachfolgende Datenbankanleitung. 
 
 - Serviceansicht
 ```shell
-hhtps://localhost:5173/#/waiter/tables/
+https://localhost:5173/#/waiter/tables/
 ```
 - Küchenansicht
 ```shell
-hhtps://localhost:5173/#/kitchen/
+https://localhost:5173/#/kitchen/
 ```
 ### Bedienung der Datenbank
 

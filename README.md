@@ -4,8 +4,10 @@
 
 **Supotsu no Ochaya** ist eine entwickelte App für die Verwaltung von Vereinsrestaurants. Sie erleichtert Kellnern die Aufnahme von Bestellungen, ermöglicht der Küche eine klare Übersicht über offene Bestellungen und gibt Administratoren die Kontrolle über Personalmanagement und die Bearbeitung der Speisekarte.
 
+
 > [!CAUTION]
 > Die entwickelte App ist ausschließlich für ein sicheres oder geschlossenes WLAN ausgelegt.
+
 
 ---
 
@@ -129,7 +131,8 @@ Aktuell können Manager alle administrativen Aufgaben direkt über die PocketBas
    Melden Sie sich mit den test Administratorzugangsdaten an:
     - **E-Mail:** ``admin@admin.admin``
     - **Passwort:** ``1234567890``
-    - Hinweis: Die Anmeldedaten sind vor einem Gebrauch außerhalb eines einfachen Tests, anzupassen. Tun Sie dies indem Sie unter dem Bereich 'System' die Elemente in der Tabelle '_superusers' anpassen.
+>[!WARNING]
+> Die Anmeldedaten sind vor einem Gebrauch außerhalb eines einfachen Tests, anzupassen. Tun Sie dies indem Sie unter dem Bereich 'System' die Elemente in der Tabelle '_superusers' anpassen.
 
 **Verwaltung von Benutzerrechten und Anlage von neuen Nutzern**
 1. **Benutzerübersicht:**

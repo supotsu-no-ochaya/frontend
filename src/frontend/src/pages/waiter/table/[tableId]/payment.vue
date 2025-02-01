@@ -68,13 +68,10 @@ const handleItemCheckboxChange = (order: any, orderItem: any, checked: boolean) 
   // Update the item's checked status
   orderItem.isChecked = checked;
   // console.log(orderItem)
-  order.isChecked = orderItems.value.every(orderitem => orderitem.isChecked)
+  order.isChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).every(orderitem => orderitem.isChecked)
   // console.log(order.isChecked)
-  if (order.isChecked){
-
-  }
   // console.log("orders", orders.value)
-  order.someChecked = orderItems.value.some(orderitem => orderitem.isChecked)
+  order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked)
   // console.log(order.someChecked)
 
   // Recalculate the total for this order
@@ -121,18 +118,11 @@ const handleRabattCheckboxClick = (checked: boolean) => {
 
 const handleLockedPersons = () => {
   console.log(orders.value)
-  // for (let order of orders.value){
   let persons = orders.value.filter((order)=>order.isChecked === true).map(order=>order.person)
   console.log(persons)
   for (let person of persons) {
     lockedStore.openPerson(tableId.value, person.toString());
-  // }
-  // let persons = lockedStore.noCart.filter(item => item.table == tableId.value).map(item => item.person);
-  } //TODO only opens persons, where there is no order
-}
-
-const handleBezahlenButtonClick = async () => {
-  isPopoverOpen.value = true; // Open the popover
+  }
 }
 
 const handleConfirmPayment = async () => {
@@ -197,20 +187,9 @@ function calculateTotalSum() {
   return totalSum;
 }
 
-
-
 function updateTotalSum() {
   document.getElementById("totalSum").textContent = "Total Sum: " + calculateTotalSum() + "€";
 }
-
-function updateOrderTotal(order) {
-  const id = "order-" + order.id;
-
-  const element = document.getElementById(id);
-  if (element !== null)
-    element.textContent = 'Summe: ' + (order.total / 100).toFixed(2) + '€';
-}
-
 </script>
 
 <template>

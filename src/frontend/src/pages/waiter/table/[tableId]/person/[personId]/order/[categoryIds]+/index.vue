@@ -74,7 +74,16 @@ function showMessage() {
   <DefaultLayout footer="waiter-nav" v-if="category">
     <WaiterControlHeader :label="category.name" icon="cutlery" />
     <div class="flex flex-col flex-1 gap-2 p-2">
-      <div> Tisch: {{ tableId }}, Person {{ personId }}</div>
+      <div class="flex justify-end items-center">
+        <div class="w-20 h-20 bg-primary rounded-full"> <!--vertikal zentrieren-->
+          <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
+            <div class="text-l text-center">
+              <p>Tisch: {{ tableId }}</p>
+              <p>Person {{ personId }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
       <template v-if="subCategories !== null" v-for="subCategory in subCategories">
         <router-link class="group" :to="{ name: '/waiter/table/[tableId]/person/[personId]/order/[categoryIds]+/', params: { tableId, personId, categoryIds: [...categoryIds, subCategory.id] } }">
           <Button class="w-full flex gap-2 group-even:flex-row-reverse" >
@@ -88,16 +97,16 @@ function showMessage() {
       </template>
     </div>
     <div class="grid grid-cols-2 p-2 gap-2">
-      <template v-for="menuItem in menuItems">
-        <div class="bg-primary rounded-xl mt-5 flex-col flex">
+      <template v-for="menuItem in menuItems" >
+        <div v-if="!menuItem.disabled" class="bg-primary rounded-xl mt-5 flex-col flex">
          <img class="mx-auto px-6 py-2 w-3/5 bg-background rounded-xl -mt-5" :src="getIconURL(menuItem)" :alt="menuItem.name" />
           <div class="flex justify-evenly px-1 py-2">
             <Button size="icon" class="bg-background" @click="subFromCart(menuItem,tableId, personId)">
               <LucideMinus />
             </Button>
             <div class="bg-background rounded-xl min-w-8 grid place-content-center">
-              {{ cartStore.cart.find(item => item.id === menuItem.id && item.table === tableId && item.person === personId) ? 
-              cartStore.cart.find(item => item.id === menuItem.id && item.table === tableId && item.person === personId).quantity 
+              {{ cartStore.cart.find(item => item.id === menuItem.id && item.table === tableId && item.person === personId) ?
+              cartStore.cart.find(item => item.id === menuItem.id && item.table === tableId && item.person === personId).quantity
               : 0 }}
             </div>
             <Button size="icon" class="bg-background" @click="addToCart(menuItem,tableId, personId)">

@@ -20,10 +20,13 @@ import { Input } from '@/components/ui/input'; // Import shadcn-vue Input
 import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 import { OrderItemStatus } from "@/interfaces/order/OrderItem.ts";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
+import {useTableStore} from "@/components/TableInfo";
 
 const router = useRouter();
 const route = useRoute("/waiter/table/[tableId]/payment");
 const tableId = computed(() => route.params.tableId);
+const tableStore = useTableStore()
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 let Rabatt = reactive({ value: 0.10, checked: false });
 let isPopoverOpen = ref(false); // State to control popover visibility
 let tipValue = ref(); // State for tip input
@@ -108,7 +111,6 @@ const calculateOrderTotal = (order) => {
     }
   }
   order.total = total;
-  updateOrderTotal(order);
   updateTotalSum();
 };
 
@@ -133,8 +135,10 @@ const handleBezahlenButtonClick = async () => {
   isPopoverOpen.value = true; // Open the popover
 }
 
-const handleConfirmPayment = () => {
+const handleConfirmPayment = async () => {
   isPopoverOpen.value = false; // Close the popover
+  tableStore.table.tableEmpty[tableId.value-1] = true;
+  tableStore.table.timers[tableId.value-1] = null;
   handleLockedPersons(); // Open all Persons for now
   let _orderItems: string[] = [];
   let _total_amount = 0;
@@ -152,8 +156,10 @@ const handleConfirmPayment = () => {
   paymentService.create({ order_items: _orderItems, payment_option: paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1', discount_percent: _discount, total_amount: _total_amount, tip_amount: tipValue.value });
 }
 
-const handleAdjustPayment = () => {
+const handleAdjustPayment = async () => {
   isAdjustPopoverOpen.value = false; // Close the popover
+  tableStore.table.tableEmpty[tableId.value-1] = true;
+  tableStore.table.timers[tableId.value-1] = null;
   let _orderItems: string[] = [];
   orderItems.value.forEach(orderItem => {
     if (orderItem.isChecked) {
@@ -173,7 +179,6 @@ const calculateTotal = (order, orderItem, checked) => {
   }
 
   updateTotalSum();
-  updateOrderTotal(order);
 
   return order.total;
 };
@@ -230,23 +235,29 @@ function updateOrderTotal(order) {
             <Table>
               <TableBody>
                 <template v-for="orderItem in orderItems">
-                  <TableRow>
-                    <TableCell class="w-max-min" v-if="orderItem.order == order.id">
+                  <TableRow v-if="orderItem.order == order.id">
+                    <!-- Name Column -->
+                    <TableCell class="min-w-max">
                       <div> {{ menuItems.find(menuItem => menuItem.id === orderItem.menu_item).name }} </div>
                     </TableCell>
-                    <TableCell class="w-max-min" v-if="orderItem.order == order.id">
-                      <div> {{ orderItem.price / 100 }}€ </div>
+
+                    <!-- Price Column (Right-aligned) -->
+                    <TableCell class="min-w-max text-right pr-4">
+                      <div>{{ (orderItem.price / 100).toFixed(2) }}€</div>
                     </TableCell>
-                    <TableCell class="w-max-min" v-if="orderItem.order == order.id">
+
+                    <!-- Checkbox Column (Centered) -->
+                    <TableCell class="w-1/5 text-center">
                       <Checkbox
                         :checked="orderItem.isChecked"
                         @update:checked="(checked) => handleItemCheckboxChange(order, orderItem, checked)"
                       />
                     </TableCell>
                   </TableRow>
-                  <TableRow v-if="orderItem.notes">
-                    <TableCell colspan="3" class="block w-full rounded-md border mr-1 bg-secondary"
-                               v-if="orderItem.order == order.id">
+
+                  <!-- Notes Row -->
+                  <TableRow v-if="orderItem.notes && orderItem.order == order.id">
+                    <TableCell colspan="3" class="block w-full rounded-md border bg-secondary">
                       {{ orderItem.notes }}
                     </TableCell>
                   </TableRow>

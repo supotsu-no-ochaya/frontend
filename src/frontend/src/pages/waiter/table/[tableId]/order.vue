@@ -189,10 +189,12 @@ function clearCarts(){
                     <Table>
                       <TableBody as-child>
                         <template v-for="orderItem in cartStore.cart.filter((item: any) => item.person === person && item.table === tableId)">
-                          <template v-if="orderItem.isSend" v-for="index in orderItem.quantity">
+                          <template v-if="orderItem.isSend  && orderItem.station ===''" v-for="index in orderItem.quantity">
                             <Collapsible as-child v-model:open="orderItem.isOpen[parseInt(index-1)]">
                               <CollapsibleTrigger as-child @click="()=>{if (orderItem.notes[parseInt(index-1)]!==''){orderItem.isOpen[parseInt(index-1)]=true}}">
-                                <TableRow as-child>
+                                <TableRow as-child v-model="orderItem.isChecked[index-1]" 
+                                @click="orderItem.isChecked[index-1] = !orderItem.isChecked[index-1]" 
+                                :class="{'line-through': orderItem.isChecked[index-1]}">
                                   <TableCell class="max-w-min" as-child>
                                     {{orderItem.name}}
                                   </TableCell>

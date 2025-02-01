@@ -46,8 +46,9 @@ export const useCartStore = defineStore('cart', () => {
       existing.quantity += 1;
       existing.notes.push("")
       existing.isOpen.push(false)
+      existing.isChecked.push(false)
     } else {
-      cart.value.push({ ...product, quantity: 1, table, person, notes: [""], isOpen: [], isSend: false, orderId: [] });
+      cart.value.push({ ...product, quantity: 1, table, person, notes: [""], isOpen: [], isChecked: [], isSend: false, orderId: [] });
     }
   };
 

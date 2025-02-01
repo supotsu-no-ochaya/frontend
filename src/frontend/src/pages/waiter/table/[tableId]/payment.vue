@@ -19,16 +19,20 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Input } from '@/components/ui/input'; // Import shadcn-vue Input
 import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 import { OrderItemStatus } from "@/interfaces/order/OrderItem.ts";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
+import DialogTitle from "@/components/ui/dialog/DialogTitle.vue";
+import { paymentOptionService } from "@/services/payment/paymentOptionService";
 
 const router = useRouter();
 const route = useRoute("/waiter/table/[tableId]/payment");
 const tableId = computed(() => route.params.tableId);
 let Rabatt = reactive({ value: 0.10, checked: false });
 let isPopoverOpen = ref(false); // State to control popover visibility
-let tipValue = ref(0); // State for tip input
+let tipValue = ref(); // State for tip input
 let isAdjustPopoverOpen = ref(false); // State to control the second popover
 let adjustedTotalAmount = ref(0); // State for adjusted total amount input
 let adjustedDiscountAmount = ref(0); // State for adjusted discount amount input
+let paymentOption = ref('cash')
 
 let orders = reactive(computedAsync(() =>
   orderService.getAll().then((orders) =>
@@ -65,6 +69,11 @@ const handleItemCheckboxChange = (order: any, orderItem: any, checked: boolean) 
   // Recalculate the total for this order
   calculateTotal(order, orderItem, checked);
 };
+
+function togglePaymentOption(option: string){
+  paymentOption.value = option
+  console.log(paymentOption)
+}
 
 function handleOrderCheckboxChange(order, checked) {
   // Update the checked status of all items in the order
@@ -122,11 +131,11 @@ const handleConfirmPayment = () => {
       orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt);
     }
   });
-  paymentService.create({ order_items: _orderItems, discount_percent: _discount, total_amount: _total_amount, tip_amount: tipValue.value });
+  paymentService.create({ order_items: _orderItems, payment_option: paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1', discount_percent: _discount, total_amount: _total_amount, tip_amount: tipValue.value });
 }
 
 const handleAdjustPayment = () => {
-  isAdjustPopoverOpen.value = false; // Close the popover
+  trinkgeld.value = false; // Close the popover
   let _orderItems: string[] = [];
   orderItems.value.forEach(orderItem => {
     if (orderItem.isChecked) {
@@ -134,7 +143,7 @@ const handleAdjustPayment = () => {
       orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt);
     }
   });
-  paymentService.create({ order_items: _orderItems, discount_percent: adjustedDiscountAmount.value, total_amount: adjustedTotalAmount.value, tip_amount: tipValue.value });
+  paymentService.create({ order_items: _orderItems, payment_option: paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1', discount_percent: adjustedDiscountAmount.value, total_amount: adjustedTotalAmount.value, tip_amount: tipValue.value });
 }
 
 // Method to calculate total for a order based on checked items
@@ -164,6 +173,8 @@ function calculateTotalSum() {
   }
   return totalSum;
 }
+
+
 
 function updateTotalSum() {
   document.getElementById("totalSum").textContent = "Total Sum: " + calculateTotalSum() + "€";
@@ -239,24 +250,38 @@ function updateOrderTotal(order) {
     </div>
 
     <!-- Footer Section -->
-    <div class="flex items-center fixed bottom-16 left-0 w-full bg-primary text-lg font-bold text-center py-4">
-      <Popover v-model:open="isPopoverOpen">
-        <PopoverTrigger asChild>
-          <Button class="w-1/5 ml-2 bg-secondary active:bg-primary text-black">
+    <div class="flex items-center fixed bottom-16 left-0 w-full bg-primary text-lg font-bold text-center py-4 ">
+      <Dialog class="rounded-md"> 
+
+      <!-- </Dialog>v-model:open="isPopoverOpen"> -->
+        <DialogTrigger class="w-1/5 min-w-min ml-2 bg-secondary active:bg-secondary text-black rounded-sm">
             Bezahlen
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent class="w-full ml-4">
-          <div class="flex flex-col gap-4">
-            <h2 class="text-lg font-bold">Bestätigen Sie die Zahlung</h2>
-            <p>Trinkgeld in ct:</p>
-            <Input v-model="tipValue" type="number" placeholder="Trinkgeld in ct" />
-            <Button @click="handleConfirmPayment" class="w-full">Bezahlen</Button>
-          </div>
-        </PopoverContent>
-      </Popover>
+        </DialogTrigger>
+        <DialogContent class="w-11/12 max-w-[425px] border-amber-900 border-opacity-40 border rounded-md">
+          <DialogHeader>
+            <DialogTitle class="text-left mb-2"> Übersicht </DialogTitle>
+            <DialogDescription>
+              <button @click="togglePaymentOption('cash');":class="paymentOption=='cash' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2">
+                BAR
+              </button>
+              <button @click="togglePaymentOption('card');" :class="paymentOption=='card' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2 mb-2">
+                Karte
+              </button>
+              <Input v-model="tipValue" type="number" placeholder="Trinkgeld in ct" class=""/>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter class="justify-between flex w-full">
+            <Suspense>
+              <strong class="" id="totalSum">Totale Summe: {{ calculateTotalSum() / 100 }}€</strong>
+            </Suspense>
+            <button @click="handleConfirmPayment" class="bg-primary active:bg-secondary h-full max-w-min px-2 py-1 rounded-sm" type="submit">
+              Bezahlen
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <Suspense>
-        <strong class="w-3/5" id="totalSum">Total Sum: {{ calculateTotalSum() / 100 }}€</strong>
+        <strong class="w-3/5" id="totalSum">Totale Summe: {{ calculateTotalSum() / 100 }}€</strong>
       </Suspense>
       <Popover v-model:open="isAdjustPopoverOpen">
         <PopoverTrigger asChild>

@@ -19,9 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Input } from '@/components/ui/input'; // Import shadcn-vue Input
 import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 import { OrderItemStatus } from "@/interfaces/order/OrderItem.ts";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
-import DialogTitle from "@/components/ui/dialog/DialogTitle.vue";
-import { paymentOptionService } from "@/services/payment/paymentOptionService";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 
 const router = useRouter();
 const route = useRoute("/waiter/table/[tableId]/payment");
@@ -42,7 +40,8 @@ let orders = reactive(computedAsync(() =>
       .map((order) => ({
         ...order,              // Spread existing properties
         total: 0,        // Add the new property
-        isChecked: false // Add the new property
+        isChecked: false, // Add the new property
+        someChecked: false,
       }))
   )
 ));
@@ -65,6 +64,15 @@ let menuItems = computedAsync(() => menuItemService.getAll());
 const handleItemCheckboxChange = (order: any, orderItem: any, checked: boolean) => {
   // Update the item's checked status
   orderItem.isChecked = checked;
+  // console.log(orderItem)
+  order.isChecked = orderItems.value.every(orderitem => orderitem.isChecked)
+  // console.log(order.isChecked)
+  if (order.isChecked){
+
+  }
+  // console.log("orders", orders.value)
+  order.someChecked = orderItems.value.some(orderitem => orderitem.isChecked)
+  // console.log(order.someChecked)
 
   // Recalculate the total for this order
   calculateTotal(order, orderItem, checked);
@@ -74,6 +82,11 @@ function togglePaymentOption(option: string){
   paymentOption.value = option
   console.log(paymentOption)
 }
+
+const toggleChecked = (order) => {
+  order.isChecked = !order.isChecked;
+  // console.log("Neuer Wert:", order.isChecked);
+};
 
 function handleOrderCheckboxChange(order, checked) {
   // Update the checked status of all items in the order
@@ -105,9 +118,14 @@ const handleRabattCheckboxClick = (checked: boolean) => {
 }
 
 const handleLockedPersons = () => {
-  let persons = lockedStore.noCart.filter(item => item.table == tableId.value).map(item => item.person);
+  console.log(orders.value)
+  // for (let order of orders.value){
+  let persons = orders.value.filter((order)=>order.isChecked === true).map(order=>order.person)
+  console.log(persons)
   for (let person of persons) {
-    lockedStore.openPerson(tableId.value, person);
+    lockedStore.openPerson(tableId.value, person.toString());
+  // }
+  // let persons = lockedStore.noCart.filter(item => item.table == tableId.value).map(item => item.person);
   } //TODO only opens persons, where there is no order
 }
 
@@ -135,7 +153,7 @@ const handleConfirmPayment = () => {
 }
 
 const handleAdjustPayment = () => {
-  trinkgeld.value = false; // Close the popover
+  isAdjustPopoverOpen.value = false; // Close the popover
   let _orderItems: string[] = [];
   orderItems.value.forEach(orderItem => {
     if (orderItem.isChecked) {
@@ -198,12 +216,15 @@ function updateOrderTotal(order) {
       <Accordion type="multiple" class="w-4/5 mx-auto">
         <AccordionItem v-for="order in orders" :key="order.id" :value="order.status">
           <!--TODO delete collabsible since it´s unused in LIEFERN-->
-          <AccordionTrigger>Person: {{ order.person }}
+          <AccordionTrigger> Person: {{ order.person }}
             <Checkbox
-              :v-model="order.isChecked"
-              @update:checked="(checked) => handleOrderCheckboxChange(order, checked)"
-              @click.stop
-            />
+              :checked="order.isChecked"
+              :indeterminate="order.someChecked && !order.isChecked"
+              @update:checked="(checked) =>{handleOrderCheckboxChange(order, checked); console.log(order.isChecked)}"
+              @click.stop="toggleChecked(order)"
+              :class="{'bg-ring': order.someChecked && !order.isChecked,
+                        '': !order.someChecked
+              }" />
           </AccordionTrigger>
           <AccordionContent>
             <Table>
@@ -211,10 +232,10 @@ function updateOrderTotal(order) {
                 <template v-for="orderItem in orderItems">
                   <TableRow>
                     <TableCell class="w-max-min" v-if="orderItem.order == order.id">
-                      <div>{{ menuItems.find(menuItem => menuItem.id === orderItem.menu_item).name }}</div>
+                      <div> {{ menuItems.find(menuItem => menuItem.id === orderItem.menu_item).name }} </div>
                     </TableCell>
                     <TableCell class="w-max-min" v-if="orderItem.order == order.id">
-                      <div>{{ orderItem.price / 100 }}€</div>
+                      <div> {{ orderItem.price / 100 }}€ </div>
                     </TableCell>
                     <TableCell class="w-max-min" v-if="orderItem.order == order.id">
                       <Checkbox

@@ -31,6 +31,7 @@ let isAdjustPopoverOpen = ref(false); // State to control the second popover
 let adjustedTotalAmount = ref(0); // State for adjusted total amount input
 let adjustedDiscountAmount = ref(0); // State for adjusted discount amount input
 let paymentOption = ref('cash')
+const openAccordions = ref(new Set());
 
 let orders = reactive(computedAsync(() =>
   orderService.getAll().then((orders) =>
@@ -42,6 +43,7 @@ let orders = reactive(computedAsync(() =>
         total: 0,        // Add the new property
         isChecked: false, // Add the new property
         someChecked: false,
+        accordion: false, 
       }))
   )
 ));
@@ -82,6 +84,18 @@ function togglePaymentOption(option: string){
   paymentOption.value = option
   console.log(paymentOption)
 }
+
+// const toggleAccordion = (order) => {
+//   order.accordion = !order.accordion; // Toggle accordion manually
+// };
+
+const toggleAccordion = (orderId) => {
+  if (openAccordions.value.has(orderId)) {
+    openAccordions.value.delete(orderId); // Close if already open
+  } else {
+    openAccordions.value.add(orderId); // Open if closed
+  }
+};
 
 const toggleChecked = (order) => {
   order.isChecked = !order.isChecked;
@@ -216,7 +230,7 @@ function updateOrderTotal(order) {
       <Accordion type="multiple" class="w-4/5 mx-auto">
         <AccordionItem v-for="order in orders" :key="order.id" :value="order.status">
           <!--TODO delete collabsible since it´s unused in LIEFERN-->
-          <AccordionTrigger> Person: {{ order.person }}
+          <AccordionTrigger @click="()=>{toggleAccordion(order.id) ;console.log('orders', orders, openAccordions)}" > Person: {{ order.person }}
             <Checkbox
               :checked="order.isChecked"
               :indeterminate="order.someChecked && !order.isChecked"
@@ -226,7 +240,7 @@ function updateOrderTotal(order) {
                         '': !order.someChecked
               }" />
           </AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent v-if="openAccordions.has(order.id)">
             <Table>
               <TableBody>
                 <template v-for="orderItem in orderItems">

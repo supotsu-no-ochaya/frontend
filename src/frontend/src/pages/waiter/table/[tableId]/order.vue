@@ -28,13 +28,9 @@ const tableId = computed(() => route.params.tableId);
 const cartStore = reactive(useCartStore());
 const tableStore = reactive(useTableStore());
 
-// const lockedStore = reactive(lockedCart())
+
 
 //TODO delete later
-const lockPerson = (table: string, person:string)=> {
-  lockedStore.lockPerson(table, person)
-}
-
 const addToCart = (product: string, table: string, person: string) => {
   cartStore.addToCart(product,table, person);
 };
@@ -58,11 +54,9 @@ for (let orderItem of cartStore.cart){
   }
 }
 
-const isOpen = ref(false) //TODO delete
-
 async function handleOrderSend(person:string, table: string) {
   lockedStore.lockPerson(table, person)
-  console.log(lockedStore.value)
+  console.log("lockedstore:", lockedStore.value)
   if (cartStore.cart.filter((item: any) => item.person === person && item.table === table).length > 0) {
     tableStore.table.tableEmpty[table-1] = false;
     tableStore.table.timers[table-1] = new Date().getTime()
@@ -79,21 +73,19 @@ async function handleOrderSend(person:string, table: string) {
           order: order.id,
           price: orderItem.price,
           products: _bom,
-          status: OrderItemStatus.Aufgegeben,
+          status: orderItem.station === "" ? OrderItemStatus.Abholbereit : OrderItemStatus.Aufgegeben,
           menu_item: orderItem.id,
           menu_item_name: orderItem.name,
           notes: orderItem.notes[i]
         })
         orderItem.orderId.push(response.id)
 
-
       }
-
       orderItem.isSend = true
 
-      if (orderItem.station !== "") {
-        cartStore.removeFromCart(orderItem, table, person);
-      }
+      // if (orderItem.station !== "") {
+      //   cartStore.removeFromCart(orderItem, table, person);
+      // }
     }
   }
 }
@@ -110,7 +102,7 @@ async function handleOrderGrabed(person:string, table:string){
 
 console.log("our cart", cartStore.cart)
 
-// delete them later or add a button
+// delete them later
 function clearCarts(){
   cartStore.clearCart()
   lockedStore.clearCart()
@@ -120,7 +112,7 @@ function clearCarts(){
 <template>
   <DefaultLayout footer="waiter-nav">
     <WaiterControlHeader :label="'Tisch: '+tableId" icon="bill" />
-      <Tabs>
+      <Tabs default-value="order">
         <TabsList class="flex justify-center w-full bg-gradient-to-b from-background">
           <TabsTrigger value="order" class="w-1/2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             Bestellung
@@ -197,21 +189,21 @@ function clearCarts(){
                     <Table>
                       <TableBody as-child>
                         <template v-for="orderItem in cartStore.cart.filter((item: any) => item.person === person && item.table === tableId)">
-                          <template v-if="orderItem.isSend && orderItem.station ===''" v-for="index in orderItem.quantity">
+                          <template v-if="orderItem.isSend" v-for="index in orderItem.quantity">
                             <Collapsible as-child v-model:open="orderItem.isOpen[parseInt(index-1)]">
                               <CollapsibleTrigger as-child @click="()=>{if (orderItem.notes[parseInt(index-1)]!==''){orderItem.isOpen[parseInt(index-1)]=true}}">
                                 <TableRow as-child>
-                                  <TableCell class="w-max-min" as-child>
+                                  <TableCell class="max-w-min" as-child>
                                     {{orderItem.name}}
                                   </TableCell>
-                                  <TableCell class="w-max-min">
+                                  <TableCell class="max-w-min">
                                     {{((orderItem.price)/100).toFixed(2)}}€
                                   </TableCell>
                                 </TableRow>
                               </CollapsibleTrigger >
                               <CollapsibleContent>  <!--TODO delete collabsible since it´s unused in LIEFERN-->
                                 <Table>
-                                  <TableRow v-if="orderItem.notes[parseInt(index-1)]" class="">
+                                  <TableRow v-if="orderItem.notes[parseInt(index-1)]">
                                     <TableCell colspan="2" class="block w-full rounded-md border mr-1 bg-secondary">
                                       {{orderItem.notes[parseInt(index-1)]}}
                                     </TableCell>

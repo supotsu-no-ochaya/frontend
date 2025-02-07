@@ -57,6 +57,7 @@ let orderItems = reactive(computedAsync(() =>
       .map((item) => ({
         ...item, // Spread existing properties
         isChecked: false, // Add the new property
+        isPayed: false
       }))
   )
 ));
@@ -141,6 +142,9 @@ const handleConfirmPayment = async () => {
       _orderItems.push(orderItem.id);
       _total_amount += orderItem.price;
       orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt);
+      orderItem.isPayed = true,
+      orderItem.isChecked = false,
+      console.log("orderitem", orderItem)
     }
   });
   paymentService.create({ order_items: _orderItems, payment_option: paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1', discount_percent: _discount, total_amount: _total_amount, tip_amount: tipValue.value });
@@ -214,7 +218,7 @@ function updateTotalSum() {
             <Table>
               <TableBody>
                 <template v-for="orderItem in orderItems">
-                  <TableRow v-if="orderItem.order == order.id">
+                  <TableRow v-if="orderItem.order == order.id && !orderItem.isPayed">
                     <!-- Name Column -->
                     <TableCell class="min-w-max">
                       <div> {{ menuItems.find(menuItem => menuItem.id === orderItem.menu_item).name }} </div>

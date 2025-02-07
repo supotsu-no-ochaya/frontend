@@ -21,9 +21,9 @@ export const lockedCart = defineStore('noCart', () => {
 
   const openPerson = (table, person) =>{
     let index = noCart.value.findIndex(item => item.person === person && item.table === table);
-    // console.login
     if (index !== -1) {
       noCart.value.splice(index, 1);
+      console.log("opened cause payed: Person",person, "tisch", table )
     }
   };
 
@@ -46,8 +46,9 @@ export const useCartStore = defineStore('cart', () => {
       existing.quantity += 1;
       existing.notes.push("")
       existing.isOpen.push(false)
+      existing.isChecked.push(false)
     } else {
-      cart.value.push({ ...product, quantity: 1, table, person, notes: [""], isOpen: [], isSend: false, orderId: [] });
+      cart.value.push({ ...product, quantity: 1, table, person, notes: [""], isOpen: [], isChecked: [], isSend: false, orderId: [] });
     }
   };
 

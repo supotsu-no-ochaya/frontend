@@ -19,6 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Input } from '@/components/ui/input'; // Import shadcn-vue Input
 import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 import { OrderItemStatus } from "@/interfaces/order/OrderItem.ts";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import {useTableStore} from "@/components/TableInfo";
 
 const router = useRouter();
@@ -28,10 +29,11 @@ const tableStore = useTableStore()
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 let Rabatt = reactive({ value: 0.10, checked: false });
 let isPopoverOpen = ref(false); // State to control popover visibility
-let tipValue = ref(0); // State for tip input
+let afterTip = ref(); //State for tip input
 let isAdjustPopoverOpen = ref(false); // State to control the second popover
 let adjustedTotalAmount = ref(0); // State for adjusted total amount input
 let adjustedDiscountAmount = ref(0); // State for adjusted discount amount input
+let paymentOption = ref('cash')
 
 let orders = reactive(computedAsync(() =>
   orderService.getAll().then((orders) =>
@@ -41,7 +43,8 @@ let orders = reactive(computedAsync(() =>
       .map((order) => ({
         ...order,              // Spread existing properties
         total: 0,        // Add the new property
-        isChecked: false // Add the new property
+        isChecked: false, // Add the new property
+        someChecked: false,
       }))
   )
 ));
@@ -54,6 +57,7 @@ let orderItems = reactive(computedAsync(() =>
       .map((item) => ({
         ...item, // Spread existing properties
         isChecked: false, // Add the new property
+        isPayed: false
       }))
   )
 ));
@@ -64,9 +68,29 @@ let menuItems = computedAsync(() => menuItemService.getAll());
 const handleItemCheckboxChange = (order: any, orderItem: any, checked: boolean) => {
   // Update the item's checked status
   orderItem.isChecked = checked;
+  // console.log(orderItem)
+  order.isChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).every(orderitem => orderitem.isChecked)
+  // console.log(order.isChecked)
+  // console.log("orders", orders.value)
+  order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked)
+  // console.log(order.someChecked)
 
   // Recalculate the total for this order
   calculateTotal(order, orderItem, checked);
+};
+
+function getTipValue(){
+  return  afterTip.value - calculateTotalSum();
+}
+
+function togglePaymentOption(option: string){
+  paymentOption.value = option
+  console.log(paymentOption)
+}
+
+const toggleChecked = (order) => {
+  order.isChecked = !order.isChecked;
+  // console.log("Neuer Wert:", order.isChecked);
 };
 
 function handleOrderCheckboxChange(order, checked) {
@@ -98,14 +122,12 @@ const handleRabattCheckboxClick = (checked: boolean) => {
 }
 
 const handleLockedPersons = () => {
-  let persons = lockedStore.noCart.filter(item => item.table == tableId.value).map(item => item.person);
+  console.log(orders.value)
+  let persons = orders.value.filter((order)=>order.isChecked === true).map(order=>order.person)
+  console.log(persons)
   for (let person of persons) {
-    lockedStore.openPerson(tableId.value, person);
-  } //TODO only opens persons, where there is no order
-}
-
-const handleBezahlenButtonClick = async () => {
-  isPopoverOpen.value = true; // Open the popover
+    lockedStore.openPerson(tableId.value, person.toString());
+  }
 }
 
 const handleConfirmPayment = async () => {
@@ -124,11 +146,12 @@ const handleConfirmPayment = async () => {
       _orderItems.push(orderItem.id);
       _total_amount += orderItem.price;
       orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt);
+      orderItem.isPayed = true,
+      orderItem.isChecked = false,
+      console.log("orderitem", orderItem)
     }
   });
-  paymentService.create({ order_items: _orderItems, discount_percent: _discount, total_amount: _total_amount, tip_amount: tipValue.value });
-  await sleep(1000);
-  await router.go(0)
+  paymentService.create({ order_items: _orderItems, payment_option: (paymentOption.value =='cash' || paymentOption.value =='card') ? (paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1') : '7if9vi3z90h2568', discount_percent: _discount, total_amount: _total_amount, tip_amount: getTipValue() });
 }
 
 const handleAdjustPayment = async () => {
@@ -142,9 +165,7 @@ const handleAdjustPayment = async () => {
       orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt);
     }
   });
-  paymentService.create({ order_items: _orderItems, discount_percent: adjustedDiscountAmount.value, total_amount: adjustedTotalAmount.value, tip_amount: tipValue.value });
-  await sleep(1000);
-  await router.go(0)
+  paymentService.create({ order_items: _orderItems, payment_option: (paymentOption.value =='cash' || paymentOption.value =='card') ? (paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1') : '7if9vi3z90h2568', discount_percent: adjustedDiscountAmount.value, total_amount: adjustedTotalAmount.value, tip_amount: getTipValue() });
 }
 
 // Method to calculate total for a order based on checked items
@@ -177,7 +198,6 @@ function calculateTotalSum() {
 function updateTotalSum() {
   document.getElementById("totalSum").textContent = "Total Sum: " + calculateTotalSum() + "€";
 }
-
 </script>
 
 <template>
@@ -188,25 +208,28 @@ function updateTotalSum() {
       <Accordion type="multiple" class="w-4/5 mx-auto">
         <AccordionItem v-for="order in orders" :key="order.id" :value="order.status">
           <!--TODO delete collabsible since it´s unused in LIEFERN-->
-          <AccordionTrigger>Bestellung: Person {{ order.person }}
+          <AccordionTrigger> Person: {{ order.person }}
             <Checkbox
-              :v-model="order.isChecked"
-              @update:checked="(checked) => handleOrderCheckboxChange(order, checked)"
-              @click.stop
-            />
+              :checked="order.isChecked"
+              :indeterminate="order.someChecked && !order.isChecked"
+              @update:checked="(checked) =>{handleOrderCheckboxChange(order, checked); console.log(order.isChecked)}"
+              @click.stop="toggleChecked(order)"
+              :class="{'bg-ring': order.someChecked && !order.isChecked,
+                        '': !order.someChecked
+              }" />
           </AccordionTrigger>
           <AccordionContent>
             <Table>
               <TableBody>
                 <template v-for="orderItem in orderItems">
-                  <TableRow v-if="orderItem.order == order.id">
+                  <TableRow v-if="orderItem.order == order.id && !orderItem.isPayed">
                     <!-- Name Column -->
-                    <TableCell class="w-2/5">
-                      <div>{{ menuItems.find(menuItem => menuItem.id === orderItem.menu_item).name }}</div>
+                    <TableCell class="min-w-max">
+                      <div> {{ menuItems.find(menuItem => menuItem.id === orderItem.menu_item).name }} </div>
                     </TableCell>
 
                     <!-- Price Column (Right-aligned) -->
-                    <TableCell class="w-1/5 text-right pr-4">
+                    <TableCell class="min-w-max text-right pr-4">
                       <div>{{ (orderItem.price / 100).toFixed(2) }}€</div>
                     </TableCell>
 
@@ -228,7 +251,7 @@ function updateTotalSum() {
                 </template>
               </TableBody>
             </Table>
-
+            <div class="flex items-center justify-center font-bold mt-2" :id="'order-' + order.id"></div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -246,24 +269,41 @@ function updateTotalSum() {
     </div>
 
     <!-- Footer Section -->
-    <div class="flex items-center fixed bottom-16 left-0 w-full bg-primary text-lg font-bold text-center py-4">
-      <Popover v-model:open="isPopoverOpen">
-        <PopoverTrigger asChild>
-          <Button class="w-1/5 ml-2 bg-secondary active:bg-primary text-black">
+    <div class="flex items-center fixed bottom-16 left-0 w-full bg-primary text-lg font-bold text-center py-4 ">
+      <Dialog class="rounded-md"> 
+
+      <!-- </Dialog>v-model:open="isPopoverOpen"> -->
+        <DialogTrigger class="w-1/5 min-w-min ml-2 bg-secondary active:bg-secondary text-black rounded-sm">
             Bezahlen
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent class="w-full ml-4">
-          <div class="flex flex-col gap-4">
-            <h2 class="text-lg font-bold">Bestätigen Sie die Zahlung</h2>
-            <p>Trinkgeld in ct:</p>
-            <Input v-model="tipValue" type="number" placeholder="Trinkgeld in ct" />
-            <Button @click="handleConfirmPayment" class="w-full">Bezahlen</Button>
-          </div>
-        </PopoverContent>
-      </Popover>
+        </DialogTrigger>
+        <DialogContent class="w-11/12 max-w-[425px] border-amber-900 border-opacity-40 border rounded-md">
+          <DialogHeader>
+            <DialogTitle class="text-left mb-2"> Übersicht </DialogTitle>
+            <DialogDescription>
+              <button @click="togglePaymentOption('cash');":class="paymentOption=='cash' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2">
+                BAR
+              </button>
+              <button @click="togglePaymentOption('card');" :class="paymentOption=='card' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2 mb-2">
+                Karte
+              </button>
+              <button @click="togglePaymentOption('coupon');":class="paymentOption=='coupon' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2">
+                Gutschein
+              </button>
+              <Input v-model="afterTip" type="number" placeholder="Gesamt mit Trinkgeld in ct" class=""/>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter class="justify-between flex w-full">
+            <Suspense>
+              <strong class="" id="totalSum">Totale Summe: {{ calculateTotalSum() / 100 }}€</strong>
+            </Suspense>
+            <button @click="handleConfirmPayment" class="bg-primary active:bg-secondary h-full max-w-min px-2 py-1 rounded-sm" type="submit">
+              Bezahlen
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <Suspense>
-        <strong class="w-3/5" id="totalSum">Total Sum: {{ calculateTotalSum() / 100 }}€</strong>
+        <strong class="w-3/5" id="totalSum">Totale Summe: {{ calculateTotalSum() / 100 }}€</strong>
       </Suspense>
       <Popover v-model:open="isAdjustPopoverOpen">
         <PopoverTrigger asChild>
@@ -277,7 +317,7 @@ function updateTotalSum() {
             <p>Gesamtbetrag in ct:</p>
             <Input v-model="adjustedTotalAmount" type="number" placeholder="Gesamtbetrag in ct" />
             <p>Trinkgeld in ct:</p>
-            <Input v-model="tipValue" type="number" placeholder="Trinkgeld in ct" />
+            <Input v-model="afterTip" type="number" placeholder="Gesamt mit Trinkgeld in ct" />
             <p>Rabatt in %:</p>
             <Input v-model="adjustedDiscountAmount" type="number" placeholder="Rabatt in %" />
             <Button @click="handleAdjustPayment" class="w-full">Anpassen</Button>

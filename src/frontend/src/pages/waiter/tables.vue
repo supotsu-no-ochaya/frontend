@@ -3,11 +3,20 @@ import { DefaultLayout } from "@/layouts/default";
 import { reactive, ref, onMounted, onBeforeUnmount } from "vue";
 import { useTableStore } from "@/components/TableInfo";
 import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
+import { lockedStore } from "@/components/cart.js";
+
 
 const tableStore = reactive(useTableStore());
 const nTables = ref(12);
 
 //tableStore.table = {}
+
+const tablesLocked = ref([])
+for (let tableId = 0; tableId < nTables.value; tableId++){
+  if (lockedStore.noCart.find(combo=>parseInt(combo.table)==tableId)){
+    tablesLocked.value.push(tableId)
+  }
+}
 
 if (tableStore.table.timers === undefined) {
   tableStore.table.timers = [];
@@ -39,8 +48,9 @@ if (tableStore.table.tableEmpty.length === 0) {
 const formatTime = (elapsedTime: number) => {
   const totalSeconds = Math.floor(elapsedTime / 1000);
   const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`; // Ensures 2-digit seconds
+  return `${minutes}`
+  //const seconds = totalSeconds % 60;
+  //return `${minutes}:${seconds.toString().padStart(2, '0')}`; // Ensures 2-digit seconds
 };
 
 // Function to update timers periodically
@@ -79,10 +89,10 @@ onBeforeUnmount(() => {
           <!-- Timer Text (Centered Below the Circle) -->
           <div class="text-xs h-6 w-full text-center">
             <template v-if="tableStore.table.timers[tableId-1] !== null">
-              Timer: {{ formatTime((new Date()).getTime() - tableStore.table.timers[tableId-1]) }}
+              {{ formatTime((new Date()).getTime() - tableStore.table.timers[tableId-1]) }} min
             </template>
             <template v-else>
-              <span class="opacity-0">Timer: 0:00</span> <!-- Invisible placeholder for alignment -->
+              <span class="opacity-0"> 0:00</span> <!-- Invisible placeholder for alignment -->
             </template>
           </div>
         </router-link>

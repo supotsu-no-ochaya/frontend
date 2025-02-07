@@ -86,6 +86,7 @@ const addNewOrders = debounce(async (newValues: any, oldValues: any) => {
           return {[station]:<Order>{
             id: String(Order.id),
             table: String(Order.table),
+            person: String(Order.person),
             waiter: newValues.users_raw?.find((User: any)=> User.id == Order.waiter)?.username ?? "not loading",
             time: new Date(Order.created).toLocaleTimeString('de-DE', {hour: "2-digit", minute: "2-digit" }) + " Uhr", //Item.menu_item.map((ID)=>ID == menu_items_raw?.)
             state: false,
@@ -124,29 +125,7 @@ const addNewOrders = debounce(async (newValues: any, oldValues: any) => {
 // if new entry in env, execute addNewOrders
 watch(environment, addNewOrders, { deep: true });
 
-// give every Menu_item a Station and save it locally to avoid severus PB-requests
-//TODO delete this
-// function StationDictMenuitem(){
-//   const stationsDict = {}
-//   if (Array.isArray(environment.menu_items_raw)&&Array.isArray(environment.allStationnames_raw)&&Array.isArray(environment.OrderItems_raw)){
-//   for (let temp_menuitem of environment.menu_items_raw){
-//     let temp_category = temp_menuitem.category
-//     let temp_id = temp_menuitem.id
-//     for (let temp_orderitem of environment.OrderItems_raw){
-//       if (temp_orderitem.menu_item == temp_id){
-//       for (let temp_station of environment.allStationnames_raw)
-//         if (temp_station.id == temp_menuitem.category){
-//           let temp_station_name = temp_station.name
-//           Object.assign(stationsDict, {[temp_id]: temp_station_name})
-//         }
-//       }
-//     }
-//   }}
-// }
-
-
 //* here are All InterFfaces necessary for allOrders
-
 export interface OrderItem {
   /** Name of the item ordered */
   name: string;           
@@ -161,7 +140,9 @@ export interface Order {
   /** Unique identifier for the order */
   id: string;
   /** Table number where the order was placed */
-  table: string;          
+  table: string;
+  /** Person that´s ordering */
+  person: string;
   /** Name of the waiter serving this order */
   waiter: string;
   /**  Time when the order was taken */
@@ -191,6 +172,7 @@ export const allOrders = reactive<AllOrders>({
 //     {
 //       id: '0',
 //       table: '2',
+//       person: '3',
 //       waiter: 'Lea',
 //       time: '12:45 Uhr',
 //       state: false,

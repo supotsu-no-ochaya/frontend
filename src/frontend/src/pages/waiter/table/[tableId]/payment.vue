@@ -57,7 +57,7 @@ let orderItems = reactive(computedAsync(() =>
       .map((item) => ({
         ...item, // Spread existing properties
         isChecked: false, // Add the new property
-        isPayed: false
+        isPayed: false,
       }))
   )
 ));
@@ -68,12 +68,8 @@ let menuItems = computedAsync(() => menuItemService.getAll());
 const handleItemCheckboxChange = (order: any, orderItem: any, checked: boolean) => {
   // Update the item's checked status
   orderItem.isChecked = checked;
-  // console.log(orderItem)
   order.isChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).every(orderitem => orderitem.isChecked)
-  // console.log(order.isChecked)
-  // console.log("orders", orders.value)
   order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked)
-  // console.log(order.someChecked)
 
   // Recalculate the total for this order
   calculateTotal(order, orderItem, checked);
@@ -90,7 +86,6 @@ function togglePaymentOption(option: string){
 
 const toggleChecked = (order) => {
   order.isChecked = !order.isChecked;
-  // console.log("Neuer Wert:", order.isChecked);
 };
 
 function handleOrderCheckboxChange(order, checked) {
@@ -98,7 +93,9 @@ function handleOrderCheckboxChange(order, checked) {
   for (let _orderItem of orderItems.value) {
     if (_orderItem.order == order.id) {
       _orderItem.isChecked = checked;
+      // _orderItem.someChecked = checked;
     }
+    order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked)
   }
 
   // Recalculate the total for the entire order

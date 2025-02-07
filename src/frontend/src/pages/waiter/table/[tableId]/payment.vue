@@ -21,6 +21,7 @@ import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 import { OrderItemStatus } from "@/interfaces/order/OrderItem.ts";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import {useTableStore} from "@/components/TableInfo";
+import type { RefSymbol } from "@vue/reactivity";
 
 const router = useRouter();
 const route = useRoute("/waiter/table/[tableId]/payment");
@@ -106,7 +107,7 @@ function handleOrderCheckboxChange(order, checked) {
 const calculateOrderTotal = (order) => {
   let total = 0;
   for (let _orderItem of orderItems.value) {
-    if (_orderItem.order == order.id && _orderItem.isChecked) {
+    if (_orderItem.order == order.id && _orderItem.isChecked && !_orderItem.isPayed) {
       total += parseFloat(_orderItem.price);
     }
   }
@@ -158,6 +159,9 @@ const handleConfirmPayment = async () => {
   });
   updateOrderisPayed();
   paymentService.create({ order_items: _orderItems, payment_option: (paymentOption.value =='cash' || paymentOption.value =='card') ? (paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1') : '7if9vi3z90h2568', discount_percent: _discount, total_amount: _total_amount, tip_amount: getTipValue() });
+  for (let _order of orders.value){
+    _order.total = 0.00;
+  } 
 }
 
 const handleAdjustPayment = async () => {
@@ -178,6 +182,9 @@ const handleAdjustPayment = async () => {
   });
   updateOrderisPayed();
   paymentService.create({ order_items: _orderItems, payment_option: (paymentOption.value =='cash' || paymentOption.value =='card') ? (paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1') : '7if9vi3z90h2568', discount_percent: adjustedDiscountAmount.value, total_amount: adjustedTotalAmount.value, tip_amount: getTipValue() });
+  for (let _order of orders.value){
+    _order.total = 0.00;
+  } 
 }
 
 // Method to calculate total for a order based on checked items
@@ -187,9 +194,7 @@ const calculateTotal = (order, orderItem, checked) => {
   } else if (checked === false) {
     order.total -= parseFloat(orderItem.price);
   }
-
   updateTotalSum();
-
   return order.total;
 };
 
@@ -197,7 +202,7 @@ function calculateTotalSum() {
   var totalSum = 0.00;
   try {
     for (let i = 0; i < orders.value.length; i++) {
-      totalSum += orders.value[i].total;
+        totalSum += orders.value[i].total;
     }
     if (Rabatt.checked) {
       totalSum = totalSum * (1 - Rabatt.value);
@@ -255,7 +260,7 @@ function updateTotalSum() {
                   </TableRow>
 
                   <!-- Notes Row -->
-                  <TableRow v-if="orderItem.notes && orderItem.order == order.id">
+                  <TableRow v-if="orderItem.notes && orderItem.order == order.id && !orderItem.isPayed">
                     <TableCell colspan="3" class="block w-full rounded-md border bg-secondary">
                       {{ orderItem.notes }}
                     </TableCell>

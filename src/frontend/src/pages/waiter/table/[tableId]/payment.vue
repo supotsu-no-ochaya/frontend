@@ -135,7 +135,7 @@ function updateOrderisPayed(){
 }
 
 const handleConfirmPayment = async () => {
-  isPopoverOpen.value = false; // Close the popover   //ToDo delete?
+
   tableStore.table.tableEmpty[tableId.value-1] = true;
   tableStore.table.timers[tableId.value-1] = null;
   
@@ -152,7 +152,7 @@ const handleConfirmPayment = async () => {
       _orderItems.push(orderItem.id);
       _total_amount += orderItem.price;
       orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt);
-      orderItem.isPayed = true,
+      orderItem.isPayed = true;
       console.log("orderitem got payed", orderItem)
     }
   });
@@ -169,9 +169,10 @@ const handleAdjustPayment = async () => {
 
   let _orderItems: string[] = [];
   orderItems.value.forEach(orderItem => {
-    if (orderItem.isChecked) {
+    if (orderItem.isChecked && !orderItem.isPayed) {
       _orderItems.push(orderItem.id);
       orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt);
+      orderItem.isPayed = true
     }
 
   });
@@ -280,10 +281,8 @@ function updateTotalSum() {
     </div>
 
     <!-- Footer Section -->
-    <div class="flex items-center fixed bottom-16 left-0 w-full bg-primary text-lg font-bold text-center py-4 ">
-      <Dialog class="rounded-md"> 
-
-      <!-- </Dialog>v-model:open="isPopoverOpen"> -->
+    <div class="flex justify-between fixed bottom-16 left-0 w-full bg-primary text-lg font-bold text-center py-4 ">
+      <Dialog class="rounded-md">
         <DialogTrigger class="w-1/5 min-w-min ml-2 bg-secondary active:bg-secondary text-black rounded-sm">
             Bezahlen
         </DialogTrigger>
@@ -302,7 +301,7 @@ function updateTotalSum() {
                   Gutschein
                 </button>
               </div>
-              <Input v-model="afterTip" type="number" placeholder="Gesamt mit Trinkgeld in ct" class=""/>
+              <Input v-model="afterTip" type="number" placeholder="Gesamt mit Trinkgeld in ct"/>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter class="justify-between flex w-full">
@@ -320,7 +319,31 @@ function updateTotalSum() {
       <Suspense>
         <strong class="w-3/5" id="totalSum">Totale Summe: {{ calculateTotalSum() / 100 }}€</strong>
       </Suspense>
-      <Popover v-model:open="isAdjustPopoverOpen">
+      <Dialog class="rounded-md"> 
+
+      <!-- </Dialog>v-model:open="isPopoverOpen"> -->
+        <DialogTrigger class="w-1/5 min-w-min mr-2 bg-secondary active:bg-secondary text-black rounded-sm">
+          Anpassen
+        </DialogTrigger>
+        <DialogContent class="w-11/12 max-w-[425px] border-amber-900 border-opacity-40 border rounded-md">
+          <DialogHeader>
+            <DialogTitle class="text-left mb-2"> Anpassen </DialogTitle>
+            <DialogDescription class="my-2">
+              <Input class="my-2" as-child v-model="adjustedTotalAmount" type="number" placeholder="Gesamtbetrag in ct" />
+              <Input class="my-2" as-child v-model="afterTip" type="number" placeholder="Gesamt mit Trinkgeld in ct" />
+              <Input class="my-2" as-child v-model="adjustedDiscountAmount" type="number" placeholder="Rabatt in %" />
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter class="justify-between flex w-full">
+            <DialogClose as-child>
+              <button @click="handleAdjustPayment" class="bg-primary active:bg-secondary h-full max-w-min px-2 py-1 rounded-sm" type="submit">
+                bezahlen für Angepasstes
+              </button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <!-- <Popover v-model:open="isAdjustPopoverOpen">
         <PopoverTrigger asChild>
           <Button class="w-1/5 mr-2 bg-accent active:bg-primary text-black">
             Anpassen
@@ -338,7 +361,7 @@ function updateTotalSum() {
             <Button @click="handleAdjustPayment" class="w-full">Anpassen</Button>
           </div>
         </PopoverContent>
-      </Popover>
+      </Popover> -->
     </div>
   </DefaultLayout>
 </template>

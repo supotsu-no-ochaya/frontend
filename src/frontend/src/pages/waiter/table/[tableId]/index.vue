@@ -14,7 +14,7 @@ const tableId = computed(() => route.params.tableId); // Reactive tableId
 const tableStore = useTableStore();
 const personsLocked = lockedStore.noCart.filter(combo=>combo.table==tableId.value).map(combo=> parseInt(combo.person)); //TODO
 
-console.log("here", lockedStore.noCart, personsLocked)
+console.log("here", lockedStore.noCart, personsLocked, tableStore.table.persons[tableId.value]);
 
 // Add a person to the table (increment count)
 const addPerson = (table) => {
@@ -29,6 +29,16 @@ const removePerson = (table) => {
 // Ensure the table is initialized in the store when this component is loaded
 if (!tableStore.table.persons[tableId.value]) {
   addPerson(tableId.value);
+}
+
+const removePersonSecure = (tableId) => {
+  const personsAtTable = tableStore.table.persons[tableId]
+  console.log(personsAtTable,personsLocked[0])
+  if ((personsAtTable-1)>=personsLocked[0]){
+    removePerson(tableId)
+  } else {
+    alert("Person is noch in Bedienung")
+  }
 }
 
 </script>
@@ -64,7 +74,7 @@ if (!tableStore.table.persons[tableId.value]) {
 
     <!-- Controls for Adding/Removing People -->
     <div class="flex justify-evenly items-stretch gap-2">
-      <Button size="icon" @click="removePerson(tableId)">
+      <Button size="icon" @click="removePersonSecure(tableId)">
         <LucideMinus class="size-10" />
       </Button>
       <Button size="icon" @click="addPerson(tableId)">

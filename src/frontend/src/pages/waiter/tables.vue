@@ -12,7 +12,7 @@ const nTables = ref(12);
 //tableStore.table = {}
 
 const tablesLocked = ref([])
-for (let tableId = 0; i < nTables.value; i++){
+for (let tableId = 0; tableId < nTables.value; tableId++){
   if (lockedStore.noCart.find(combo=>parseInt(combo.table)==tableId)){
     tablesLocked.value.push(tableId)
   }

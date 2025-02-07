@@ -129,11 +129,8 @@ const handleLockedPersons = () => {
 
 function updateOrderisPayed(){
   for (let order of orders.value){
-    console.log("order", order)
     order.isPayed = order.isChecked
-    console.log("order", order)
     order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked)
-
   }
 }
 
@@ -156,8 +153,7 @@ const handleConfirmPayment = async () => {
       _total_amount += orderItem.price;
       orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt);
       orderItem.isPayed = true,
-      // orderItem.isChecked = false,      //ToDo oh oh... could give a big mistake
-      console.log("orderitem", orderItem)
+      console.log("orderitem got payed", orderItem)
     }
   });
   updateOrderisPayed();
@@ -291,15 +287,17 @@ function updateTotalSum() {
           <DialogHeader>
             <DialogTitle class="text-left mb-2"> Übersicht </DialogTitle>
             <DialogDescription>
-              <button @click="togglePaymentOption('cash');":class="paymentOption=='cash' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2">
-                BAR
-              </button>
-              <button @click="togglePaymentOption('card');" :class="paymentOption=='card' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2 mb-2">
-                Karte
-              </button>
-              <button @click="togglePaymentOption('coupon');":class="paymentOption=='coupon' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2">
-                Gutschein
-              </button>
+              <div class="flex flex-nowrap">
+                <button @click="togglePaymentOption('cash');":class="paymentOption=='cash' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2">
+                  BAR
+                </button>
+                <button @click="togglePaymentOption('card');" :class="paymentOption=='card' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2 mb-2">
+                  Karte
+                </button>
+                <button @click="togglePaymentOption('coupon');":class="paymentOption=='coupon' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2">
+                  Gutschein
+                </button>
+              </div>
               <Input v-model="afterTip" type="number" placeholder="Gesamt mit Trinkgeld in ct" class=""/>
             </DialogDescription>
           </DialogHeader>

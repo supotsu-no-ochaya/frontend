@@ -164,6 +164,9 @@ const handleAdjustPayment = async () => {
   isAdjustPopoverOpen.value = false; // Close the popover
   tableStore.table.tableEmpty[tableId.value-1] = true;
   tableStore.table.timers[tableId.value-1] = null;
+  
+  handleLockedPersons();
+
   let _orderItems: string[] = [];
   orderItems.value.forEach(orderItem => {
     if (orderItem.isChecked) {
@@ -172,6 +175,7 @@ const handleAdjustPayment = async () => {
     }
 
   });
+  updateOrderisPayed();
   paymentService.create({ order_items: _orderItems, payment_option: (paymentOption.value =='cash' || paymentOption.value =='card') ? (paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1') : '7if9vi3z90h2568', discount_percent: adjustedDiscountAmount.value, total_amount: adjustedTotalAmount.value, tip_amount: getTipValue() });
 }
 

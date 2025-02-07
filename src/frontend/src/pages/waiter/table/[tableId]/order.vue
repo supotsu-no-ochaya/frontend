@@ -95,6 +95,7 @@ async function handleOrderGrabed(person:string, table:string){
   }
 }
 
+//hier ist deer entwurf um allle order anzuzeigen, auch die aktuellen aus der küche
 const orders = await computedAsync(()=> orderService.getAll())
 
 setTimeout(()=>{

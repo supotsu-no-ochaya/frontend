@@ -20,6 +20,7 @@ import CollapsibleTrigger from "@/components/ui/collapsible/CollapsibleTrigger.v
 import { OrderItemStatus } from "@/interfaces/order/OrderItem";
 import { LucideScrollText } from "lucide-vue-next";
 import { lockedStore } from "@/components/cart.js";
+import { computedAsync } from "@vueuse/core";
 
 const router = useRouter();
 const route = useRoute("/waiter/table/[tableId]/order");
@@ -68,7 +69,7 @@ async function handleOrderSend(person:string, table: string) {
 
     for (let orderItem of (cartStore.cart.filter((item: any) => item.person === person && item.table === table))) {
       for (let i = 0; i < orderItem.quantity; i++) {
-        let _bom = orderItem.bom_template.products ? orderItem.bom_template.products : ["z3acikruw24l618"]
+        let _bom = orderItem.bom_template.products ? orderItem.bom_template.products : ["z3acikruw24l618"]  //ToDO ??
         let response = await orderItemService.create({
           order: order.id,
           price: orderItem.price,
@@ -79,13 +80,9 @@ async function handleOrderSend(person:string, table: string) {
           notes: orderItem.notes[i]
         })
         orderItem.orderId.push(response.id)
-
+        
       }
       orderItem.isSend = true
-
-      // if (orderItem.station !== "") {
-      //   cartStore.removeFromCart(orderItem, table, person);
-      // }
     }
   }
 }
@@ -98,7 +95,14 @@ async function handleOrderGrabed(person:string, table:string){
   }
 }
 
+//hier ist deer entwurf um allle order anzuzeigen, auch die aktuellen aus der küche
+const orders = await computedAsync(()=> orderService.getAll())
 
+setTimeout(()=>{
+  console.log(orders.value)
+  let newo= orders.value?.filter(object=>persons.includes(toString(object.person)))
+  console.log(newo)
+}, 5_000);
 
 console.log("our cart", cartStore.cart)
 
@@ -225,8 +229,8 @@ function clearCarts(){
         </TabsContent>
       </Tabs>
       <!-- for dev puposes TODO delete -->
-      <button class="fixed bottom-24 bg-primary rounded right-4 border " @click="clearCarts">
+      <!-- <button class="fixed bottom-24 bg-primary rounded right-4 border " @click="clearCarts">
         Clear Carts
-      </button>
+      </button> -->
   </DefaultLayout>
 </template>

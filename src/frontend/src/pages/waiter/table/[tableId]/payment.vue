@@ -19,7 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Input } from '@/components/ui/input'; // Import shadcn-vue Input
 import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 import { OrderItemStatus } from "@/interfaces/order/OrderItem.ts";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import {useTableStore} from "@/components/TableInfo";
 
 const router = useRouter();
@@ -45,6 +45,7 @@ let orders = reactive(computedAsync(() =>
         total: 0,        // Add the new property
         isChecked: false, // Add the new property
         someChecked: false,
+        isPayed: false,
       }))
   )
 ));
@@ -57,7 +58,7 @@ let orderItems = reactive(computedAsync(() =>
       .map((item) => ({
         ...item, // Spread existing properties
         isChecked: false, // Add the new property
-        isPayed: false
+        isPayed: false,
       }))
   )
 ));
@@ -68,12 +69,8 @@ let menuItems = computedAsync(() => menuItemService.getAll());
 const handleItemCheckboxChange = (order: any, orderItem: any, checked: boolean) => {
   // Update the item's checked status
   orderItem.isChecked = checked;
-  // console.log(orderItem)
   order.isChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).every(orderitem => orderitem.isChecked)
-  // console.log(order.isChecked)
-  // console.log("orders", orders.value)
-  order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked)
-  // console.log(order.someChecked)
+  order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked && !orderitem.isPayed)
 
   // Recalculate the total for this order
   calculateTotal(order, orderItem, checked);
@@ -90,7 +87,6 @@ function togglePaymentOption(option: string){
 
 const toggleChecked = (order) => {
   order.isChecked = !order.isChecked;
-  // console.log("Neuer Wert:", order.isChecked);
 };
 
 function handleOrderCheckboxChange(order, checked) {
@@ -98,7 +94,9 @@ function handleOrderCheckboxChange(order, checked) {
   for (let _orderItem of orderItems.value) {
     if (_orderItem.order == order.id) {
       _orderItem.isChecked = checked;
+      // _orderItem.someChecked = checked;
     }
+    order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked && !orderitem.isPayed)
   }
 
   // Recalculate the total for the entire order
@@ -122,7 +120,6 @@ const handleRabattCheckboxClick = (checked: boolean) => {
 }
 
 const handleLockedPersons = () => {
-  console.log(orders.value)
   let persons = orders.value.filter((order)=>order.isChecked === true).map(order=>order.person)
   console.log(persons)
   for (let person of persons) {
@@ -130,11 +127,20 @@ const handleLockedPersons = () => {
   }
 }
 
+function updateOrderisPayed(){
+  for (let order of orders.value){
+    order.isPayed = order.isChecked
+    order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked && !orderitem.isPayed)
+  }
+}
+
 const handleConfirmPayment = async () => {
-  isPopoverOpen.value = false; // Close the popover
+  isPopoverOpen.value = false; // Close the popover   //ToDo delete?
   tableStore.table.tableEmpty[tableId.value-1] = true;
   tableStore.table.timers[tableId.value-1] = null;
-  handleLockedPersons(); // Open all Persons for now
+  
+  handleLockedPersons();
+  
   let _orderItems: string[] = [];
   let _total_amount = 0;
   let _discount = 0
@@ -142,15 +148,15 @@ const handleConfirmPayment = async () => {
     _discount = parseInt(Rabatt.value * 100);
   }
   orderItems.value.forEach(orderItem => {
-    if (orderItem.isChecked) {
+    if (orderItem.isChecked && !orderItem.isPayed) {
       _orderItems.push(orderItem.id);
       _total_amount += orderItem.price;
       orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt);
       orderItem.isPayed = true,
-      orderItem.isChecked = false,
-      console.log("orderitem", orderItem)
+      console.log("orderitem got payed", orderItem)
     }
   });
+  updateOrderisPayed();
   paymentService.create({ order_items: _orderItems, payment_option: (paymentOption.value =='cash' || paymentOption.value =='card') ? (paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1') : '7if9vi3z90h2568', discount_percent: _discount, total_amount: _total_amount, tip_amount: getTipValue() });
 }
 
@@ -158,13 +164,18 @@ const handleAdjustPayment = async () => {
   isAdjustPopoverOpen.value = false; // Close the popover
   tableStore.table.tableEmpty[tableId.value-1] = true;
   tableStore.table.timers[tableId.value-1] = null;
+  
+  handleLockedPersons();
+
   let _orderItems: string[] = [];
   orderItems.value.forEach(orderItem => {
     if (orderItem.isChecked) {
       _orderItems.push(orderItem.id);
       orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt);
     }
+
   });
+  updateOrderisPayed();
   paymentService.create({ order_items: _orderItems, payment_option: (paymentOption.value =='cash' || paymentOption.value =='card') ? (paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1') : '7if9vi3z90h2568', discount_percent: adjustedDiscountAmount.value, total_amount: adjustedTotalAmount.value, tip_amount: getTipValue() });
 }
 
@@ -208,7 +219,7 @@ function updateTotalSum() {
       <Accordion type="multiple" class="w-4/5 mx-auto">
         <AccordionItem v-for="order in orders" :key="order.id" :value="order.status">
           <!--TODO delete collabsible since it´s unused in LIEFERN-->
-          <AccordionTrigger> Person: {{ order.person }}
+          <AccordionTrigger v-if="!order.isPayed"> Person: {{ order.person }}
             <Checkbox
               :checked="order.isChecked"
               :indeterminate="order.someChecked && !order.isChecked"
@@ -280,15 +291,17 @@ function updateTotalSum() {
           <DialogHeader>
             <DialogTitle class="text-left mb-2"> Übersicht </DialogTitle>
             <DialogDescription>
-              <button @click="togglePaymentOption('cash');":class="paymentOption=='cash' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2">
-                BAR
-              </button>
-              <button @click="togglePaymentOption('card');" :class="paymentOption=='card' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2 mb-2">
-                Karte
-              </button>
-              <button @click="togglePaymentOption('coupon');":class="paymentOption=='coupon' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2">
-                Gutschein
-              </button>
+              <div class="flex flex-nowrap">
+                <button @click="togglePaymentOption('cash');":class="paymentOption=='cash' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2">
+                  BAR
+                </button>
+                <button @click="togglePaymentOption('card');" :class="paymentOption=='card' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2 mb-2">
+                  Karte
+                </button>
+                <button @click="togglePaymentOption('coupon');":class="paymentOption=='coupon' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2">
+                  Gutschein
+                </button>
+              </div>
               <Input v-model="afterTip" type="number" placeholder="Gesamt mit Trinkgeld in ct" class=""/>
             </DialogDescription>
           </DialogHeader>
@@ -296,9 +309,11 @@ function updateTotalSum() {
             <Suspense>
               <strong class="" id="totalSum">Totale Summe: {{ calculateTotalSum() / 100 }}€</strong>
             </Suspense>
-            <button @click="handleConfirmPayment" class="bg-primary active:bg-secondary h-full max-w-min px-2 py-1 rounded-sm" type="submit">
-              Bezahlen
-            </button>
+            <DialogClose as-child>
+              <button @click="handleConfirmPayment" class="bg-primary active:bg-secondary h-full max-w-min px-2 py-1 rounded-sm" type="submit">
+                Bezahlen
+              </button>
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>

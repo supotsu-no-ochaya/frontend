@@ -19,7 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Input } from '@/components/ui/input'; // Import shadcn-vue Input
 import WaiterControlHeader from "@/components/waiter/WaiterControlHeader.vue";
 import { OrderItemStatus } from "@/interfaces/order/OrderItem.ts";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import {useTableStore} from "@/components/TableInfo";
 
 const router = useRouter();
@@ -70,7 +70,7 @@ const handleItemCheckboxChange = (order: any, orderItem: any, checked: boolean) 
   // Update the item's checked status
   orderItem.isChecked = checked;
   order.isChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).every(orderitem => orderitem.isChecked)
-  order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked)
+  order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked && !orderitem.isPayed)
 
   // Recalculate the total for this order
   calculateTotal(order, orderItem, checked);
@@ -96,7 +96,7 @@ function handleOrderCheckboxChange(order, checked) {
       _orderItem.isChecked = checked;
       // _orderItem.someChecked = checked;
     }
-    order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked)
+    order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked && !orderitem.isPayed)
   }
 
   // Recalculate the total for the entire order
@@ -130,7 +130,7 @@ const handleLockedPersons = () => {
 function updateOrderisPayed(){
   for (let order of orders.value){
     order.isPayed = order.isChecked
-    order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked)
+    order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked && !orderitem.isPayed)
   }
 }
 
@@ -305,9 +305,11 @@ function updateTotalSum() {
             <Suspense>
               <strong class="" id="totalSum">Totale Summe: {{ calculateTotalSum() / 100 }}€</strong>
             </Suspense>
-            <button @click="handleConfirmPayment" class="bg-primary active:bg-secondary h-full max-w-min px-2 py-1 rounded-sm" type="submit">
-              Bezahlen
-            </button>
+            <DialogClose as-child>
+              <button @click="handleConfirmPayment" class="bg-primary active:bg-secondary h-full max-w-min px-2 py-1 rounded-sm" type="submit">
+                Bezahlen
+              </button>
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>

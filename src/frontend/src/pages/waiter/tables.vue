@@ -9,8 +9,6 @@ import { lockedStore } from "@/components/cart.js";
 const tableStore = reactive(useTableStore());
 const nTables = ref(12);
 
-//tableStore.table = {}
-
 const tablesLocked = ref([])
 for (let tableId = 0; tableId < nTables.value; tableId++){
   if (lockedStore.noCart.find(combo=>parseInt(combo.table)==tableId)){
@@ -79,12 +77,11 @@ onBeforeUnmount(() => {
         <router-link class="mx-auto flex flex-col items-center"
                      :to="{ name: '/waiter/table/[tableId]/', params: { tableId } }">
           <!-- Table Circle -->
-          <div class="w-20 h-20 grid place-content-center size-20 rounded-full bg-primary">
-            <!--NEEDS FIXING BY CHECKING ALL ORDER STATUSES-->
-            <!--:class="tableStore.table.tableEmpty[tableId-1] ? 'bg-primary': 'bg-orange-500'">-->
-            <div>
-              {{ tableId }}
-            </div>
+            <div class="w-20 h-20 grid place-content-center size-20 rounded-full"
+              :class="tablesLocked.includes(tableId) ? 'bg-green-500 rounded-full' : 'bg-primary'">
+              <div>
+                {{ tableId }}
+              </div>
           </div>
           <!-- Timer Text (Centered Below the Circle) -->
           <div class="text-xs h-6 w-full text-center">

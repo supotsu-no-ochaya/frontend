@@ -45,6 +45,7 @@ let orders = reactive(computedAsync(() =>
         total: 0,        // Add the new property
         isChecked: false, // Add the new property
         someChecked: false,
+        isPayed: false,
       }))
   )
 ));
@@ -119,7 +120,6 @@ const handleRabattCheckboxClick = (checked: boolean) => {
 }
 
 const handleLockedPersons = () => {
-  console.log(orders.value)
   let persons = orders.value.filter((order)=>order.isChecked === true).map(order=>order.person)
   console.log(persons)
   for (let person of persons) {
@@ -127,11 +127,23 @@ const handleLockedPersons = () => {
   }
 }
 
+function updateOrderisPayed(){
+  for (let order of orders.value){
+    console.log("order", order)
+    order.isPayed = order.isChecked
+    console.log("order", order)
+    order.someChecked = orderItems.value?.filter(orderitems=> orderitems.order === order.id).some(orderitem => orderitem.isChecked)
+
+  }
+}
+
 const handleConfirmPayment = async () => {
-  isPopoverOpen.value = false; // Close the popover
+  isPopoverOpen.value = false; // Close the popover   //ToDo delete?
   tableStore.table.tableEmpty[tableId.value-1] = true;
   tableStore.table.timers[tableId.value-1] = null;
-  handleLockedPersons(); // Open all Persons for now
+  
+  handleLockedPersons();
+  
   let _orderItems: string[] = [];
   let _total_amount = 0;
   let _discount = 0
@@ -139,15 +151,16 @@ const handleConfirmPayment = async () => {
     _discount = parseInt(Rabatt.value * 100);
   }
   orderItems.value.forEach(orderItem => {
-    if (orderItem.isChecked) {
+    if (orderItem.isChecked && !orderItem.isPayed) {
       _orderItems.push(orderItem.id);
       _total_amount += orderItem.price;
       orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt);
       orderItem.isPayed = true,
-      orderItem.isChecked = false,
+      // orderItem.isChecked = false,      //ToDo oh oh... could give a big mistake
       console.log("orderitem", orderItem)
     }
   });
+  updateOrderisPayed();
   paymentService.create({ order_items: _orderItems, payment_option: (paymentOption.value =='cash' || paymentOption.value =='card') ? (paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1') : '7if9vi3z90h2568', discount_percent: _discount, total_amount: _total_amount, tip_amount: getTipValue() });
 }
 
@@ -161,6 +174,7 @@ const handleAdjustPayment = async () => {
       _orderItems.push(orderItem.id);
       orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt);
     }
+
   });
   paymentService.create({ order_items: _orderItems, payment_option: (paymentOption.value =='cash' || paymentOption.value =='card') ? (paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1') : '7if9vi3z90h2568', discount_percent: adjustedDiscountAmount.value, total_amount: adjustedTotalAmount.value, tip_amount: getTipValue() });
 }
@@ -205,7 +219,7 @@ function updateTotalSum() {
       <Accordion type="multiple" class="w-4/5 mx-auto">
         <AccordionItem v-for="order in orders" :key="order.id" :value="order.status">
           <!--TODO delete collabsible since it´s unused in LIEFERN-->
-          <AccordionTrigger> Person: {{ order.person }}
+          <AccordionTrigger v-if="!order.isPayed"> Person: {{ order.person }}
             <Checkbox
               :checked="order.isChecked"
               :indeterminate="order.someChecked && !order.isChecked"

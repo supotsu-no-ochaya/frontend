@@ -68,7 +68,7 @@ async function handleOrderSend(person:string, table: string) {
 
     for (let orderItem of (cartStore.cart.filter((item: any) => item.person === person && item.table === table))) {
       for (let i = 0; i < orderItem.quantity; i++) {
-        let _bom = orderItem.bom_template.products ? orderItem.bom_template.products : ["z3acikruw24l618"]
+        let _bom = orderItem.bom_template.products ? orderItem.bom_template.products : ["z3acikruw24l618"]  //ToDO ??
         let response = await orderItemService.create({
           order: order.id,
           price: orderItem.price,

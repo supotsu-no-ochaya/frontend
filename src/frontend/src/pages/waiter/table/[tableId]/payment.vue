@@ -29,7 +29,7 @@ const tableStore = useTableStore()
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 let Rabatt = reactive({ value: 0.10, checked: false });
 let isPopoverOpen = ref(false); // State to control popover visibility
-let tipValue = ref(); // State for tip input
+let afterTip = ref(); //State for tip input
 let isAdjustPopoverOpen = ref(false); // State to control the second popover
 let adjustedTotalAmount = ref(0); // State for adjusted total amount input
 let adjustedDiscountAmount = ref(0); // State for adjusted discount amount input
@@ -78,6 +78,10 @@ const handleItemCheckboxChange = (order: any, orderItem: any, checked: boolean) 
   // Recalculate the total for this order
   calculateTotal(order, orderItem, checked);
 };
+
+function getTipValue(){
+  return  afterTip.value - calculateTotalSum();
+}
 
 function togglePaymentOption(option: string){
   paymentOption.value = option
@@ -147,7 +151,7 @@ const handleConfirmPayment = async () => {
       console.log("orderitem", orderItem)
     }
   });
-  paymentService.create({ order_items: _orderItems, payment_option: paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1', discount_percent: _discount, total_amount: _total_amount, tip_amount: tipValue.value });
+  paymentService.create({ order_items: _orderItems, payment_option: (paymentOption.value =='cash' || paymentOption.value =='card') ? (paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1') : '7if9vi3z90h2568', discount_percent: _discount, total_amount: _total_amount, tip_amount: getTipValue() });
 }
 
 const handleAdjustPayment = async () => {
@@ -161,7 +165,7 @@ const handleAdjustPayment = async () => {
       orderItemService.updateOrderItemToStatus(orderItem.id, OrderStatus.Bezahlt);
     }
   });
-  paymentService.create({ order_items: _orderItems, payment_option: paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1', discount_percent: adjustedDiscountAmount.value, total_amount: adjustedTotalAmount.value, tip_amount: tipValue.value });
+  paymentService.create({ order_items: _orderItems, payment_option: (paymentOption.value =='cash' || paymentOption.value =='card') ? (paymentOption.value =='cash'? '3gie4k61or17sfk' : '2dbpn606978dru1') : '7if9vi3z90h2568', discount_percent: adjustedDiscountAmount.value, total_amount: adjustedTotalAmount.value, tip_amount: getTipValue() });
 }
 
 // Method to calculate total for a order based on checked items
@@ -282,7 +286,10 @@ function updateTotalSum() {
               <button @click="togglePaymentOption('card');" :class="paymentOption=='card' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2 mb-2">
                 Karte
               </button>
-              <Input v-model="tipValue" type="number" placeholder="Trinkgeld in ct" class=""/>
+              <button @click="togglePaymentOption('coupon');":class="paymentOption=='coupon' ? 'bg-primary': 'bg-secondary'" class="text-black mx-2 rounded-sm font-bold w-1/3 max-w-[100px] self-start min-h-min p-2">
+                Gutschein
+              </button>
+              <Input v-model="afterTip" type="number" placeholder="Gesamt mit Trinkgeld in ct" class=""/>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter class="justify-between flex w-full">
@@ -310,7 +317,7 @@ function updateTotalSum() {
             <p>Gesamtbetrag in ct:</p>
             <Input v-model="adjustedTotalAmount" type="number" placeholder="Gesamtbetrag in ct" />
             <p>Trinkgeld in ct:</p>
-            <Input v-model="tipValue" type="number" placeholder="Trinkgeld in ct" />
+            <Input v-model="afterTip" type="number" placeholder="Gesamt mit Trinkgeld in ct" />
             <p>Rabatt in %:</p>
             <Input v-model="adjustedDiscountAmount" type="number" placeholder="Rabatt in %" />
             <Button @click="handleAdjustPayment" class="w-full">Anpassen</Button>

@@ -33,8 +33,8 @@ if (!tableStore.table.persons[tableId.value]) {
 
 const removePersonSecure = (tableId) => {
   const personsAtTable = tableStore.table.persons[tableId]
-  console.log(personsAtTable,personsLocked[0])
-  if ((personsAtTable-1)>=personsLocked[0]){
+  console.log(personsAtTable, personsLocked, Math.max(...personsLocked))
+  if ((personsAtTable-1) >= Math.max(...personsLocked)){
     removePerson(tableId)
   } else {
     alert("Person is noch in Bedienung")

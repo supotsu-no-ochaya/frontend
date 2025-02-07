@@ -105,7 +105,7 @@ setTimeout(()=>{
 }, 5_000);
 
 console.log("our cart", cartStore.cart)
-
+//  clearCarts()
 // delete them later
 function clearCarts(){
   cartStore.clearCart()

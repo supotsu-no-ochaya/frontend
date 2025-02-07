@@ -63,7 +63,7 @@ watch(
                 //add orderID as first El to trashcan
                 trashcan[stationName].unshift(order.id);
               }
-              orderService.updateOrderToStatus(order.id, OrderStatus.Abholbereit)
+              orderService.updateOrderToStatus(order.id, OrderStatus.Geliefert)     //TODO: auf Abholbereit stellen, wenn interface in order rdy ist
             }
             if (trashcan[stationName].length > trashlength) {
               //rmve x+1 el of trashcan

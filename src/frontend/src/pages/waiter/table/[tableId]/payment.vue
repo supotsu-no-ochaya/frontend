@@ -31,8 +31,8 @@ let Rabatt = reactive({ value: 0.10, checked: false });
 let isPopoverOpen = ref(false); // State to control popover visibility
 let afterTip = ref(); //State for tip input
 let isAdjustPopoverOpen = ref(false); // State to control the second popover
-let adjustedTotalAmount = ref(0); // State for adjusted total amount input
-let adjustedDiscountAmount = ref(0); // State for adjusted discount amount input
+let adjustedTotalAmount = ref(); // State for adjusted total amount input
+let adjustedDiscountAmount = ref(); // State for adjusted discount amount input
 let paymentOption = ref('cash')
 
 let orders = reactive(computedAsync(() =>
